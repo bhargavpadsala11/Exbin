@@ -1,0 +1,27 @@
+package com.newexpenseinvoicemanager.newbudgetplanner.exbin.dao
+
+import androidx.lifecycle.LiveData
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
+
+@Dao
+interface categoriesDao {
+    @Insert
+    suspend fun inserCategory(categories: Categories)
+
+    @Delete
+    suspend fun deletetCategory(categories: Categories)
+
+
+    @Query("SELECT * FROM Categories")
+    fun getAllCategory(): LiveData<List<Categories>>
+
+    @Query("SELECT * FROM Categories WHERE CategoryName = :name")
+    fun getCategoryByName(name: String): Categories?
+
+
+
+}

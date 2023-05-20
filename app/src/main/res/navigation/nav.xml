@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav"
+    app:startDestination="@id/homeFragment">
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/budgetFragment"
+        android:name="com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments.BudgetFragment"
+        android:label="fragment_budget"
+        tools:layout="@layout/fragment_budget" />
+
+    <fragment
+        android:id="@+id/moreFragment"
+        android:name="com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments.MoreFragment"
+        android:label="fragment_more"
+        tools:layout="@layout/fragment_more"></fragment>
+    <fragment
+        android:id="@+id/transectionFragment"
+        android:name="com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments.TransectionFragment"
+        android:label="fragment_transection"
+        tools:layout="@layout/fragment_transection" />
+    <fragment
+        android:id="@+id/addCateoryFragment"
+        android:name="com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments.AddCategoriesFragment"
+        android:label="fragment_add_cateory"
+        tools:layout="@layout/fragment_add_categories" />
+</navigation>
