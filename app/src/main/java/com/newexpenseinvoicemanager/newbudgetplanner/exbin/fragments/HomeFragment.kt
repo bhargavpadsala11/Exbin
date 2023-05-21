@@ -137,13 +137,16 @@ class HomeFragment : Fragment() {
 
         dao.getIncomeExpenseDifference().observe(requireActivity()) { differnce ->
 
-            if (differnce >= 0) {
-                binding.currentBalanceTxt.text = "$differnce"
-                binding.currentBalanceTxt.setTextColor(ContextCompat.getColor(requireContext(), R.color.transectionGreen))
-            } else {
-                binding.currentBalanceTxt.text = "-${differnce}"
-                binding.currentBalanceTxt.setTextColor(ContextCompat.getColor(requireContext(), R.color.transectionRed))
+            if (differnce != null){
+                if (differnce >= 0) {
+                    binding.currentBalanceTxt.text = "$differnce"
+                    binding.currentBalanceTxt.setTextColor(ContextCompat.getColor(requireContext(), R.color.transectionGreen))
+                } else {
+                    binding.currentBalanceTxt.text = "-${differnce}"
+                    binding.currentBalanceTxt.setTextColor(ContextCompat.getColor(requireContext(), R.color.transectionRed))
 
+                }}else{
+                hideData()
             }
         }
     }

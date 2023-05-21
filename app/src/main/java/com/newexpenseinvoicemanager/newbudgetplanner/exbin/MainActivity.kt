@@ -142,53 +142,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
-        when {
-            currentFragment is MoreFragment -> {
-                // If the current fragment is a MoreFragment, pop the back stack
-                if (supportFragmentManager.backStackEntryCount > 0) {
-                    supportFragmentManager.popBackStack()
-
-                } else {
-                    super.onBackPressed()
-                }
+        if (currentFragment is HomeFragment) {
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - backPressedTime < backPressedTimeout) {
+                finish()
+            } else {
+                backPressedTime = currentTime
+                Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show()
             }
-            currentFragment is CategoryListFragment -> {
-                // If the current fragment is a CategoryFragment, pop the back stack
-                if (supportFragmentManager.backStackEntryCount > 0) {
-                    supportFragmentManager.popBackStack()
-                } else {
-                    super.onBackPressed()
-                }
-            }
-            currentFragment is AddCategoriesFragment -> {
-                // If the current fragment is a SlideFragment, pop the back stack
-                if (supportFragmentManager.backStackEntryCount > 0) {
-                    supportFragmentManager.popBackStack()
-                } else {
-                    super.onBackPressed()
-                }
-            }
-            currentFragment is PaymentModeFragment -> {
-                // If the current fragment is a SlideFragment, pop the back stack
-                if (supportFragmentManager.backStackEntryCount > 0) {
-                    supportFragmentManager.popBackStack()
-                } else {
-                    super.onBackPressed()
-                }
-            }
-            else -> {
-                val fragment = HomeFragment()
-                val transaction = supportFragmentManager.beginTransaction()
-                transaction.replace(R.id.fragment_container, fragment)
-                transaction.commit()
-                // Set the selectedItemId based on the current fragment
-                when (currentFragment) {
-                    is MoreFragment -> bottomNavigationView.selectedItemId = R.id.navigation_more
-                    is TransectionFragment -> bottomNavigationView.selectedItemId = R.id.navigation_transection
-                    is BudgetFragment -> bottomNavigationView.selectedItemId = R.id.navigation_budget
-                    else -> bottomNavigationView.selectedItemId = R.id.navigation_home
-                }
-            }
+        } else {
+            val fragment = HomeFragment()
+            val transaction = supportFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container, fragment)
+            transaction.commit()
+            bottomNavigationView.selectedItemId = R.id.navigation_home
         }
     }
 
