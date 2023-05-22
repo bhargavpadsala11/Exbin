@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
@@ -20,6 +21,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.DateFormatSymbols
 import java.time.LocalDateTime
+import java.time.Month
+import java.time.format.TextStyle
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -29,6 +32,7 @@ class BudgetFragment : Fragment() {
     private lateinit var categoryList: ArrayList<String>
     private lateinit var selectedCatColor: String
     private var currentMonth: Int = Calendar.getInstance().get(Calendar.MONTH)
+    var monthName: String = DateFormatSymbols().months[currentMonth]
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,6 +41,7 @@ class BudgetFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentBudgetBinding.inflate(layoutInflater)
 
+        setBudgetView()
         binding.ydtextView.visibility = View.GONE
         binding.budgetRecy.visibility = View.VISIBLE
         getCategory()
@@ -84,31 +89,29 @@ class BudgetFragment : Fragment() {
             )
             clearText()
         }
-        val adapter = BudgetAndExpenseAdapter(emptyList())
-        binding.budgetRecy.adapter = adapter
-        val dao = AppDataBase.getInstance(requireContext()).budgetDao()
-        lifecycleScope.launch {
-            val budgetAndExpenseList = dao.getBudgetAndExpense()
-            adapter.budgetAndExpenseList = budgetAndExpenseList
-            adapter.notifyDataSetChanged()
-            Log.d("In Lifescycle Scope", "$budgetAndExpenseList")
-        }
+
 
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun insertBudget(
         amount: String,
         category: String,
         catgoryColor: String,
         date: String
     ) {
+        val currentMonth = Month.values()[Month.values().indexOf(Month.valueOf(java.time.LocalDate.now().month.name))]
+        val monthString = currentMonth.getDisplayName(TextStyle.FULL, Locale.getDefault())
+
+
         val db = AppDataBase.getInstance(requireContext()).budgetDao()
         val data = BudgetDb(
             budget = amount,
             budgetCat = category,
             catColor = catgoryColor,
-            currentDate = date
+            currentDate = date,
+            month = monthString
 
         )
         lifecycleScope.launch(Dispatchers.IO) {
@@ -161,6 +164,17 @@ class BudgetFragment : Fragment() {
                         }
                 }
             }
+        }
+    }
+
+    fun setBudgetView() {
+        val adapter = BudgetAndExpenseAdapter(emptyList())
+        binding.budgetRecy.adapter = adapter
+        val dao = AppDataBase.getInstance(requireContext()).budgetDao()
+        lifecycleScope.launch {
+            val budgetAndExpenseList = dao.getBudgetAndExpense()
+            adapter.budgetAndExpenseList = budgetAndExpenseList
+            adapter.notifyDataSetChanged()
         }
     }
 

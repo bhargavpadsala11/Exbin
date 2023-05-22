@@ -30,7 +30,6 @@ class CategoryListAdapter(
 
     override fun onBindViewHolder(holder: CategoryListViewHolder, position: Int) {
         holder.binding.titleTextView.text = list[position].CategoryName
-        holder.binding.descriptionTextView.text = list[position].CategoryDiscription
         val image = byteArrayToDrawable(list[position].CategoryImage)
         Glide.with(context).load(image).into(holder.binding.imageView)
 

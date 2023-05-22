@@ -9,7 +9,6 @@ data class Categories(
     @ColumnInfo(name = "_id")
     @PrimaryKey(autoGenerate = true) val categoryId: Int = 0,
     val CategoryName: String? = "",
-    val CategoryDiscription: String? = "",
     val CategoryColor : String = "",
     val CategoryImage: ByteArray? = null
 

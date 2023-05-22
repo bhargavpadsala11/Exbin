@@ -37,64 +37,32 @@ class PaymentModesAdapter(
     override fun onBindViewHolder(holder: PaymentModeViewHolder, position: Int) {
         holder.binding.pmntdtextview.text = list[position].paymentMode
         //val dao = AppDataBase.getInstance(context).paymentModesDao()
-        holder.binding.root.setOnClickListener {
-            val cardView = mainLayout.findViewById<MaterialCardView>(R.id.addcardview)
-            cardView.visibility = View.VISIBLE
-            val cardTextView = mainLayout.findViewById<TextInputEditText>(R.id.addPaymet)
-
-            cardTextView.setText(list[position].paymentMode)
-            cardTextView.requestFocus()
-            val cardViewButtonApply = mainLayout.findViewById<Button>(R.id.btnapply)
-            cardViewButtonApply.setOnClickListener {
-                val newPaymentMode = cardTextView.text.toString()
-                updatePaymentMode(list[position].paymentModeId, newPaymentMode)
-                list[position].paymentMode = newPaymentMode
-                notifyItemChanged(position)
-                clearText(cardTextView)
-                hideFragment(cardView)
-
-            }
-
-
-            val cardViewButtonCancel = mainLayout.findViewById<Button>(R.id.btncancel)
-            cardViewButtonCancel.setOnClickListener {
-                clearText(cardTextView)
-                hideFragment(cardView)
-            }
-        }
-    }
-
-
-//    override fun onBindViewHolder(holder: PaymentModeViewHolder, position: Int) {
-//        holder.binding.pmntdtextview.text = list[position].paymentMode
-//        val dao = AppDataBase.getInstance(context).paymentModesDao()
-//        holder.binding.btneditmode.setOnClickListener {
+//        holder.binding.root.setOnClickListener {
 //            val cardView = mainLayout.findViewById<MaterialCardView>(R.id.addcardview)
 //            cardView.visibility = View.VISIBLE
 //            val cardTextView = mainLayout.findViewById<TextInputEditText>(R.id.addPaymet)
 //
-//            textInputEditText.setText(list[position].paymentMode)
-//            textInputEditText.requestFocus()
+//            cardTextView.setText(list[position].paymentMode)
+//            cardTextView.requestFocus()
 //            val cardViewButtonApply = mainLayout.findViewById<Button>(R.id.btnapply)
 //            cardViewButtonApply.setOnClickListener {
-//                cardTextView.text.toString()
-//                Toast.makeText(context, "+$cardTextView+", Toast.LENGTH_SHORT).show()
-//                updatePaymentMode(
-//                    list[position].paymentModeId,
-//                    textInputEditText.getText().toString()
-//                )
-//                clearText(textInputEditText)
+//                val newPaymentMode = cardTextView.text.toString()
+//                updatePaymentMode(list[position].paymentModeId, newPaymentMode)
+//                list[position].paymentMode = newPaymentMode
+//                notifyItemChanged(position)
+//                clearText(cardTextView)
 //                hideFragment(cardView)
 //
+//            }
 //
-//                val cardViewButtonCancel = mainLayout.findViewById<Button>(R.id.btncancel)
-//                cardViewButtonCancel.setOnClickListener {
-//                    clearText(textInputEditText)
-//                    hideFragment(cardView)
-//                }
+//
+//            val cardViewButtonCancel = mainLayout.findViewById<Button>(R.id.btncancel)
+//            cardViewButtonCancel.setOnClickListener {
+//                clearText(cardTextView)
+//                hideFragment(cardView)
 //            }
 //        }
-//    }
+    }
 
 
     override fun getItemCount(): Int {

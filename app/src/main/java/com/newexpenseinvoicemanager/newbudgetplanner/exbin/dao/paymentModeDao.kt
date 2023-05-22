@@ -8,6 +8,9 @@ import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.PaymentModes
 interface paymentModeDao {
 
     @Insert
+    fun insertAll(paymentModes: List<PaymentModes>)
+
+    @Insert
     suspend fun insertPaymentMode(paymentMode : PaymentModes)
 
     @Delete
@@ -31,7 +34,8 @@ interface paymentModeDao {
 //
 //    @Query("SELECT * PaymentModes WHERE id = :id")
 //    fun selectOnePaymentMode(id :Int) : PaymentModes
-
+@Insert(onConflict = OnConflictStrategy.IGNORE)
+suspend fun insertDefaultPaymentModes(paymentModes: List<PaymentModes>)
 
 
 }

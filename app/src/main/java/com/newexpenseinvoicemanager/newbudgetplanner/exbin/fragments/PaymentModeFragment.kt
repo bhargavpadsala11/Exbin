@@ -4,12 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.PaymentModesAdapter
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.FragmentPaymentModeBinding
@@ -28,18 +32,39 @@ class PaymentModeFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentPaymentModeBinding.inflate(layoutInflater)
 
+        val mainView = inflater.inflate(R.layout.fragment_payment_mode, container, false)
+        val addPaymentView = inflater.inflate(R.layout.add_payent_maode_layout, container, false)
 
         binding.addPaymentFloating.setOnClickListener {
-            binding.addcardview.visibility = View.VISIBLE
-        }
+            Toast.makeText(requireContext(), "Button pressing", Toast.LENGTH_SHORT).show()
+            // binding.addcardview.visibility = View.VISIBLE
+            mainView.visibility = View.GONE
+            addPaymentView.visibility = View.VISIBLE
+            container?.addView(addPaymentView)
 
-        binding.btnapply.setOnClickListener {
-            addPaymentMode(binding.addPaymet.text.toString())
-            clearText(binding.addPaymet)
+
         }
-        binding.btncancel.setOnClickListener {
-            clearText(binding.addPaymet)
-            hideFragment(binding.addcardview)
+        val addButton = addPaymentView.findViewById<MaterialButton>(R.id.btnapply)
+        val cancelButton = addPaymentView.findViewById<MaterialButton>(R.id.btncancel)
+        addButton.setOnClickListener {
+
+            val getaymentModeTextView =
+                addPaymentView.findViewById<TextInputEditText>(R.id.addPaymet)
+            if (getaymentModeTextView.text?.isEmpty() == true){
+                //getaymentModeTextView.setBackgroundResource(R.drawable.red_under_line)
+                getaymentModeTextView.requestFocus()
+                Toast.makeText(requireContext(), "Please write Payment mode name", Toast.LENGTH_SHORT).show()
+            }else{
+            addPaymentMode(getaymentModeTextView.text.toString())
+            mainView.visibility = View.VISIBLE
+            addPaymentView.visibility = View.GONE
+            container?.removeView(addPaymentView)
+            getaymentModeTextView.setText("")}
+        }
+        cancelButton.setOnClickListener {
+            mainView.visibility = View.VISIBLE
+            addPaymentView.visibility = View.GONE
+            container?.removeView(addPaymentView)
         }
 
         val dao = AppDataBase.getInstance(requireContext()).paymentModesDao()
@@ -47,11 +72,8 @@ class PaymentModeFragment : Fragment() {
 //                Toast.makeText(requireContext(), "${dao.getAllPaymentMode()}", Toast.LENGTH_SHORT).show()
             val layoutManager = LinearLayoutManager(requireContext())
             val recy = binding.paymentModesList
-
             recy.layoutManager = layoutManager
             val mainLayout = binding.MainLayoutOfPaymentMode
-            val textInputEditText = binding.addPaymet
-
             val adapter = PaymentModesAdapter(requireContext(), it, mainLayout)
             recy.adapter = adapter
         }
@@ -67,9 +89,6 @@ class PaymentModeFragment : Fragment() {
         }
     }
 
-    private fun clearText(addPaymet: TextInputEditText) {
-        addPaymet.setText("")
-    }
 
     private fun hideFragment(addcardview: MaterialCardView) {
         addcardview.visibility = View.GONE

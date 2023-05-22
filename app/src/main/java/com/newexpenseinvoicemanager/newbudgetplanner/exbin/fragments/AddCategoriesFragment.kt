@@ -377,7 +377,6 @@ class AddCategoriesFragment : Fragment() {
         binding.btnSave.setOnClickListener {
             addCategory(
                 binding.addCategorytxt.text.toString(),
-                binding.addCategoryDesctxt.text.toString()
             )
             // clearText(binding.addCategorytxt, binding.addCategoryDesctxt)
         }
@@ -398,7 +397,6 @@ class AddCategoriesFragment : Fragment() {
             val colorDrawable = ColorDrawable(colorInt)
             val mergedDrawable = mergeDrawables(iconDrawable!!, colorDrawable)
             binding.mergedImage.setImageDrawable(mergedDrawable)
-            Toast.makeText(requireContext(), "$selectedColor", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -423,11 +421,10 @@ class AddCategoriesFragment : Fragment() {
         return layerDrawable
     }
 
-    private fun addCategory(addcategory: String, addDescription: String) {
+    private fun addCategory(addcategory: String) {
         val db = AppDataBase.getInstance(requireContext()).categoriesDao()
         val data = Categories(
             CategoryName = addcategory,
-            CategoryDiscription = addDescription,
             CategoryColor = "$selectedColor",
             CategoryImage = drawableToByteArray(binding.mergedImage.drawable)
         )

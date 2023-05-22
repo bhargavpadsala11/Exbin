@@ -22,7 +22,6 @@ class MoreFragment : Fragment() {
         var fragment: Fragment
 
         binding.addCatBtn.setOnClickListener {
-            Toast.makeText(requireContext(), "button pressed", Toast.LENGTH_SHORT).show()
             fragment = CategoryListFragment()
             activity?.supportFragmentManager?.beginTransaction()
                 ?.replace(R.id.fragment_container, fragment)

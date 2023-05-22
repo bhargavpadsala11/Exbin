@@ -29,12 +29,6 @@
             android:textSize="22sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/descriptionTextView"
-            android:layout_width="match_parent"
-            android:layout_height="47dp"
-            android:text="Description"
-            android:textSize="17sp" />
 
     </LinearLayout>
 

@@ -24,7 +24,6 @@ class CategoryAdapter(
 
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
         holder.binding.titleTextView.text = list[position].CategoryName
-        holder.binding.descriptionTextView.text = list[position].CategoryDiscription
         Glide.with(context).load(list[position].CategoryImage).into(holder.binding.imageView)
     }
 

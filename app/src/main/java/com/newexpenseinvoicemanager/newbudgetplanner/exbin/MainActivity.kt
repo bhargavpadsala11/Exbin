@@ -24,6 +24,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fab: FloatingActionButton
     private var backPressedTime: Long = 0
     private val backPressedTimeout: Long = 2000 // 2 seconds
+    private var isButtonVisible = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -109,8 +111,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun floatButtonShow() {
-        binding.exp.visibility = View.VISIBLE
-        binding.inc.visibility = View.VISIBLE
+        if (isButtonVisible) {
+            binding.exp.visibility = View.GONE
+            binding.inc.visibility = View.GONE
+        } else {
+            binding.exp.visibility = View.VISIBLE
+            binding.inc.visibility = View.VISIBLE
+        }
+
+        // Toggle the visibility state
+        isButtonVisible = !isButtonVisible
     }
 
     private fun floatButtonHide() {

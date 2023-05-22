@@ -9,4 +9,13 @@ data class PaymentModes(
     //  @ColumnInfo(name = "paymentMode")
     var paymentMode: String? = ""
 
-)
+) {
+    companion object {
+        const val CASH = "Cash"
+        const val CREDIT_CARD = "Credit Card"
+        const val DEBIT_CARD = "Debit Card"
+        const val NET_BANKING = "Net Banking"
+        const val UPI = "UPI"
+        const val GOOGLE_PAY = "Google Pay"
+    }
+}

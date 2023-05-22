@@ -17,28 +17,48 @@ class BudgetAndExpenseAdapter(var budgetAndExpenseList: List<BudgetAndExpense>) 
         fun bind(budgetAndExpense: BudgetAndExpense) {
             //   binding.catTextView.text = budgetAndExpense.budgetCat
             binding.catTextView.text = budgetAndExpense.category
-            binding.remainingTxt.text = budgetAndExpense.amount1
 
             val budgetAmount = budgetAndExpense.budget.toDoubleOrNull()
             val expenseAmount = budgetAndExpense.amount1?.toDoubleOrNull()
+            val amountOfIncExpTbl = budgetAndExpense.budgetCat
+            if (amountOfIncExpTbl != null) {
+                binding.catTextView.text = budgetAndExpense.category
 
-            if (budgetAmount != null && expenseAmount != null) {
-                val progress = (expenseAmount / budgetAmount * 100).toInt()
-                binding.determinateBar.progress = progress
+                binding.remainingTxt.text = "Remaining ${budgetAndExpense.amount}"
+            } else {
+                var sum = budgetAndExpense.amount!!.toInt() - budgetAndExpense.amount1!!.toInt()
+                binding.remainingTxt.text = "Remaining ${sum}"
+            }
+            if (amountOfIncExpTbl != null) {
+                binding.catTextView.text = budgetAndExpense.category
+
+                binding.determinateBar.progress = 0
                 binding.determinateBar.progressTintList =
                     ColorStateList.valueOf(Color.parseColor(budgetAndExpense.catColor))
                 val color = Color.parseColor(budgetAndExpense.catColor)
                 binding.viewId1.setBackgroundColor(color)
-                binding.amntOfamntText.text =
-                    "${budgetAndExpense.amount1} of ${budgetAndExpense.amount}"
+                binding.amntOfamntText.text = "00 of ${budgetAndExpense.amount}"
+                binding.image.visibility = View.GONE
+                binding.warningTxt.visibility = View.GONE
+            } else {
+                if (budgetAmount != null && expenseAmount != null) {
+                    val progress = (expenseAmount / budgetAmount * 100).toInt()
+                    binding.determinateBar.progress = progress
+                    binding.determinateBar.progressTintList =
+                        ColorStateList.valueOf(Color.parseColor(budgetAndExpense.catColor))
+                    val color = Color.parseColor(budgetAndExpense.catColor)
+                    binding.viewId1.setBackgroundColor(color)
+                    binding.amntOfamntText.text =
+                        "${budgetAndExpense.amount1} of ${budgetAndExpense.amount}"
 
 
-                if (expenseAmount > budgetAmount) {
-                    binding.image.visibility = View.VISIBLE
-                    binding.warningTxt.visibility = View.VISIBLE
-                } else {
-                    binding.image.visibility = View.GONE
-                    binding.warningTxt.visibility = View.GONE
+                    if (expenseAmount > budgetAmount) {
+                        binding.image.visibility = View.VISIBLE
+                        binding.warningTxt.visibility = View.VISIBLE
+                    } else {
+                        binding.image.visibility = View.GONE
+                        binding.warningTxt.visibility = View.GONE
+                    }
                 }
             }
         }
