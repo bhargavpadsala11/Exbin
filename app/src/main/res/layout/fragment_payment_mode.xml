@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/MainLayoutOfPaymentMode"
@@ -7,15 +8,17 @@
     android:layout_height="match_parent"
     tools:context=".fragments.PaymentModeFragment">
 
+    <include
+        android:id="@+id/app_bar"
+        layout="@layout/custom_app_bar" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/paymentModesList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/app_bar"
         tools:listitem="@layout/payment_mode_item_layout" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -25,91 +28,10 @@
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="20dp"
         android:clickable="true"
-        android:src="@drawable/ic_add_24"
+        app:backgroundTint="@color/main_color"
+        app:tint="@color/white"
+        app:srcCompat="@drawable/ic_add_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
-    <!--    <com.google.android.material.card.MaterialCardView-->
-    <!--        android:layout_width="290dp"-->
-    <!--        android:layout_height="200dp"-->
-    <!--        app:cornerRadius="12dp"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toTopOf="parent"-->
-    <!--        android:visibility="gone"-->
-    <!--        android:id="@+id/addcardview">-->
-
-    <!--        <LinearLayout-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="match_parent"-->
-    <!--            android:orientation="vertical">-->
-
-    <!--            <LinearLayout-->
-    <!--                android:layout_width="match_parent"-->
-    <!--                android:layout_height="0dp"-->
-    <!--                android:layout_weight="1"-->
-    <!--                android:background="@color/purple_500">-->
-
-    <!--                <TextView-->
-    <!--                    android:layout_width="match_parent"-->
-    <!--                    android:layout_height="match_parent"-->
-    <!--                    android:gravity="center"-->
-    <!--                    android:text="Add Payment Mode"-->
-    <!--                    android:textColor="@color/white"-->
-    <!--                    android:textSize="25sp"-->
-    <!--                    android:textStyle="bold" />-->
-    <!--            </LinearLayout>-->
-
-    <!--            <LinearLayout-->
-    <!--                android:layout_width="match_parent"-->
-    <!--                android:layout_height="0dp"-->
-    <!--                android:layout_weight="1">-->
-
-    <!--                <com.google.android.material.textfield.TextInputEditText-->
-    <!--                    android:layout_width="match_parent"-->
-    <!--                    android:layout_height="match_parent"-->
-    <!--                    android:layout_margin="5dp"-->
-    <!--                    android:hint="Name"-->
-    <!--                    android:textSize="20sp"-->
-    <!--                    android:id="@+id/addPaymet"/>-->
-
-    <!--            </LinearLayout>-->
-
-    <!--            <LinearLayout-->
-    <!--                android:layout_width="match_parent"-->
-    <!--                android:layout_height="0dp"-->
-    <!--                android:layout_weight="1"-->
-    <!--                android:orientation="horizontal">-->
-
-    <!--                <com.google.android.material.button.MaterialButton-->
-    <!--                    android:layout_width="0dp"-->
-    <!--                    android:layout_height="wrap_content"-->
-    <!--                    android:layout_margin="10dp"-->
-    <!--                    android:layout_weight="1"-->
-    <!--                    android:backgroundTint="@color/white"-->
-    <!--                    android:padding="5dp"-->
-    <!--                    android:text="CANCEL"-->
-    <!--                    android:textColor="@color/black"-->
-    <!--                    app:cornerRadius="25dp"-->
-    <!--                    app:strokeColor="@color/purple_700"-->
-    <!--                    app:strokeWidth="2dp"-->
-    <!--                    android:id="@+id/btncancel"/>-->
-
-    <!--                <com.google.android.material.button.MaterialButton-->
-    <!--                    android:layout_width="0dp"-->
-    <!--                    android:layout_height="wrap_content"-->
-    <!--                    android:layout_margin="10dp"-->
-    <!--                    android:layout_weight="1"-->
-    <!--                    android:padding="5dp"-->
-    <!--                    android:text="APPLY"-->
-    <!--                    app:cornerRadius="25dp"-->
-    <!--                    android:id="@+id/btnapply"/>-->
-
-    <!--            </LinearLayout>-->
-
-    <!--        </LinearLayout>-->
-
-    <!--    </com.google.android.material.card.MaterialCardView>-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
