@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -83,7 +82,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="2"
                                 android:gravity="end"
-                                android:text="3,253.00"
+                                android:text="00.00"
                                 android:textColor="#FFFFFF"
                                 android:textSize="20sp" />
 
@@ -110,7 +109,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="2"
                                 android:gravity="end"
-                                android:text="104.94"
+                                android:text="00.00"
                                 android:textColor="#FFFFFF"
                                 android:textSize="20sp"
                                 android:textStyle="bold" />
@@ -147,7 +146,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="2"
                                 android:gravity="end"
-                                android:text="3,253.00"
+                                android:text="00.00"
                                 android:textColor="#FFFFFF"
                                 android:textSize="20sp" />
 
@@ -174,7 +173,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="2"
                                 android:gravity="end"
-                                android:text="104.94"
+                                android:text="00.00"
                                 android:textColor="#FFFFFF"
                                 android:textSize="20sp"
                                 android:textStyle="bold" />
@@ -185,42 +184,42 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/piechartay"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:orientation="vertical"
-                android:id="@+id/piechartay"
                 android:visibility="gone">
 
                 <com.github.mikephil.charting.charts.PieChart
                     android:id="@+id/pieChart"
                     android:layout_width="200dp"
                     android:layout_height="200dp"
-                    android:layout_gravity="center"/>
+                    android:layout_gravity="center" />
 
                 <TextView
+                    android:id="@+id/currentBalance"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:paddingTop="10dp"
-                    android:id="@+id/currentBalance"
-                    android:text="Current Balanace"/>
+                    android:text="Current Balanace" />
 
                 <TextView
+                    android:id="@+id/currentBalanceTxt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:id="@+id/currentBalanceTxt"
                     android:text="0.00"
                     android:textStyle="bold" />
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/seeAll"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_margin="5dp"
                 android:orientation="horizontal"
-                android:id="@+id/seeAll"
                 android:visibility="gone">
 
                 <TextView
@@ -251,14 +250,14 @@
                     </com.google.android.material.card.MaterialCardView>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/homeTranRecy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/transection_item_layout"
-                android:visibility="gone"/>
-
+                tools:listitem="@layout/transection_item_layout" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
@@ -267,6 +266,7 @@
                 android:gravity="center"
                 android:textSize="30sp"
                 android:textStyle="bold"/>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

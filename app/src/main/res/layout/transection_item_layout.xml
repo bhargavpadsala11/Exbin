@@ -52,8 +52,7 @@
                     android:layout_margin="5dp"
                     android:layout_weight="1"
                     android:gravity="end"
-                    android:text="-2544"
-                    android:textColor="#F24E4E"
+                    android:text="00.00"
                     android:textSize="22sp"
                     android:textStyle="bold" />
             </LinearLayout>

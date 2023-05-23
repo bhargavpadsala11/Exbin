@@ -6,12 +6,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.PaymentModeItemLayoutBinding
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments.BudgetFragment
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments.HomeFragment
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.PaymentModes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -20,7 +30,8 @@ import kotlinx.coroutines.launch
 class PaymentModesAdapter(
     val context: Context,
     val list: List<PaymentModes>,
-    val mainLayout: View
+    val paymentModeItemLayout: View,
+    private val listener: FragmentCallListener
 ) :
     RecyclerView.Adapter<PaymentModesAdapter.PaymentModeViewHolder>() {
 
@@ -36,32 +47,39 @@ class PaymentModesAdapter(
 
     override fun onBindViewHolder(holder: PaymentModeViewHolder, position: Int) {
         holder.binding.pmntdtextview.text = list[position].paymentMode
-        //val dao = AppDataBase.getInstance(context).paymentModesDao()
-//        holder.binding.root.setOnClickListener {
-//            val cardView = mainLayout.findViewById<MaterialCardView>(R.id.addcardview)
-//            cardView.visibility = View.VISIBLE
-//            val cardTextView = mainLayout.findViewById<TextInputEditText>(R.id.addPaymet)
+
+        if (list[position].paymentModeId <= 6) {
+            holder.binding.btnDelete.visibility = View.GONE
+            holder.binding.btneditmode.visibility = View.GONE
+        } else {
+            holder.binding.btnDelete.visibility = View.VISIBLE
+            holder.binding.btneditmode.visibility = View.VISIBLE
+        }
+        holder.binding.btneditmode.setOnClickListener {
+//            paymentModeItemLayout.visibility = View.VISIBLE
+            //val btnApply = paymentModeItemLayout.findViewById<MaterialButton>(R.id.btnapply)
+           // Toast.makeText(context, "button pressing", Toast.LENGTH_SHORT).show()
+            listener.callOtherLayoutFile()
+
+            // btnApply.setOnClickListener {
+
+            //val txtPaymentMode = paymentModeItemLayout.findViewById<AppCompatTextView>(R.id.pmntdtextview)
+
+//                if (txtPaymentMode.text.isEmpty()){
+//                    Toast.makeText(context, "Please add mode", Toast.LENGTH_SHORT).show()
+//                }else{
+//                    val dao = AppDataBase.getInstance(context).paymentModesDao()
+//                    GlobalScope.launch(Dispatchers.IO) {
+//                        dao.updatePaymentMode(list[position].paymentModeId,txtPaymentMode.text.toString())
+//                        paymentModeItemLayout.visibility = View.GONE
+//                        notifyDataSetChanged()
 //
-//            cardTextView.setText(list[position].paymentMode)
-//            cardTextView.requestFocus()
-//            val cardViewButtonApply = mainLayout.findViewById<Button>(R.id.btnapply)
-//            cardViewButtonApply.setOnClickListener {
-//                val newPaymentMode = cardTextView.text.toString()
-//                updatePaymentMode(list[position].paymentModeId, newPaymentMode)
-//                list[position].paymentMode = newPaymentMode
-//                notifyItemChanged(position)
-//                clearText(cardTextView)
-//                hideFragment(cardView)
-//
-//            }
-//
-//
-//            val cardViewButtonCancel = mainLayout.findViewById<Button>(R.id.btncancel)
-//            cardViewButtonCancel.setOnClickListener {
-//                clearText(cardTextView)
-//                hideFragment(cardView)
-//            }
-//        }
+//                    }
+//                    //dao.updatePaymentMode(list[position].paymentModeId,txtPaymentMode.text.toString())
+//                }
+            //}
+        }
+
     }
 
 
@@ -84,4 +102,7 @@ class PaymentModesAdapter(
         addcardview.visibility = View.GONE
     }
 
+}
+interface FragmentCallListener {
+    fun callOtherLayoutFile()
 }

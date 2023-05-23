@@ -37,5 +37,7 @@ interface paymentModeDao {
 @Insert(onConflict = OnConflictStrategy.IGNORE)
 suspend fun insertDefaultPaymentModes(paymentModes: List<PaymentModes>)
 
+//@Update
+//suspend fun updatePaymentMode(paymentMode : PaymentModes)
 
 }
