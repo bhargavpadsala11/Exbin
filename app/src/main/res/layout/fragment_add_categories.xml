@@ -55,6 +55,7 @@
             android:layout_marginHorizontal="30dp"
             android:hint="Name"
             android:textSize="18sp"
+            android:inputType="text"
             app:layout_constraintTop_toBottomOf="@+id/app_bar"
             app:layout_constraintBottom_toTopOf="@id/selectIcon"
             android:importantForAutofill="no"
@@ -123,12 +124,12 @@
             app:layout_constraintBottom_toBottomOf="@+id/divider"
             app:layout_constraintStart_toEndOf="@+id/divider"
             app:layout_constraintEnd_toStartOf="@+id/arrow2"
-            app:cardCornerRadius="50dp">
+            app:cardCornerRadius="25dp">
 
             <ImageView
                 android:id="@+id/selectColor"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:importantForAccessibility="no"
                 app:srcCompat="@color/purple_500" />
         </androidx.cardview.widget.CardView>
@@ -165,12 +166,12 @@
             app:layout_constraintTop_toTopOf="@+id/divider1"
             app:layout_constraintBottom_toBottomOf="@+id/divider1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:cardCornerRadius="50dp">
+            app:cardCornerRadius="25dp">
 
             <ImageView
                 android:id="@+id/mergedImage"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:importantForAccessibility="no"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_home"
