@@ -25,9 +25,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:text="Manage Payment Modes"
         android:textColor="@color/white"
-        android:textSize="22sp"
+        android:textSize="22sp" />
 
-
-        />
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_delete"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
