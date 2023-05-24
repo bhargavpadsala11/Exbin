@@ -37,6 +37,7 @@
         android:layout_height="50dp"
         android:background="@color/red"
         android:src="@drawable/ic_delete"
+        android:scaleType="center"
         app:layout_constraintBottom_toBottomOf="@+id/ll_line"
         app:layout_constraintEnd_toEndOf="@+id/ll_line"
         app:layout_constraintStart_toStartOf="@+id/ll_line"
