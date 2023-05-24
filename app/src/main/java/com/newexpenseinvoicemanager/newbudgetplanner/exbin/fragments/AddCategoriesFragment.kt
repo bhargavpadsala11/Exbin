@@ -375,10 +375,26 @@ class AddCategoriesFragment : Fragment() {
         }
 
         binding.btnSave.setOnClickListener {
-            addCategory(
-                binding.addCategorytxt.text.toString(),
-            )
-            // clearText(binding.addCategorytxt, binding.addCategoryDesctxt)
+            if (binding.addCategorytxt.text?.isEmpty() == true) {
+                binding.addCategorytxt.requestFocus()
+                Toast.makeText(
+                    requireContext(),
+                    "Please write Category name",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }else if(updateMergedIcon() == null){
+                Toast.makeText(
+                    requireContext(),
+                    "Please Select Icon and Color",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }else {
+                addCategory(
+                    binding.addCategorytxt.text.toString(),
+                )
+                Toast.makeText(requireContext(), "Category Added", Toast.LENGTH_SHORT).show()
+                // clearText(binding.addCategorytxt, binding.addCategoryDesctxt)
+            }
         }
 
         return binding.root

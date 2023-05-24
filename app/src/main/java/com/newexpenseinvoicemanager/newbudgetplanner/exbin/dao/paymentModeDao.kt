@@ -31,7 +31,10 @@ interface paymentModeDao {
 
     @Query("UPDATE PaymentModes SET paymentMode = :newPaymentMode WHERE paymentModeId = :id")
     fun updatePaymentMode(id: Int, newPaymentMode: String)
-//
+
+    @Query("DELETE FROM PaymentModes WHERE paymentModeId = :id")
+    fun deletePaymentMode(id: Int)
+//DELETE FROM table_name WHERE id = ?
 //    @Query("SELECT * PaymentModes WHERE id = :id")
 //    fun selectOnePaymentMode(id :Int) : PaymentModes
 @Insert(onConflict = OnConflictStrategy.IGNORE)

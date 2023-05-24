@@ -83,6 +83,8 @@ class IncomeActivity : AppCompatActivity() {
             val category = binding.category.selectedItem as String
             val paymentModes = binding.paymentMode.selectedItem as String
             insertIncome(amount, category, date, time, paymentModes, note, currentDateTime)
+
+           // checkValidation(amount, category, date, time, paymentModes, note, currentDateTime)
             clearText()
         }
 
@@ -139,6 +141,53 @@ class IncomeActivity : AppCompatActivity() {
         }
     }
 
+//    fun checkValidation(amount: String,
+//                        category: String,
+//                        date: String,
+//                        time: String,
+//                        paymentMode: String,
+//                        note: String,
+//                        currentDateTime: String){
+//        if(binding.incAmount.text.toString().isEmpty()){
+//            Toast.makeText(
+//                this,
+//                "Please Enter Amount",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        }else if (binding.category.selectedItem.toString().isBlank()){
+//            Toast.makeText(
+//                this,
+//                "Please Select Category",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        } else if(binding.incdate.text.toString().isEmpty()) {
+//            Toast.makeText(
+//                this,
+//                "Please Select Date",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        } else if (binding.inctime.text.toString().isEmpty()){
+//            Toast.makeText(
+//                this,
+//                "Please Select Time",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        }else if (binding.paymentMode.selectedItem.toString().isBlank()){
+//            Toast.makeText(
+//                this,
+//                "Please Select Payment Mode",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        }else if(binding.incNote.text.toString().isEmpty()){
+//            Toast.makeText(
+//                this,
+//                "Please write Note",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        }else{
+//            insertIncome(amount, category, date, time, paymentMode, note, currentDateTime)
+//        }
+//    }
 
     fun getCategory() {
         categoryList = ArrayList()
@@ -170,8 +219,6 @@ class IncomeActivity : AppCompatActivity() {
         binding.incNote.setText("")
         binding.incdate.setText("")
         binding.inctime.setText("")
-        categoryList.clear()
-        PaymentModeList.clear()
         Toast.makeText(this, "Income Added Successfully", Toast.LENGTH_SHORT).show()
     }
 

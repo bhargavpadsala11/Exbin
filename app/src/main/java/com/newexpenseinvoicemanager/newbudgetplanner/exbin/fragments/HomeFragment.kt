@@ -137,50 +137,62 @@ class HomeFragment : Fragment() {
 
         dao.getIncomeExpenseDifference().observe(requireActivity()) { differnce ->
 
-            if (differnce != null){
+            if (differnce != null) {
                 if (differnce >= 0) {
                     binding.currentBalanceTxt.text = "$differnce"
-                    binding.currentBalanceTxt.setTextColor(ContextCompat.getColor(requireContext(), R.color.transectionGreen))
+                    binding.currentBalanceTxt.setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.transectionGreen
+                        )
+                    )
                 } else {
                     binding.currentBalanceTxt.text = "-${differnce}"
-                    binding.currentBalanceTxt.setTextColor(ContextCompat.getColor(requireContext(), R.color.transectionRed))
+                    binding.currentBalanceTxt.setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.transectionRed
+                        )
+                    )
 
-                }}else{
+                }
+            } else {
                 hideData()
             }
         }
     }
 
-    private fun createPieChart() {
-        if (inc != 0.0 && exp != 0.0) {
-            pieChart = binding.pieChart
-            pieChart.setUsePercentValues(true)
-            pieChart.description.isEnabled = false
-            pieChart.legend.isEnabled = false
 
-            val entries = ArrayList<PieEntry>()
-            entries.add(PieEntry(inc.toFloat(), "Income"))
-            entries.add(PieEntry(exp.toFloat(), "Expense"))
-
-            val dataSet = PieDataSet(entries, "")
-            dataSet.colors = listOf(ColorTemplate.rgb("#4CAF50"), ColorTemplate.rgb("#F44336"))
-
-            val data = PieData(dataSet)
-            data.setValueFormatter(object : ValueFormatter() {
-                override fun getFormattedValue(value: Float): String {
-                    return String.format("%.2f%%", value)
-                }
-            })
-            data.setValueTextSize(14f)
-            data.setValueTextColor(Color.WHITE)
-
-            pieChart.data = data
-            pieChart.animateY(1000, Easing.EaseInOutQuad)
-            pieChart.setHoleColor(Color.TRANSPARENT) // set hole color to transparent
-            pieChart.setHoleRadius(50f) // set hole radius
-            pieChart.invalidate()
-        }
-    }
+//    private fun createPieChart() {
+//        if (inc != 0.0 && exp != 0.0) {
+//            pieChart = binding.pieChart
+//            pieChart.setUsePercentValues(true)
+//            pieChart.description.isEnabled = false
+//            pieChart.legend.isEnabled = false
+//
+//            val entries = ArrayList<PieEntry>()
+//            entries.add(PieEntry(inc.toFloat(), "Income"))
+//            entries.add(PieEntry(exp.toFloat(), "Expense"))
+//
+//            val dataSet = PieDataSet(entries, "")
+//            dataSet.colors = listOf(ColorTemplate.rgb("#4CAF50"), ColorTemplate.rgb("#F44336"))
+//
+//            val data = PieData(dataSet)
+//            data.setValueFormatter(object : ValueFormatter() {
+//                override fun getFormattedValue(value: Float): String {
+//                    return String.format("%.2f%%", value)
+//                }
+//            })
+//            data.setValueTextSize(14f)
+//            data.setValueTextColor(Color.WHITE)
+//
+//            pieChart.data = data
+//            pieChart.animateY(1000, Easing.EaseInOutQuad)
+//            pieChart.setHoleColor(Color.TRANSPARENT) // set hole color to transparent
+//            pieChart.setHoleRadius(50f) // set hole radius
+//            pieChart.invalidate()
+//        }
+//    }
 
     fun hideData() {
         binding.textviewdata.visibility = View.VISIBLE
@@ -195,4 +207,43 @@ class HomeFragment : Fragment() {
         binding.piechartay.visibility = View.VISIBLE
         binding.homeTranRecy.visibility = View.VISIBLE
     }
+
+    private fun createPieChart() {
+        pieChart = binding.pieChart
+        pieChart.setUsePercentValues(true)
+        pieChart.description.isEnabled = false
+        pieChart.legend.isEnabled = false
+
+        val entries = ArrayList<PieEntry>()
+        val dataSet = PieDataSet(entries, "")
+
+        if (inc == 0.0 && exp != 0.0) {
+            entries.add(PieEntry(exp.toFloat(), "Expense"))
+            dataSet.colors = listOf(ColorTemplate.rgb("#F44336"))
+        } else if (inc != 0.0 && exp == 0.0) {
+            entries.add(PieEntry(inc.toFloat(), "Income"))
+            dataSet.colors = listOf(ColorTemplate.rgb("#4CAF50"))
+        } else if (inc != 0.0 && exp != 0.0) {
+            entries.add(PieEntry(inc.toFloat(), "Income"))
+            entries.add(PieEntry(exp.toFloat(), "Expense"))
+            dataSet.colors = listOf(ColorTemplate.rgb("#4CAF50"), ColorTemplate.rgb("#F44336"))
+        }
+
+        val data = PieData(dataSet)
+        data.setValueFormatter(object : ValueFormatter() {
+            override fun getFormattedValue(value: Float): String {
+                return String.format("%.2f%%", value)
+            }
+        })
+        data.setValueTextSize(14f)
+        data.setValueTextColor(Color.WHITE)
+
+        pieChart.data = data
+        pieChart.animateY(1000, Easing.EaseInOutQuad)
+        pieChart.setHoleColor(Color.TRANSPARENT) // set hole color to transparent
+        pieChart.setHoleRadius(50f) // set hole radius
+        pieChart.invalidate()
+    }
+
 }
+

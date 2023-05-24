@@ -84,10 +84,60 @@ class ExpenseActivity : AppCompatActivity() {
             val category = binding.expcategory.selectedItem as String
             val paymentModes = binding.exppaymentMode.selectedItem as String
             insertExpsnes(amount, category, date, time, paymentModes, note, currentDateTime)
-            clearText()
+           // checkValidation(amount, category, date, time, paymentModes, note, currentDateTime)
         }
 
     }
+
+//    fun checkValidation(amount: String,
+//                        category: String,
+//                        date: String,
+//                        time: String,
+//                        paymentMode: String,
+//                        note: String,
+//                        currentDateTime: String){
+//        if(binding.expAmount.text.toString().isEmpty()){
+//            Toast.makeText(
+//                this,
+//                "Please Enter Amount",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        }else if (binding.expcategory.selectedItem.toString().isBlank()){
+//            Toast.makeText(
+//                this,
+//                "Please Select Category",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        } else if(binding.expdate.text.toString().isEmpty()) {
+//            Toast.makeText(
+//                this,
+//                "Please Select Date",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        } else if (binding.exptime.text.toString().isEmpty()){
+//            Toast.makeText(
+//                this,
+//                "Please Select Time",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        }else if (binding.exppaymentMode.selectedItem.toString().isBlank()){
+//            Toast.makeText(
+//                this,
+//                "Please Select Payment Mode",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        }else if(binding.expNote.text.toString().isEmpty()){
+//            Toast.makeText(
+//                this,
+//                "Please write Note",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        }else{
+//            insertExpsnes(amount, category, date, time, paymentMode, note, currentDateTime)
+//            clearText()
+//        }
+//
+//    }
 
     fun insertExpsnes(
         amount: String,
@@ -171,8 +221,6 @@ class ExpenseActivity : AppCompatActivity() {
         binding.expNote.setText("")
         binding.expdate.setText("")
         binding.exptime.setText("")
-        categoryList.clear()
-        PaymentModeList.clear()
         Toast.makeText(this, "Expense Added Successfully", Toast.LENGTH_SHORT).show()
     }
 
