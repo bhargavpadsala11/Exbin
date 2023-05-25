@@ -80,10 +80,10 @@
             android:id="@+id/selectIcon"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_margin="14dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/selectColor"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/selectColor"
+            app:layout_constraintEnd_toStartOf="@+id/arrow1"
             app:srcCompat="@drawable/ic_home" />
 
 
@@ -93,63 +93,48 @@
             android:layout_height="40dp"
             app:layout_constraintBottom_toBottomOf="@+id/selectIcon"
             app:layout_constraintStart_toEndOf="@+id/selectIcon"
+            app:layout_constraintEnd_toStartOf="@+id/selectColor"
             app:layout_constraintTop_toTopOf="@+id/selectIcon"
-            app:srcCompat="@drawable/ic_next" />
+            app:srcCompat="@drawable/ic_add_24" />
 
 
-        <View
-            android:id="@+id/divider"
-            android:layout_width="3dp"
-            android:layout_height="60dp"
-            android:background="?android:attr/listDivider"
-            app:layout_constraintBottom_toBottomOf="@+id/arrow1"
-            app:layout_constraintStart_toEndOf="@+id/arrow1"
-            app:layout_constraintTop_toTopOf="@+id/arrow1" />
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/selectColor"
             android:layout_width="40dp"
             android:layout_height="40dp"
             app:cardCornerRadius="25dp"
-            app:layout_constraintBottom_toBottomOf="@+id/divider"
-            app:layout_constraintEnd_toStartOf="@+id/arrow2"
-            app:layout_constraintStart_toEndOf="@+id/divider"
-            app:layout_constraintTop_toTopOf="@+id/divider"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:shapeAppearanceOverlay="@style/Circular"
             app:srcCompat="@color/purple_500" />
 
 
         <ImageView
             android:id="@+id/arrow2"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             app:layout_constraintBottom_toBottomOf="@+id/selectColor"
-            app:layout_constraintEnd_toStartOf="@+id/divider1"
-            app:layout_constraintTop_toTopOf="@+id/selectColor"
-            app:srcCompat="@drawable/ic_next" />
-
-
-        <View
-            android:id="@+id/divider1"
-            android:layout_width="3dp"
-            android:layout_height="60dp"
-            android:layout_margin="14dp"
-            android:background="?android:attr/listDivider"
-            app:layout_constraintBottom_toBottomOf="@+id/arrow2"
             app:layout_constraintEnd_toStartOf="@+id/mergedImage"
-            app:layout_constraintTop_toTopOf="@+id/arrow2" />
+            app:layout_constraintTop_toTopOf="@+id/selectColor"
+            app:layout_constraintStart_toEndOf="@+id/selectColor"
+            app:tint="@color/black"
+            app:srcCompat="@drawable/ic_equl" />
+
 
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/mergedImage"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_margin="18dp"
             android:scaleType="centerCrop"
-            app:layout_constraintBottom_toBottomOf="@+id/divider1"
+            app:layout_constraintBottom_toBottomOf="@+id/selectColor"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/divider1"
+            app:layout_constraintTop_toTopOf="@+id/selectColor"
             app:shapeAppearanceOverlay="@style/Circular"
+            app:layout_constraintStart_toEndOf="@+id/arrow2"
             app:srcCompat="@color/purple_500" />
 
 
