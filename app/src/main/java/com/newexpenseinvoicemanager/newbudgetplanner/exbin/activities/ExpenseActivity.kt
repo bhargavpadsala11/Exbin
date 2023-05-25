@@ -74,16 +74,14 @@ class ExpenseActivity : AppCompatActivity() {
 
 
         binding.addIncomeBtn.setOnClickListener {
-            val currentDateTime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                LocalDateTime.now().toString()
-            } else {
-                TODO("VERSION.SDK_INT < O")
-            }
+            val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+            val currentDate = sdf.format(Date())
             val amount = binding.expAmount.text.toString()
             val note = binding.expNote.text.toString()
             val category = binding.expcategory.selectedItem as String
             val paymentModes = binding.exppaymentMode.selectedItem as String
-            insertExpsnes(amount, category, date, time, paymentModes, note, currentDateTime)
+            insertExpsnes(amount, category, date, time, paymentModes, note, currentDate)
+            clearText()
            // checkValidation(amount, category, date, time, paymentModes, note, currentDateTime)
         }
 

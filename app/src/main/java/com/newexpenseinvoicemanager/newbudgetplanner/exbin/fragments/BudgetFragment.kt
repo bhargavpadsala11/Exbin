@@ -1,15 +1,12 @@
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
@@ -20,11 +17,8 @@ import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.BudgetDb
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.DateFormatSymbols
-import java.time.LocalDateTime
-import java.time.Month
-import java.time.format.TextStyle
+import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class BudgetFragment : Fragment() {
 
@@ -75,17 +69,14 @@ class BudgetFragment : Fragment() {
 
 
         binding.materialButton1.setOnClickListener {
-            val currentDateTime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                LocalDateTime.now().toString()
-            } else {
-                TODO("VERSION.SDK_INT < O")
-            }
+            val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+            val currentDate = sdf.format(Date())
             val amount = binding.amountText.text.toString()
             insertBudget(
                 amount,
                 binding.categorySpin.selectedItem as String,
                 selectedCatColor,
-                currentDateTime
+                currentDate
             )
             clearText()
         }
@@ -94,16 +85,17 @@ class BudgetFragment : Fragment() {
         return binding.root
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun insertBudget(
         amount: String,
         category: String,
         catgoryColor: String,
         date: String
     ) {
-        val currentMonth = Month.values()[Month.values().indexOf(Month.valueOf(java.time.LocalDate.now().month.name))]
-        val monthString = currentMonth.getDisplayName(TextStyle.FULL, Locale.getDefault())
-
+//        val currentMonth = Month.values()[Month.values().indexOf(Month.valueOf(java.time.LocalDate.now().month.name))]
+//        val monthString = currentMonth.getDisplayName(TextStyle.FULL, Locale.getDefault())
+        val cal = Calendar.getInstance()
+        val month_date = SimpleDateFormat("MMMM")
+        val month_name = month_date.format(cal.time)
 
         val db = AppDataBase.getInstance(requireContext()).budgetDao()
         val data = BudgetDb(
@@ -111,7 +103,7 @@ class BudgetFragment : Fragment() {
             budgetCat = category,
             catColor = catgoryColor,
             currentDate = date,
-            month = monthString
+            month = month_name
 
         )
         lifecycleScope.launch(Dispatchers.IO) {

@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -73,16 +74,24 @@ class IncomeActivity : AppCompatActivity() {
 
 
         binding.addIncomeBtn.setOnClickListener {
-            val currentDateTime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                LocalDateTime.now().toString()
-            } else {
-                TODO("VERSION.SDK_INT < O")
-            }
+//            val currentDateTime = LocalDateTime.now().toString()
+
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            } else {
+//                TODO("VERSION.SDK_INT < O")
+//            }
+
+            val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+            val currentDate = sdf.format(Date())
+            System.out.println(" C DATE is  "+currentDate)
+//            val date1 = getCurrentDateTime()
+//            val dateInString = date1.toString("yyyy/MM/dd HH:mm:ss")
+//            Log.d("Current Date","$dateInString")
             val amount = binding.incAmount.text.toString()
             val note = binding.incNote.text.toString()
             val category = binding.category.selectedItem as String
             val paymentModes = binding.paymentMode.selectedItem as String
-            insertIncome(amount, category, date, time, paymentModes, note, currentDateTime)
+            insertIncome(amount, category, date, time, paymentModes, note, currentDate)
 
            // checkValidation(amount, category, date, time, paymentModes, note, currentDateTime)
             clearText()
@@ -226,4 +235,5 @@ class IncomeActivity : AppCompatActivity() {
         super.onBackPressed()
         finish()
     }
+    
 }

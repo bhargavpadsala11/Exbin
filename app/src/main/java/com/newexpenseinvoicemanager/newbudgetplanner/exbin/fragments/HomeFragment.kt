@@ -147,7 +147,7 @@ class HomeFragment : Fragment() {
                         )
                     )
                 } else {
-                    binding.currentBalanceTxt.text = "-${differnce}"
+                    binding.currentBalanceTxt.text = "${differnce}"
                     binding.currentBalanceTxt.setTextColor(
                         ContextCompat.getColor(
                             requireContext(),
