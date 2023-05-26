@@ -65,6 +65,30 @@ class HomeFragment : Fragment() {
             }
         }
 
+        binding.incCard.setOnClickListener {
+            if (getTotalIncome() != null) {
+                val ldf = TransectionListFragment()
+                val args = Bundle()
+                args.putString("TRANSECTIONKEY", "INCOME")
+                ldf.setArguments(args)
+                val transaction = activity?.supportFragmentManager?.beginTransaction()
+                transaction?.replace(R.id.fragment_container, ldf)
+                transaction?.commit()
+            }
+        }
+
+        binding.expCard.setOnClickListener {
+            if (getTotalExpense() != null) {
+                val ldf = TransectionListFragment()
+                val args = Bundle()
+                args.putString("TRANSECTIONKEY", "EXPENSE")
+                ldf.setArguments(args)
+                val transaction = activity?.supportFragmentManager?.beginTransaction()
+                transaction?.replace(R.id.fragment_container, ldf)
+                transaction?.commit()
+            }
+        }
+
         return binding.root
     }
 

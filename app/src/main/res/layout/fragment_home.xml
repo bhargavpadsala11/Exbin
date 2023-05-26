@@ -58,6 +58,7 @@
                         android:layout_height="130dp"
                         android:layout_margin="10dp"
                         android:layout_weight="1"
+                        android:id="@+id/incCard"
                         app:cardBackgroundColor="#41C85D"
                         app:cardCornerRadius="10dp">
 
@@ -122,6 +123,7 @@
                         android:layout_height="130dp"
                         android:layout_margin="10dp"
                         android:layout_weight="1"
+                        android:id="@+id/expCard"
                         app:cardBackgroundColor="#F25459"
                         app:cardCornerRadius="10dp">
 

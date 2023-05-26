@@ -44,7 +44,6 @@ class MainActivity : AppCompatActivity() {
             var fragment: Fragment
             when (item.itemId) {
                 R.id.navigation_home -> {
-                    floatButtonHide()
                     toolbar?.setTitle("Home")
                     fragment = HomeFragment()
                     loadFragment(fragment)
@@ -79,6 +78,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
         fab.setOnClickListener {
+           val fragment = HomeFragment()
+            loadFragment(fragment)
             floatButtonShow()
         }
         binding.inc.setOnClickListener {
@@ -154,20 +155,25 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
         if (currentFragment is HomeFragment) {
+            bottomNavigationView.selectedItemId = R.id.navigation_home
             val currentTime = System.currentTimeMillis()
             if (currentTime - backPressedTime < backPressedTimeout) {
-                finish()
+                super.onBackPressed()
             } else {
                 backPressedTime = currentTime
                 Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show()
             }
         } else {
-            val fragment = HomeFragment()
-            val transaction = supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.fragment_container, fragment)
-            transaction.commit()
-            bottomNavigationView.selectedItemId = R.id.navigation_home
+//            if (currentFragment is MoreFragment) {
+//                bottomNavigationView.selectedItemId = R.id.navigation_more
+//            }else if(currentFragment is TransectionFragment){
+//                bottomNavigationView.selectedItemId = R.id.navigation_transection
+//            }else if (currentFragment is BudgetFragment){
+//                bottomNavigationView.selectedItemId = R.id.navigation_budget
+//            }
+            super.onBackPressed()
         }
+
     }
 
 

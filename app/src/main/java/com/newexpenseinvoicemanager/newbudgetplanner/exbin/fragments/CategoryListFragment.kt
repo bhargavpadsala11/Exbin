@@ -31,7 +31,18 @@ class CategoryListFragment : Fragment() {
             val recy = binding.recyclerView
 
             recy.layoutManager = layoutManager
-            val adapter = CategoryListAdapter(requireContext(),it)
+            val adapter = CategoryListAdapter(requireContext(),it){Category, buttonClicked ->
+
+                if(buttonClicked == "EDIT"){
+                    val ldf = AddCategoriesFragment()
+                    val args = Bundle()
+                    args.putString("EDIT", "${Category.categoryId}")
+                    ldf.setArguments(args)
+                    val transaction = activity?.supportFragmentManager?.beginTransaction()
+                    transaction?.replace(R.id.fragment_container, ldf)
+                    transaction?.commit()
+                }
+            }
             recy.adapter = adapter
         }
         binding.floatingActionButton.setOnClickListener {

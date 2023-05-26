@@ -12,10 +12,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.CategoryItemLayoutBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.PaymentModes
 
 class CategoryListAdapter(
     val context: Context,
-    val list: List<Categories>
+    val list: List<Categories>,
+    private val onImageClickListener: (Categories, String) -> Unit
 ) :
     RecyclerView.Adapter<CategoryListAdapter.CategoryListViewHolder>() {
 
@@ -32,6 +34,10 @@ class CategoryListAdapter(
         holder.binding.titleTextView.text = list[position].CategoryName
         val image = byteArrayToDrawable(list[position].CategoryImage)
         Glide.with(context).load(image).into(holder.binding.imageView)
+        holder.binding.catehoryItem.setOnClickListener {
+            onImageClickListener(list[position],"EDIT")
+        }
+
 
     }
 

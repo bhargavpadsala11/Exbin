@@ -22,6 +22,13 @@ interface categoriesDao {
     @Query("SELECT * FROM Categories WHERE CategoryName = :name")
     fun getCategoryByName(name: String): Categories?
 
+    @Query("SELECT * FROM Categories WHERE _id = :id")
+    fun getCategoryById(id: Int): Categories?
 
+    @Query("DELETE FROM Categories WHERE _id = :id")
+    fun deleteCategory(id: Int)
+
+    @Query("UPDATE Categories SET CategoryName = :categoryName,CategoryImage = :udateImage,CategoryColor = :updateColor WHERE _id = :id")
+    fun updateCategory(id: Int, categoryName: String,udateImage: ByteArray?,updateColor :String?)
 
 }

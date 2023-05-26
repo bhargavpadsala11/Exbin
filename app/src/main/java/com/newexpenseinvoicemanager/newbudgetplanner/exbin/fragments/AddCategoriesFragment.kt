@@ -1,7 +1,9 @@
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
@@ -16,10 +18,12 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.ColorAdapter
@@ -29,6 +33,7 @@ import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.FragmentA
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
 
@@ -37,11 +42,74 @@ class AddCategoriesFragment : Fragment() {
     private lateinit var binding: FragmentAddCategoriesBinding
     private var selectedIcon: Int? = null
     private var selectedColor: String? = null
+    private var deleteCategoryView: View? = null
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentAddCategoriesBinding.inflate(layoutInflater)
+
+        val value = arguments?.getString("EDIT")
+
+        if (value != null) {
+            val custom = binding.appBar
+            custom.ivTitle.setText("Manage Category")
+            val db = AppDataBase.getInstance(requireContext()).categoriesDao()
+            lifecycleScope.launch(Dispatchers.IO) {
+                val category = db.getCategoryById(value.toInt())
+                withContext(Dispatchers.Main) {
+                    binding.addCategorytxt.setText(category?.CategoryName)
+                    val image = byteArrayToDrawable(category?.CategoryImage)
+                    binding.mergedImage.setImageDrawable(image)
+
+//                    binding.btnSave.setOnClickListener {
+//                        val db = AppDataBase.getInstance(requireContext()).categoriesDao()
+//                        lifecycleScope.launch(Dispatchers.IO) {
+//                            if (value.toInt()!=null && binding.addCategorytxt.text.toString() != null && drawableToByteArray(binding.mergedImage.drawable) != null && selectedColor != null) {
+//                                db.updateCategory(
+//                                    value.toInt(),
+//                                    binding.addCategorytxt.text.toString(),
+//                                    drawableToByteArray(binding.mergedImage.drawable),
+//                                    selectedColor
+//                                )
+//                            }else if(value.toInt()!=null && binding.addCategorytxt.text.toString() != null){
+//
+//                            }
+//                        }
+//                    }
+
+                    custom.ivDelete.setOnClickListener {
+                        deleteCategoryView =
+                            inflater.inflate(R.layout.custom_delete_dialog, container, false)
+                        container?.addView(deleteCategoryView)
+                        val deleteBtn =
+                            deleteCategoryView?.findViewById<MaterialButton>(R.id.btn_delete)
+                        val cancelBtn =
+                            deleteCategoryView?.findViewById<MaterialButton>(R.id.btncancel)
+                        val hintText =
+                            deleteCategoryView?.findViewById<AppCompatTextView>(R.id.tv_delete_title)
+                        hintText?.setText("Are you sure you want to delete this Category ?")
+                        deleteBtn?.setOnClickListener {
+                            val db = AppDataBase.getInstance(requireContext()).categoriesDao()
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                db.deleteCategory(value.toInt())
+                            }
+                            container?.removeView(deleteCategoryView)
+                            val ldf = CategoryListFragment()
+                            val transaction = activity?.supportFragmentManager?.beginTransaction()
+                            transaction?.replace(R.id.fragment_container, ldf)
+                            transaction?.disallowAddToBackStack()
+                            transaction?.commit()
+                        }
+                        cancelBtn?.setOnClickListener {
+                            container?.removeView(deleteCategoryView)
+                        }
+                    }
+                }
+            }
+        }
 
         val icons = listOf(
             R.drawable.ic_cat_cancel,
@@ -336,7 +404,8 @@ class AddCategoriesFragment : Fragment() {
             binding.iconRecyclerView.adapter = iconAdapter
             binding.iconRecyclerView.layoutManager = GridLayoutManager(requireContext(), 4)
 
-            binding.iconRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            binding.iconRecyclerView.addOnScrollListener(object :
+                RecyclerView.OnScrollListener() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     super.onScrollStateChanged(recyclerView, newState)
                     if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
@@ -363,7 +432,8 @@ class AddCategoriesFragment : Fragment() {
             binding.colorRecyclerView.adapter = colorAdapter
             binding.colorRecyclerView.layoutManager = GridLayoutManager(requireContext(), 4)
 
-            binding.colorRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            binding.colorRecyclerView.addOnScrollListener(object :
+                RecyclerView.OnScrollListener() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     super.onScrollStateChanged(recyclerView, newState)
                     if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
@@ -382,21 +452,19 @@ class AddCategoriesFragment : Fragment() {
                     "Please write Category name",
                     Toast.LENGTH_SHORT
                 ).show()
-            }else if(updateMergedIcon() == null){
+            } else if (updateMergedIcon() == null) {
                 Toast.makeText(
                     requireContext(),
                     "Please Select Icon and Color",
                     Toast.LENGTH_SHORT
                 ).show()
-            }else {
+            } else {
                 addCategory(
                     binding.addCategorytxt.text.toString(),
                 )
                 Toast.makeText(requireContext(), "Category Added", Toast.LENGTH_SHORT).show()
-                // clearText(binding.addCategorytxt, binding.addCategoryDesctxt)
             }
         }
-
         return binding.root
     }
 
@@ -486,6 +554,12 @@ class AddCategoriesFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         (activity as MainActivity?)!!.showBottomNavigationView()
+        deleteCategoryView?.visibility = View.GONE
+    }
+
+    fun byteArrayToDrawable(byteArray: ByteArray?): Drawable {
+        val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray!!.size)
+        return BitmapDrawable(Resources.getSystem(), bitmap)
     }
 
 }
