@@ -127,8 +127,8 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/mergedImage"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             app:layout_constraintBottom_toBottomOf="@+id/selectColor"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/selectColor"
