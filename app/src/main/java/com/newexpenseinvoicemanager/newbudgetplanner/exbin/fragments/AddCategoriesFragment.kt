@@ -498,54 +498,54 @@ class AddCategoriesFragment : Fragment() {
         }
     }
 
-//    private fun mergeDrawables(drawable1: Drawable, drawable2: Drawable): Drawable {
-//        val layerDrawable = LayerDrawable(arrayOf(drawable2, drawable1))
-//        layerDrawable.setLayerInset(1, 0, 0, 0, 0)
-//        return layerDrawable
-//    }
-
-        private fun getBitmapFromDrawable(drawable: Drawable): Bitmap {
-        if (drawable is BitmapDrawable) {
-            return drawable.bitmap
-        } else if (drawable is VectorDrawable) {
-            val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitmap)
-            drawable.setBounds(0, 0, canvas.width, canvas.height)
-            drawable.draw(canvas)
-            return bitmap
-        } else if (drawable is VectorDrawableCompat) {
-            val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitmap)
-            drawable.setBounds(0, 0, canvas.width, canvas.height)
-            drawable.draw(canvas)
-            return bitmap
-        } else if (drawable is ColorDrawable) {
-            val bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitmap)
-            canvas.drawColor(drawable.color)
-            return bitmap
-        } else {
-            throw IllegalArgumentException("Unsupported drawable type")
-        }
-    }
-
     private fun mergeDrawables(drawable1: Drawable, drawable2: Drawable): Drawable {
-        val bitmap1 = getBitmapFromDrawable(drawable1)
-        val bitmap2 = getBitmapFromDrawable(drawable2)
-        val mergedBitmap = Bitmap.createBitmap(bitmap1.width, bitmap1.height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(mergedBitmap)
-        drawable1.setBounds(0, 0, canvas.width, canvas.height)
-        drawable1.draw(canvas)
-        if (drawable2 is ColorDrawable) {
-            val paint = Paint()
-            paint.colorFilter = PorterDuffColorFilter(drawable2.color, PorterDuff.Mode.SRC_IN)
-            canvas.drawBitmap(bitmap1, 0f, 0f, paint)
-        } else {
-            drawable2.setBounds(0, 0, canvas.width, canvas.height)
-            drawable2.draw(canvas)
-        }
-        return BitmapDrawable(resources, mergedBitmap)
+        val layerDrawable = LayerDrawable(arrayOf(drawable2, drawable1))
+        layerDrawable.setLayerInset(1, 0, 0, 0, 0)
+        return layerDrawable
     }
+
+//        private fun getBitmapFromDrawable(drawable: Drawable): Bitmap {
+//        if (drawable is BitmapDrawable) {
+//            return drawable.bitmap
+//        } else if (drawable is VectorDrawable) {
+//            val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+//            val canvas = Canvas(bitmap)
+//            drawable.setBounds(0, 0, canvas.width, canvas.height)
+//            drawable.draw(canvas)
+//            return bitmap
+//        } else if (drawable is VectorDrawableCompat) {
+//            val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+//            val canvas = Canvas(bitmap)
+//            drawable.setBounds(0, 0, canvas.width, canvas.height)
+//            drawable.draw(canvas)
+//            return bitmap
+//        } else if (drawable is ColorDrawable) {
+//            val bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+//            val canvas = Canvas(bitmap)
+//            canvas.drawColor(drawable.color)
+//            return bitmap
+//        } else {
+//            throw IllegalArgumentException("Unsupported drawable type")
+//        }
+//    }
+//
+//    private fun mergeDrawables(drawable1: Drawable, drawable2: Drawable): Drawable {
+//        val bitmap1 = getBitmapFromDrawable(drawable1)
+//        val bitmap2 = getBitmapFromDrawable(drawable2)
+//        val mergedBitmap = Bitmap.createBitmap(bitmap1.width, bitmap1.height, Bitmap.Config.ARGB_8888)
+//        val canvas = Canvas(mergedBitmap)
+//        drawable1.setBounds(0, 0, canvas.width, canvas.height)
+//        drawable1.draw(canvas)
+//        if (drawable2 is ColorDrawable) {
+//            val paint = Paint()
+//            paint.colorFilter = PorterDuffColorFilter(drawable2.color, PorterDuff.Mode.SRC_IN)
+//            canvas.drawBitmap(bitmap1, 0f, 0f, paint)
+//        } else {
+//            drawable2.setBounds(0, 0, canvas.width, canvas.height)
+//            drawable2.draw(canvas)
+//        }
+//        return BitmapDrawable(resources, mergedBitmap)
+//    }
 
     private fun addCategory(addcategory: String) {
         val db = AppDataBase.getInstance(requireContext()).categoriesDao()
