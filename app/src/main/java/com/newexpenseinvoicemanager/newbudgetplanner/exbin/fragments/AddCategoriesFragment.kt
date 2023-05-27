@@ -2,14 +2,8 @@ package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
 import android.content.Context
 import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.LayerDrawable
+import android.graphics.*
+import android.graphics.drawable.*
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.google.android.material.button.MaterialButton
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
@@ -145,7 +140,11 @@ class AddCategoriesFragment : Fragment() {
             R.drawable.ic_warehouse_24,
             R.drawable.ic_water_damage_24,
             R.drawable.ic_currency_exchange_24,
-            R.drawable.more
+            R.drawable.more,
+            R.drawable.ic_delete,
+            R.drawable.ic_equl,
+            R.drawable.ic_left_back
+
             // Add more icons here
         )
 
@@ -499,10 +498,53 @@ class AddCategoriesFragment : Fragment() {
         }
     }
 
+//    private fun mergeDrawables(drawable1: Drawable, drawable2: Drawable): Drawable {
+//        val layerDrawable = LayerDrawable(arrayOf(drawable2, drawable1))
+//        layerDrawable.setLayerInset(1, 0, 0, 0, 0)
+//        return layerDrawable
+//    }
+
+        private fun getBitmapFromDrawable(drawable: Drawable): Bitmap {
+        if (drawable is BitmapDrawable) {
+            return drawable.bitmap
+        } else if (drawable is VectorDrawable) {
+            val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            drawable.setBounds(0, 0, canvas.width, canvas.height)
+            drawable.draw(canvas)
+            return bitmap
+        } else if (drawable is VectorDrawableCompat) {
+            val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            drawable.setBounds(0, 0, canvas.width, canvas.height)
+            drawable.draw(canvas)
+            return bitmap
+        } else if (drawable is ColorDrawable) {
+            val bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            canvas.drawColor(drawable.color)
+            return bitmap
+        } else {
+            throw IllegalArgumentException("Unsupported drawable type")
+        }
+    }
+
     private fun mergeDrawables(drawable1: Drawable, drawable2: Drawable): Drawable {
-        val layerDrawable = LayerDrawable(arrayOf(drawable2, drawable1))
-        layerDrawable.setLayerInset(1, 0, 0, 0, 0)
-        return layerDrawable
+        val bitmap1 = getBitmapFromDrawable(drawable1)
+        val bitmap2 = getBitmapFromDrawable(drawable2)
+        val mergedBitmap = Bitmap.createBitmap(bitmap1.width, bitmap1.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(mergedBitmap)
+        drawable1.setBounds(0, 0, canvas.width, canvas.height)
+        drawable1.draw(canvas)
+        if (drawable2 is ColorDrawable) {
+            val paint = Paint()
+            paint.colorFilter = PorterDuffColorFilter(drawable2.color, PorterDuff.Mode.SRC_IN)
+            canvas.drawBitmap(bitmap1, 0f, 0f, paint)
+        } else {
+            drawable2.setBounds(0, 0, canvas.width, canvas.height)
+            drawable2.draw(canvas)
+        }
+        return BitmapDrawable(resources, mergedBitmap)
     }
 
     private fun addCategory(addcategory: String) {
