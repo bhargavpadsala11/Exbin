@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="5dp">
+        android:padding="15dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -90,7 +90,8 @@
             android:layout_height="wrap_content"
             android:text="You've exceed the limit"
             android:textSize="17sp"
-            android:padding="5dp"
+            android:paddingHorizontal="6dp"
+            android:paddingTop="4dp"
             android:textColor="@color/transectionRed"
             android:id="@+id/warningTxt"
             android:visibility="gone"/>

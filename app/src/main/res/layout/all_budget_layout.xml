@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".fragments.BudgetFragment">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_edit_budget"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/main_color"
+        android:visibility="gone">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/edit_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Create Budget"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/edit_backarrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/ic_left_back"
+            app:layout_constraintBottom_toBottomOf="@id/edit_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/edit_title" />
+
+        <View
+            android:id="@+id/edit_view"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginTop="1dp"
+            android:background="@drawable/shape"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="10dp"
+            android:text="How much do you want to spend ?"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@+id/edit_currency_symbol"
+            app:layout_constraintStart_toStartOf="@id/edit_currency_symbol" />
+
+
+        <TextView
+            android:id="@+id/edit_currency_symbol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="10dp"
+            android:text="$"
+            android:textColor="@color/white"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/edit_amount"
+            app:layout_constraintStart_toStartOf="@id/edit_category_spin"
+            app:layout_constraintTop_toTopOf="@+id/edit_amount" />
+
+
+        <EditText
+            android:id="@+id/edit_amount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:hint="0"
+            android:inputType="number"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/edit_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/edit_currency_symbol" />
+
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/edit_category_spin"
+            app:layout_constraintLeft_toLeftOf="@id/edit_category_spin"
+            app:layout_constraintRight_toRightOf="@id/edit_category_spin"
+            app:layout_constraintTop_toTopOf="@id/edit_category_spin"
+            app:shapeAppearanceOverlay="@style/SpinnerShape"
+            app:strokeColor="@color/gray"
+            app:strokeWidth="2dp" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/edit_category_spin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="14dp"
+            android:layout_marginVertical="10dp"
+            android:padding="16dp"
+            android:text="bhargav padsala"
+            android:textSize="18dp"
+            app:cardCornerRadius="20dp"
+            app:layout_constraintBottom_toTopOf="@id/edit_btn_save"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:foregroundGravity="center"
+            android:paddingHorizontal="10dp"
+            android:src="@drawable/ic_down_arrows"
+            android:tint="@color/gray"
+            app:layout_constraintBottom_toBottomOf="@id/edit_category_spin"
+            app:layout_constraintEnd_toEndOf="@id/edit_category_spin"
+            app:layout_constraintTop_toTopOf="@id/edit_category_spin"
+
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/edit_btn_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="14dp"
+            android:layout_marginBottom="60dp"
+            android:backgroundTint="@color/main_color"
+            android:padding="16dp"
+            android:text="Save"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:cornerRadius="14dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_pre_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        android:background="@color/white">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/pre_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Create Budget"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/ic_left_back"
+            android:tint="@color/black"
+            app:layout_constraintBottom_toBottomOf="@id/pre_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/pre_title" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_delete"
+            android:tint="@color/black"
+            app:layout_constraintBottom_toBottomOf="@id/pre_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/pre_title" />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="14dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/main_color"
+            android:padding="16dp"
+            android:text="Edit"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:cornerRadius="14dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/shape_alart"
+            app:layout_constraintBottom_toBottomOf="@id/pre_tv_alert_limit"
+            app:layout_constraintEnd_toEndOf="@id/pre_tv_alert_limit"
+            app:layout_constraintStart_toStartOf="@id/pre_ic_arror"
+            app:layout_constraintTop_toTopOf="@id/pre_tv_alert_limit" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/pre_ic_arror"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="10dp"
+            android:src="@drawable/ic_budget_error"
+            android:tint="@color/white"
+            app:layout_constraintBottom_toBottomOf="@id/pre_tv_alert_limit"
+            app:layout_constraintEnd_toStartOf="@id/pre_tv_alert_limit"
+            app:layout_constraintTop_toTopOf="@id/pre_tv_alert_limit" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/pre_tv_alert_limit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:paddingVertical="8dp"
+            android:paddingStart="6dp"
+            android:paddingEnd="18dp"
+            android:text="You've exeed the limit"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pre_determinate_bar" />
+
+
+        <ProgressBar
+            android:id="@+id/pre_determinate_bar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="26dp"
+            android:paddingVertical="36dp"
+            android:progress="25"
+            android:progressDrawable="@drawable/progress_theme"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <EditText
+            android:id="@+id/pre_tv_amount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="$1234567"
+            android:maxLines="1"
+            android:inputType="number"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black"
+            android:textSize="50sp"
+            android:gravity="center"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/pre_determinate_bar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+        <TextView
+            android:id="@+id/pre_tv_remaining"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remaining"
+            android:textColor="@color/black"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/pre_tv_amount"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/pre_ll_catagory"
+            app:layout_constraintEnd_toEndOf="@id/pre_ll_catagory"
+            app:layout_constraintStart_toStartOf="@id/pre_ll_catagory"
+            app:layout_constraintTop_toTopOf="@id/pre_ll_catagory"
+            app:shapeAppearanceOverlay="@style/SpinnerShape"
+            app:strokeColor="@color/gray"
+            app:strokeWidth="2dp" />
+
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/pre_ll_catagory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            app:layout_constraintBottom_toTopOf="@id/pre_tv_remaining"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pre_title">
+
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/pre_iv_catagory"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_vertical"
+                android:background="@color/black"
+                android:scaleType="center"
+                android:src="@drawable/ic_delete"
+                android:tint="@color/yellow"
+                app:shapeAppearanceOverlay="@style/CatagoryIconShape" />
+
+
+            <TextView
+                android:id="@+id/pre_tv_cat_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingHorizontal="10dp"
+                android:text="Shoping"
+                android:textColor="@color/black"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout 
+        android:id="@+id/addcardview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="@color/transhplant_color">
+
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/siv_card_view"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:background="@drawable/shape_delete_dialog"
+            app:cardCornerRadius="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <View
+            android:id="@+id/ll_line"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_marginHorizontal="8dp"
+            android:background="@color/red"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/siv_card_view" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_delete"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/red"
+            android:src="@drawable/ic_delete"
+            android:scaleType="center"
+            app:layout_constraintBottom_toBottomOf="@+id/ll_line"
+            app:layout_constraintEnd_toEndOf="@+id/ll_line"
+            app:layout_constraintStart_toStartOf="@+id/ll_line"
+            app:layout_constraintTop_toTopOf="@+id/ll_line"
+            app:shapeAppearanceOverlay="@style/Circular" />
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btncancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:backgroundTint="@color/dark_main_color"
+            android:padding="13dp"
+            android:text="CANCEL"
+            android:textColor="@color/main_color"
+            app:cornerRadius="12dp"
+            app:layout_constraintBottom_toBottomOf="@+id/siv_card_view"
+            app:layout_constraintEnd_toStartOf="@+id/btn_delete"
+            app:layout_constraintStart_toStartOf="@id/siv_card_view" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_delete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:backgroundTint="@color/main_color"
+            android:padding="13dp"
+            android:text="DELETE"
+            android:textColor="@color/white"
+            app:cornerRadius="12dp"
+            app:layout_constraintBottom_toBottomOf="@+id/siv_card_view"
+            app:layout_constraintEnd_toEndOf="@+id/siv_card_view"
+            app:layout_constraintStart_toEndOf="@+id/btncancel" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_delete_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="18dp"
+            android:text="Are you sure do you want to delete this budget ?"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/btn_delete"
+            app:layout_constraintEnd_toEndOf="@+id/siv_card_view"
+            app:layout_constraintStart_toStartOf="@+id/siv_card_view"
+            app:layout_constraintTop_toTopOf="@+id/siv_card_view" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

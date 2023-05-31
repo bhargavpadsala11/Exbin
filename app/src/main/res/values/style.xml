@@ -8,10 +8,19 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <style name="SpinnerShape" parent="">
+        <item name="cornerSize">30%</item>
+    </style>
+
     <style name="customRoundedImageView" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">0dp</item>
         <item name="cornerSizeTopRight">8dp</item>
+    </style>
+
+    <style name="CatagoryIconShape" parent="">
+        <item name="cornerSize">30%</item>
+
     </style>
 
 </resources>

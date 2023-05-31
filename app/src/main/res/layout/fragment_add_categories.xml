@@ -101,14 +101,13 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/selectColor"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            app:cardCornerRadius="25dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:shapeAppearanceOverlay="@style/Circular"
+            app:shapeAppearanceOverlay="@style/CatagoryIconShape"
             app:srcCompat="@color/purple_500" />
 
 
@@ -127,12 +126,12 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/mergedImage"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             app:layout_constraintBottom_toBottomOf="@+id/selectColor"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/selectColor"
-            app:shapeAppearanceOverlay="@style/Circular"
+            app:shapeAppearanceOverlay="@style/CatagoryIconShape"
             app:layout_constraintStart_toEndOf="@+id/arrow2"
             app:srcCompat="@color/purple_500" />
 

@@ -16,7 +16,7 @@
         android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearanceOverlay="@style/Circular" />
+        app:shapeAppearanceOverlay="@style/CatagoryIconShape" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/titleTextView"
