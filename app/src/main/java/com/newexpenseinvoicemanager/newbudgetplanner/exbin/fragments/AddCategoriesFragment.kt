@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.*
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -56,24 +58,23 @@ class AddCategoriesFragment : Fragment() {
                 val category = db.getCategoryById(value.toInt())
                 withContext(Dispatchers.Main) {
                     binding.addCategorytxt.setText(category?.CategoryName)
-                    val image = byteArrayToDrawable(category?.CategoryImage)
-                    binding.mergedImage.setImageDrawable(image)
 
-//                    binding.btnSave.setOnClickListener {
-//                        val db = AppDataBase.getInstance(requireContext()).categoriesDao()
-//                        lifecycleScope.launch(Dispatchers.IO) {
-//                            if (value.toInt()!=null && binding.addCategorytxt.text.toString() != null && drawableToByteArray(binding.mergedImage.drawable) != null && selectedColor != null) {
-//                                db.updateCategory(
-//                                    value.toInt(),
-//                                    binding.addCategorytxt.text.toString(),
-//                                    drawableToByteArray(binding.mergedImage.drawable),
-//                                    selectedColor
-//                                )
-//                            }else if(value.toInt()!=null && binding.addCategorytxt.text.toString() != null){
-//
-//                            }
-//                        }
-//                    }
+                    val colorInt = Color.parseColor(category?.CategoryColor!!)
+                    val hsl = FloatArray(3)
+                    ColorUtils.colorToHSL(colorInt, hsl)
+
+                    hsl[2] += 0.2f // Increase the lightness value by 20%
+                    if (hsl[2] > 1.0f) {
+                        hsl[2] = 1.0f // Cap the lightness value at 100%
+                    }
+                    val lightColor = ColorUtils.HSLToColor(hsl)
+
+
+                    val imageView = binding.mergedImage
+                    imageView.setImageResource(category.CategoryImage.toInt())
+                    imageView.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN)
+                    imageView.setBackgroundColor(lightColor)
+
 
                     custom.ivDelete.setOnClickListener {
                         deleteCategoryView =
@@ -475,11 +476,21 @@ class AddCategoriesFragment : Fragment() {
 
     private fun updateMergedIcon() {
         if (selectedIcon != null && selectedColor != null) {
-            val iconDrawable = AppCompatResources.getDrawable(requireContext(), selectedIcon!!)
             val colorInt = Color.parseColor(selectedColor!!)
-            val colorDrawable = ColorDrawable(colorInt)
-            val mergedDrawable = mergeDrawables(iconDrawable!!, colorDrawable)
-            binding.mergedImage.setImageDrawable(mergedDrawable)
+            val hsl = FloatArray(3)
+            ColorUtils.colorToHSL(colorInt, hsl)
+
+            hsl[2] += 0.2f // Increase the lightness value by 20%
+            if (hsl[2] > 1.0f) {
+                hsl[2] = 1.0f // Cap the lightness value at 100%
+            }
+            val lightColor = ColorUtils.HSLToColor(hsl)
+
+
+            val imageView = binding.mergedImage
+            imageView.setImageResource(selectedIcon!!)
+            imageView.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN)
+            imageView.setBackgroundColor(lightColor)
         }
     }
 
@@ -498,87 +509,16 @@ class AddCategoriesFragment : Fragment() {
         }
     }
 
-    private fun mergeDrawables(drawable1: Drawable, drawable2: Drawable): Drawable {
-        val layerDrawable = LayerDrawable(arrayOf(drawable2, drawable1))
-        layerDrawable.setLayerInset(1, 0, 0, 0, 0)
-        return layerDrawable
-    }
-
-//        private fun getBitmapFromDrawable(drawable: Drawable): Bitmap {
-//        if (drawable is BitmapDrawable) {
-//            return drawable.bitmap
-//        } else if (drawable is VectorDrawable) {
-//            val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-//            val canvas = Canvas(bitmap)
-//            drawable.setBounds(0, 0, canvas.width, canvas.height)
-//            drawable.draw(canvas)
-//            return bitmap
-//        } else if (drawable is VectorDrawableCompat) {
-//            val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-//            val canvas = Canvas(bitmap)
-//            drawable.setBounds(0, 0, canvas.width, canvas.height)
-//            drawable.draw(canvas)
-//            return bitmap
-//        } else if (drawable is ColorDrawable) {
-//            val bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
-//            val canvas = Canvas(bitmap)
-//            canvas.drawColor(drawable.color)
-//            return bitmap
-//        } else {
-//            throw IllegalArgumentException("Unsupported drawable type")
-//        }
-//    }
-//
-//    private fun mergeDrawables(drawable1: Drawable, drawable2: Drawable): Drawable {
-//        val bitmap1 = getBitmapFromDrawable(drawable1)
-//        val bitmap2 = getBitmapFromDrawable(drawable2)
-//        val mergedBitmap = Bitmap.createBitmap(bitmap1.width, bitmap1.height, Bitmap.Config.ARGB_8888)
-//        val canvas = Canvas(mergedBitmap)
-//        drawable1.setBounds(0, 0, canvas.width, canvas.height)
-//        drawable1.draw(canvas)
-//        if (drawable2 is ColorDrawable) {
-//            val paint = Paint()
-//            paint.colorFilter = PorterDuffColorFilter(drawable2.color, PorterDuff.Mode.SRC_IN)
-//            canvas.drawBitmap(bitmap1, 0f, 0f, paint)
-//        } else {
-//            drawable2.setBounds(0, 0, canvas.width, canvas.height)
-//            drawable2.draw(canvas)
-//        }
-//        return BitmapDrawable(resources, mergedBitmap)
-//    }
-
     private fun addCategory(addcategory: String) {
         val db = AppDataBase.getInstance(requireContext()).categoriesDao()
         val data = Categories(
             CategoryName = addcategory,
             CategoryColor = "$selectedColor",
-            CategoryImage = drawableToByteArray(binding.mergedImage.drawable)
+            CategoryImage = "$selectedIcon"
         )
         lifecycleScope.launch(Dispatchers.IO) {
             db.inserCategory(data)
         }
-    }
-
-    private fun drawableToByteArray(drawable: Drawable?): ByteArray? {
-        if (drawable == null) {
-            return null
-        }
-        val bitmap: Bitmap = if (drawable is BitmapDrawable) {
-            drawable.bitmap
-        } else if (drawable is LayerDrawable) {
-            val width = drawable.intrinsicWidth
-            val height = drawable.intrinsicHeight
-            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitmap)
-            drawable.setBounds(0, 0, canvas.width, canvas.height)
-            drawable.draw(canvas)
-            bitmap
-        } else {
-            throw IllegalArgumentException("Unsupported drawable type")
-        }
-        val stream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-        return stream.toByteArray()
     }
 
 
@@ -599,9 +539,6 @@ class AddCategoriesFragment : Fragment() {
         deleteCategoryView?.visibility = View.GONE
     }
 
-    fun byteArrayToDrawable(byteArray: ByteArray?): Drawable {
-        val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray!!.size)
-        return BitmapDrawable(Resources.getSystem(), bitmap)
-    }
+
 
 }

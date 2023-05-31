@@ -4,10 +4,13 @@ package com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.CategoryItemLayoutBinding
@@ -32,24 +35,35 @@ class CategoryListAdapter(
 
     override fun onBindViewHolder(holder: CategoryListViewHolder, position: Int) {
         holder.binding.titleTextView.text = list[position].CategoryName
-        val image = byteArrayToDrawable(list[position].CategoryImage)
-        Glide.with(context).load(image).into(holder.binding.imageView)
+        val image = list[position].CategoryImage
+        val color = list[position].CategoryColor
+
+        val colorInt = Color.parseColor(color!!)
+        val hsl = FloatArray(3)
+        ColorUtils.colorToHSL(colorInt, hsl)
+
+        hsl[2] += 0.2f // Increase the lightness value by 20%
+        if (hsl[2] > 1.0f) {
+            hsl[2] = 1.0f // Cap the lightness value at 100%
+        }
+        val lightColor = ColorUtils.HSLToColor(hsl)
+
+
+        val imageView = holder.binding.imageView
+        imageView.setImageResource(image.toInt())
+        imageView.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN)
+        imageView.setBackgroundColor(lightColor)
+
         holder.binding.catehoryItem.setOnClickListener {
-            onImageClickListener(list[position],"EDIT")
+            onImageClickListener(list[position], "EDIT")
         }
 
 
     }
 
 
-
-
     override fun getItemCount(): Int {
         return list.size
     }
 
-fun byteArrayToDrawable(byteArray: ByteArray?): Drawable {
-    val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray!!.size)
-    return BitmapDrawable(Resources.getSystem(), bitmap)
-}
 }

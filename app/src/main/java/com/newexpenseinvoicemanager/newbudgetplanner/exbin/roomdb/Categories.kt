@@ -10,6 +10,6 @@ data class Categories(
     @PrimaryKey(autoGenerate = true) val categoryId: Int = 0,
     val CategoryName: String? = "",
     val CategoryColor : String = "",
-    val CategoryImage: ByteArray? = null
+    val CategoryImage: String = ""
 
 )

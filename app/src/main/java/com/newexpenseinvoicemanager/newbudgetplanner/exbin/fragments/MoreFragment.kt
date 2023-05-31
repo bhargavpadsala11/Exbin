@@ -23,10 +23,7 @@ class MoreFragment : Fragment() {
 
         binding.addCatBtn.setOnClickListener {
             fragment = CategoryListFragment()
-            activity?.supportFragmentManager?.beginTransaction()
-                ?.replace(R.id.fragment_container, fragment)
-                ?.addToBackStack(null)
-                ?.commit()
+            loadFragment(fragment)
         }
 
         binding.paymentModeBtn.setOnClickListener {
