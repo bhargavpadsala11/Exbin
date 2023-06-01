@@ -158,7 +158,7 @@ class MainActivity : AppCompatActivity() {
             bottomNavigationView.selectedItemId = R.id.navigation_home
             val currentTime = System.currentTimeMillis()
             if (currentTime - backPressedTime < backPressedTimeout) {
-                super.onBackPressed()
+                finish()
             } else {
                 backPressedTime = currentTime
                 Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show()

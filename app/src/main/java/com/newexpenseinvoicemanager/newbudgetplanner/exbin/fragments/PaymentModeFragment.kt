@@ -30,9 +30,9 @@ import kotlinx.coroutines.launch
 class PaymentModeFragment : Fragment() {
 
     private lateinit var binding: FragmentPaymentModeBinding
-    private lateinit var addPaymentView: View
-    private lateinit var addupdatetView: View
-    private lateinit var deletePaymentView: View
+    private var addPaymentView: View? = null
+    private var addupdatetView: View? = null
+    private var deletePaymentView: View? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,18 +48,18 @@ class PaymentModeFragment : Fragment() {
             Toast.makeText(requireContext(), "Button pressing", Toast.LENGTH_SHORT).show()
             // binding.addcardview.visibility = View.VISIBLE
             mainView.visibility = View.GONE
-            addPaymentView.visibility = View.VISIBLE
+            addPaymentView?.visibility = View.VISIBLE
             container?.addView(addPaymentView)
 
 
         }
-        val addButton = addPaymentView.findViewById<MaterialButton>(R.id.btnapply)
-        val cancelButton = addPaymentView.findViewById<MaterialButton>(R.id.btncancel)
-        addButton.setOnClickListener {
+        val addButton = addPaymentView?.findViewById<MaterialButton>(R.id.btnapply)
+        val cancelButton = addPaymentView?.findViewById<MaterialButton>(R.id.btncancel)
+        addButton?.setOnClickListener {
 
             val getaymentModeTextView =
-                addPaymentView.findViewById<TextInputEditText>(R.id.addPaymet)
-            if (getaymentModeTextView.text?.isEmpty() == true) {
+                addPaymentView?.findViewById<TextInputEditText>(R.id.addPaymet)
+            if (getaymentModeTextView?.text?.isEmpty() == true) {
                 //getaymentModeTextView.setBackgroundResource(R.drawable.red_under_line)
                 getaymentModeTextView.requestFocus()
                 Toast.makeText(
@@ -68,16 +68,16 @@ class PaymentModeFragment : Fragment() {
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
-                addPaymentMode(getaymentModeTextView.text.toString())
+                addPaymentMode(getaymentModeTextView?.text.toString())
                 mainView.visibility = View.VISIBLE
-                addPaymentView.visibility = View.GONE
+                addPaymentView?.visibility = View.GONE
                 container?.removeView(addPaymentView)
-                getaymentModeTextView.setText("")
+                getaymentModeTextView?.setText("")
             }
         }
-        cancelButton.setOnClickListener {
+        cancelButton?.setOnClickListener {
             mainView.visibility = View.VISIBLE
-            addPaymentView.visibility = View.GONE
+            addPaymentView?.visibility = View.GONE
             container?.removeView(addPaymentView)
         }
 
@@ -87,35 +87,34 @@ class PaymentModeFragment : Fragment() {
             val layoutManager = LinearLayoutManager(requireContext())
             val recy = binding.paymentModesList
             recy.layoutManager = layoutManager
-            val mainLayout = inflater.inflate(R.layout.add_payent_maode_layout, container, false)
             val adapter = PaymentModesAdapter(requireContext(), it) { paymentMode, buttonClicked ->
                 if (buttonClicked == "EDIT") {
                     addupdatetView =
                         inflater.inflate(R.layout.add_payent_maode_layout, container, false)
 
                     mainView.visibility = View.GONE
-                    addupdatetView.visibility = View.VISIBLE
+                    addupdatetView?.visibility = View.VISIBLE
                     container?.addView(addupdatetView)
 
 
                     val getaymentModeTextView =
-                        addupdatetView.findViewById<TextInputEditText>(R.id.addPaymet)
+                        addupdatetView?.findViewById<TextInputEditText>(R.id.addPaymet)
 
                     val titlePaymentModeTextView =
-                        addupdatetView.findViewById<AppCompatTextView>(R.id.titlePaymentMode)
-                    titlePaymentModeTextView.setText("Update Payment Mode")
-                    getaymentModeTextView.setText("${paymentMode.paymentMode}")
+                        addupdatetView?.findViewById<AppCompatTextView>(R.id.titlePaymentMode)
+                    titlePaymentModeTextView?.setText("Update Payment Mode")
+                    getaymentModeTextView?.setText("${paymentMode.paymentMode}")
                     val paymentId = paymentMode.paymentModeId.toInt()
-                    val updateBtn = addupdatetView.findViewById<MaterialButton>(R.id.btnapply)
+                    val updateBtn = addupdatetView?.findViewById<MaterialButton>(R.id.btnapply)
 
-                    updateBtn.setOnClickListener {
-                        updatePaymentMode(paymentId, getaymentModeTextView.text.toString())
+                    updateBtn?.setOnClickListener {
+                        updatePaymentMode(paymentId, getaymentModeTextView?.text.toString())
                         container?.removeView(addupdatetView)
                     }
 
-                    val cancelButton = addupdatetView.findViewById<MaterialButton>(R.id.btncancel)
-                    cancelButton.setOnClickListener {
-                        titlePaymentModeTextView.setText("Add Payment Mode")
+                    val cancelButton = addupdatetView?.findViewById<MaterialButton>(R.id.btncancel)
+                    cancelButton?.setOnClickListener {
+                        titlePaymentModeTextView?.setText("Add Payment Mode")
                         container?.removeView(addupdatetView)
                     }
                 }
@@ -124,24 +123,24 @@ class PaymentModeFragment : Fragment() {
                         inflater.inflate(R.layout.custom_delete_dialog, container, false)
 
                     mainView.visibility = View.GONE
-                    deletePaymentView.visibility = View.VISIBLE
+                    deletePaymentView?.visibility = View.VISIBLE
                     container?.addView(deletePaymentView)
 
                     val deletePaymentModeBtn =
-                        deletePaymentView.findViewById<MaterialButton>(R.id.btn_delete)
+                        deletePaymentView?.findViewById<MaterialButton>(R.id.btn_delete)
 
-                    val deleteTitleTextView = deletePaymentView.findViewById<AppCompatTextView>(R.id.tv_delete_title)
-                    deleteTitleTextView.setText("Are you sure you want to delete this PaymentMode ?")
+                    val deleteTitleTextView = deletePaymentView?.findViewById<AppCompatTextView>(R.id.tv_delete_title)
+                    deleteTitleTextView?.setText("Are you sure you want to delete this PaymentMode ?")
                     val deletePaymentModeCnlBtn =
-                        deletePaymentView.findViewById<MaterialButton>(R.id.btncancel)
+                        deletePaymentView?.findViewById<MaterialButton>(R.id.btncancel)
 
-                    deletePaymentModeBtn.setOnClickListener {
+                    deletePaymentModeBtn?.setOnClickListener {
                         val paymentId = paymentMode.paymentModeId
                         deltePaymentMode(paymentId)
                         container?.removeView(deletePaymentView)
                     }
 
-                    deletePaymentModeCnlBtn.setOnClickListener {
+                    deletePaymentModeCnlBtn?.setOnClickListener {
                         container?.removeView(deletePaymentView)
                     }
 
@@ -175,9 +174,9 @@ class PaymentModeFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         (activity as MainActivity?)!!.showBottomNavigationView()
-        addPaymentView.visibility = View.GONE
-        addupdatetView.visibility = View.GONE
-        deletePaymentView.visibility = View.GONE
+        addPaymentView?.visibility = View.GONE
+        addupdatetView?.visibility = View.GONE
+        deletePaymentView?.visibility = View.GONE
 
     }
 
