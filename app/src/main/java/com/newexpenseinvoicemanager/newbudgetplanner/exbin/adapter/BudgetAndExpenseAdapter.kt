@@ -2,26 +2,33 @@ package com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter
 
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.ItemBudgetLayoutBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.BudgetAndExpense
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.BudgetDb
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.PaymentModes
 
-class BudgetAndExpenseAdapter(var budgetAndExpenseList: List<BudgetAndExpense>) :
+class BudgetAndExpenseAdapter(
+    var budgetAndExpenseList: List<BudgetAndExpense>,
+    private val onCardClickListener: (BudgetAndExpense,String) -> Unit
+) :
     RecyclerView.Adapter<BudgetAndExpenseAdapter.ViewHolder>() {
 
-    inner class ViewHolder(private val binding: ItemBudgetLayoutBinding) :
+
+    inner class ViewHolder(val binding: ItemBudgetLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(budgetAndExpense: BudgetAndExpense) {
             //   binding.catTextView.text = budgetAndExpense.budgetCat
-            binding.catTextView.text = budgetAndExpense.category
+            var progress : Int? = null
 
             val budgetAmount = budgetAndExpense.budget.toDoubleOrNull()
             val expenseAmount = budgetAndExpense.amount1?.toDoubleOrNull()
             val amountOfIncExpTbl = budgetAndExpense.budgetCat
-            if (amountOfIncExpTbl != null) {
+            if (amountOfIncExpTbl != null  && expenseAmount == null) {
                 binding.catTextView.text = budgetAndExpense.category
 
                 binding.remainingTxt.text = "Remaining ${budgetAndExpense.amount}"
@@ -29,7 +36,7 @@ class BudgetAndExpenseAdapter(var budgetAndExpenseList: List<BudgetAndExpense>) 
                 var sum = budgetAndExpense.amount!!.toInt() - budgetAndExpense.amount1!!.toInt()
                 binding.remainingTxt.text = "Remaining ${sum}"
             }
-            if (amountOfIncExpTbl != null) {
+            if (amountOfIncExpTbl != null && expenseAmount == null) {
                 binding.catTextView.text = budgetAndExpense.category
 
                 binding.determinateBar.progress = 0
@@ -42,8 +49,10 @@ class BudgetAndExpenseAdapter(var budgetAndExpenseList: List<BudgetAndExpense>) 
                 binding.warningTxt.visibility = View.GONE
             } else {
                 if (budgetAmount != null && expenseAmount != null) {
-                    val progress = (expenseAmount / budgetAmount * 100).toInt()
-                    binding.determinateBar.progress = progress
+                    progress = (expenseAmount / budgetAmount * 100).toInt()
+                    val pro = progress
+                    Log.d("From Adapter","$pro")
+                    binding.determinateBar.progress = progress!!
                     binding.determinateBar.progressTintList =
                         ColorStateList.valueOf(Color.parseColor(budgetAndExpense.catColor))
                     val color = Color.parseColor(budgetAndExpense.catColor)
@@ -61,6 +70,12 @@ class BudgetAndExpenseAdapter(var budgetAndExpenseList: List<BudgetAndExpense>) 
                     }
                 }
             }
+            binding.budgetItemCard.setOnClickListener {
+                onCardClickListener(budgetAndExpenseList[position],progress.toString())
+
+            }
+
+
         }
     }
 
@@ -72,6 +87,8 @@ class BudgetAndExpenseAdapter(var budgetAndExpenseList: List<BudgetAndExpense>) 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(budgetAndExpenseList[position])
+        holder.binding.catTextView.text = budgetAndExpenseList[position].budgetCat
+
     }
 
     override fun getItemCount(): Int {

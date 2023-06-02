@@ -10,5 +10,6 @@ data class BudgetAndExpense(
     val amount: String?,
     val category: String?,
     val dType: String?,
-    val amount1: String?
+    val amount1: String?,
+    val catImage: String?
 )
