@@ -73,6 +73,7 @@ class HomeFragment : Fragment() {
                 ldf.setArguments(args)
                 val transaction = activity?.supportFragmentManager?.beginTransaction()
                 transaction?.replace(R.id.fragment_container, ldf)
+                transaction?.addToBackStack(null)
                 transaction?.commit()
             }
         }
@@ -85,6 +86,7 @@ class HomeFragment : Fragment() {
                 ldf.setArguments(args)
                 val transaction = activity?.supportFragmentManager?.beginTransaction()
                 transaction?.replace(R.id.fragment_container, ldf)
+                transaction?.addToBackStack(null)
                 transaction?.commit()
             }
         }

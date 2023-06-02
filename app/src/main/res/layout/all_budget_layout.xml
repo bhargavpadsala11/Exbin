@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".fragments.BudgetFragment">
 
 
@@ -13,8 +12,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/main_color"
+        android:paddingBottom="50dp"
         android:visibility="gone"
-        android:paddingBottom="50dp">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/edit_title"
@@ -153,9 +156,13 @@
         android:id="@+id/cl_pre_screen"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible"
         android:background="@color/white"
-        android:paddingBottom="50dp">
+        android:paddingBottom="50dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/pre_title"
@@ -173,6 +180,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:id="@+id/backButtonBudget"
             android:src="@drawable/ic_left_back"
             android:tint="@color/black"
             app:layout_constraintBottom_toBottomOf="@id/pre_title"
@@ -180,17 +188,18 @@
             app:layout_constraintTop_toTopOf="@id/pre_title" />
 
         <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/deleteButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:src="@drawable/ic_delete"
             android:tint="@color/black"
-            android:id="@+id/deleteButton"
             app:layout_constraintBottom_toBottomOf="@id/pre_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/pre_title" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/editButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="14dp"
@@ -198,7 +207,6 @@
             android:backgroundTint="@color/main_color"
             android:padding="16dp"
             android:text="Edit"
-            android:id="@+id/editButton"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="20sp"
@@ -235,12 +243,12 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:paddingVertical="8dp"
-            android:visibility="gone"
             android:paddingStart="6dp"
             android:paddingEnd="18dp"
             android:text="You've exeed the limit"
             android:textColor="@color/white"
             android:textSize="16sp"
+            android:visibility="gone"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/pre_determinate_bar" />
@@ -263,13 +271,13 @@
             android:id="@+id/pre_tv_amount"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:hint="$1234567"
-            android:maxLines="1"
             android:inputType="number"
+            android:maxLines="1"
             android:textColor="@color/black"
             android:textColorHint="@color/black"
             android:textSize="50sp"
-            android:gravity="center"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/pre_determinate_bar"
             app:layout_constraintEnd_toEndOf="parent"
@@ -341,15 +349,17 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout 
-        android:id="@+id/addcardview"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/budgetDeleteCard"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
         android:background="@color/transhplant_color"
-        android:paddingBottom="50dp">
+        android:paddingBottom="50dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
 
         <com.google.android.material.imageview.ShapeableImageView
@@ -377,8 +387,8 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="@color/red"
-            android:src="@drawable/ic_delete"
             android:scaleType="center"
+            android:src="@drawable/ic_delete"
             app:layout_constraintBottom_toBottomOf="@+id/ll_line"
             app:layout_constraintEnd_toEndOf="@+id/ll_line"
             app:layout_constraintStart_toStartOf="@+id/ll_line"
@@ -430,4 +440,4 @@
             app:layout_constraintTop_toTopOf="@+id/siv_card_view" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

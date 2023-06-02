@@ -6,9 +6,12 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.PaymentModes
 
 @Dao
 interface categoriesDao {
+    @Insert
+    fun insertAll(categories: List<Categories>)
     @Insert
     suspend fun inserCategory(categories: Categories)
 

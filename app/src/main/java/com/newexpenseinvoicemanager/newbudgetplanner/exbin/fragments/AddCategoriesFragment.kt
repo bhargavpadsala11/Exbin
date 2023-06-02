@@ -120,31 +120,13 @@ class AddCategoriesFragment : Fragment() {
             R.drawable.ic_text,
             R.drawable.icadd,
             R.drawable.iccheck,
-            R.drawable.ichome,
-            R.drawable.ic_account_balance_wallet_24,
-            R.drawable.ic_bank_account_balance_24,
-            R.drawable.ic_airplane_ticket_24,
-            R.drawable.ic_atm_24,
-            R.drawable.ic_business_24,
-            R.drawable.ic_car_crash_24,
-            R.drawable.ic_camera_indoor_24,
-            R.drawable.ic_cake_24,
-            R.drawable.ic_celebration_24,
             R.drawable.ic_new_add_home_24,
             R.drawable.ic_shop_production_quantity_limits_24,
             R.drawable.ic_storefront_24,
-            R.drawable.ic_train_24,
-            R.drawable.ic_light_24,
             R.drawable.ic_local_gas_station_24,
             R.drawable.ic_person_add_alt_24,
             R.drawable.ic_savings_24,
-            R.drawable.ic_warehouse_24,
-            R.drawable.ic_water_damage_24,
-            R.drawable.ic_currency_exchange_24,
-            R.drawable.more,
-            R.drawable.ic_delete,
-            R.drawable.ic_equl,
-            R.drawable.ic_left_back
+            R.drawable.more
 
             // Add more icons here
         )
@@ -479,6 +461,7 @@ class AddCategoriesFragment : Fragment() {
             val colorInt = Color.parseColor(selectedColor!!)
             val hsl = FloatArray(3)
             ColorUtils.colorToHSL(colorInt, hsl)
+            Toast.makeText(requireContext(), "$selectedColor", Toast.LENGTH_SHORT).show()
 
             hsl[2] += 0.2f // Increase the lightness value by 20%
             if (hsl[2] > 1.0f) {

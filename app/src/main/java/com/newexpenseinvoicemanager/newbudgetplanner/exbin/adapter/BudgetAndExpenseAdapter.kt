@@ -14,7 +14,7 @@ import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.PaymentModes
 
 class BudgetAndExpenseAdapter(
     var budgetAndExpenseList: List<BudgetAndExpense>,
-    private val onCardClickListener: (BudgetAndExpense,String) -> Unit
+    private val onCardClickListener: (BudgetAndExpense,String,Boolean) -> Unit
 ) :
     RecyclerView.Adapter<BudgetAndExpenseAdapter.ViewHolder>() {
 
@@ -24,6 +24,7 @@ class BudgetAndExpenseAdapter(
         fun bind(budgetAndExpense: BudgetAndExpense) {
             //   binding.catTextView.text = budgetAndExpense.budgetCat
             var progress : Int? = null
+            var limitShow : Boolean? = null
 
             val budgetAmount = budgetAndExpense.budget.toDoubleOrNull()
             val expenseAmount = budgetAndExpense.amount1?.toDoubleOrNull()
@@ -62,16 +63,18 @@ class BudgetAndExpenseAdapter(
 
 
                     if (expenseAmount > budgetAmount) {
+                        limitShow = true
                         binding.image.visibility = View.VISIBLE
                         binding.warningTxt.visibility = View.VISIBLE
                     } else {
                         binding.image.visibility = View.GONE
                         binding.warningTxt.visibility = View.GONE
+                        limitShow = false
                     }
                 }
             }
             binding.budgetItemCard.setOnClickListener {
-                onCardClickListener(budgetAndExpenseList[position],progress.toString())
+                onCardClickListener(budgetAndExpenseList[position],progress.toString(),limitShow!!)
 
             }
 

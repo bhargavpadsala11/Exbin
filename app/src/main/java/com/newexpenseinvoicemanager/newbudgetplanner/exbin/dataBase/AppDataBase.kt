@@ -11,7 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [PaymentModes::class, Categories::class, incexpTbl::class, BudgetDb::class], version = 12)
+@Database(entities = [PaymentModes::class, Categories::class, incexpTbl::class, BudgetDb::class], version = 13)
 abstract class AppDataBase : RoomDatabase() {
 
     companion object {
@@ -39,8 +39,10 @@ abstract class AppDataBase : RoomDatabase() {
                                 PaymentModes(paymentMode = PaymentModes.UPI),
                                 PaymentModes(paymentMode = PaymentModes.GOOGLE_PAY)
                             )
+                            val defaultCategories = Categories.getDefaultCategories()
                             CoroutineScope(Dispatchers.IO).launch {
                                 database?.paymentModesDao()?.insertAll(defaultPaymentModes)
+                                database?.categoriesDao()?.insertAll(defaultCategories)
                             }
                         }
                     })

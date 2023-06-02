@@ -169,7 +169,9 @@ class BudgetFragment : Fragment() {
     }
 
     fun setBudgetView(inflater: LayoutInflater, container: ViewGroup?) {
-        val adapter = BudgetAndExpenseAdapter(emptyList()) { it, progress ->
+        val adapter = BudgetAndExpenseAdapter(emptyList()) { it, progress, limitShow ->
+            val bId = it.budgetId
+            val bData = it
             editBudgetView = inflater.inflate(R.layout.all_budget_layout, container, false)
             container?.addView(editBudgetView)
 
@@ -184,10 +186,73 @@ class BudgetFragment : Fragment() {
             val editButton = editBudgetView?.findViewById<MaterialButton>(R.id.editButton)
             val deleteButton = editBudgetView?.findViewById<AppCompatImageView>(R.id.deleteButton)
             val categoryName = editBudgetView?.findViewById<TextView>(R.id.pre_tv_cat_name)
+            val backButtonBudget = editBudgetView?.findViewById<AppCompatImageView>(R.id.backButtonBudget)
             budgetdetail?.visibility = View.VISIBLE
+
+            backButtonBudget?.setOnClickListener {
+                container?.removeView(editBudgetView)
+            }
+            if (limitShow == true) {
+                budgetLimitImage?.visibility = View.VISIBLE
+                budgetLimitTextView?.visibility = View.VISIBLE
+            } else {
+                budgetLimitImage?.visibility = View.GONE
+                budgetLimitTextView?.visibility = View.GONE
+            }
             deleteButton?.setOnClickListener {
-                val deleteDialog = editBudgetView?.findViewById<ConstraintLayout>(R.id.addcardview)
+               // Toast.makeText(requireContext(), "Button Pressed", Toast.LENGTH_SHORT).show()
+                val deleteDialog = editBudgetView?.findViewById<ConstraintLayout>(R.id.budgetDeleteCard)
+//                budgetdetail?.visibility = View.GONE
                 deleteDialog?.visibility = View.VISIBLE
+                val cancelBtn = editBudgetView?.findViewById<MaterialButton>(R.id.btncancel)
+                val deleteBtn = editBudgetView?.findViewById<MaterialButton>(R.id.btn_delete)
+
+                deleteBtn?.setOnClickListener {
+                    deleteBudget(bId)
+                    deleteDialog?.visibility = View.GONE
+                    Toast.makeText(requireContext(), "Budget Deleted", Toast.LENGTH_SHORT).show()
+                    container?.removeView(editBudgetView)
+                    loadFragment(BudgetFragment())
+                }
+
+                cancelBtn?.setOnClickListener {
+                    deleteDialog?.visibility = View.GONE
+                    budgetdetail?.visibility = View.VISIBLE
+
+                }
+            }
+
+            editButton?.setOnClickListener {
+                val editudgetLayout =
+                    editBudgetView?.findViewById<ConstraintLayout>(R.id.cl_edit_budget)
+                budgetdetail?.visibility = View.GONE
+                editudgetLayout?.visibility = View.VISIBLE
+                val budgetTextView = editBudgetView?.findViewById<EditText>(R.id.edit_amount)
+                budgetTextView?.setText(bData.budget)
+                val budgetCatTextView =
+                    editBudgetView?.findViewById<AppCompatTextView>(R.id.edit_category_spin)
+                budgetCatTextView?.setText(bData.budgetCat)
+                val budgetBackButoon =
+                    editBudgetView?.findViewById<AppCompatImageView>(R.id.edit_backarrow)
+                budgetBackButoon?.setOnClickListener {
+                    budgetdetail?.visibility = View.VISIBLE
+                    editudgetLayout?.visibility = View.GONE
+                }
+                val budgetSaveButton =
+                    editBudgetView?.findViewById<MaterialButton>(R.id.edit_btn_save)
+                budgetSaveButton?.setOnClickListener {
+                    updateBudget(bId, budgetTextView?.text.toString())
+                    Toast.makeText(
+                        requireContext(),
+                        "Budget Updated Successfully",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    budgetdetail?.visibility = View.VISIBLE
+                    editudgetLayout?.visibility = View.GONE
+                    container?.removeView(editBudgetView)
+                    loadFragment(BudgetFragment())
+                    //container?.addView(editBudgetView)
+                }
             }
 
             val remainingAmount = editBudgetView?.findViewById<EditText>(R.id.pre_tv_amount)
@@ -218,13 +283,7 @@ class BudgetFragment : Fragment() {
                     budgetProgress?.progress = progress.toInt()
                     budgetProgress?.progressTintList =
                         ColorStateList.valueOf(Color.parseColor(it.catColor))
-                    if (it.amount1!! > it.budget) {
-                        budgetLimitImage?.visibility = View.VISIBLE
-                        budgetLimitTextView?.visibility = View.VISIBLE
-                    } else {
-                        budgetLimitImage?.visibility = View.GONE
-                        budgetLimitTextView?.visibility = View.GONE
-                    }
+
                 } else {
                     budgetProgress?.progress = 0
                     budgetProgress?.progressTintList =
@@ -252,7 +311,32 @@ class BudgetFragment : Fragment() {
         if (editBudgetView != null) {
             super.onStop()
             editBudgetView?.visibility = View.GONE
+        }else{
+            super.onStop()
         }
+    }
+
+    fun deleteBudget(id: Int) {
+        val db = AppDataBase.getInstance(requireContext()).budgetDao()
+//        val data = PaymentModes()
+        lifecycleScope.launch(Dispatchers.IO) {
+            db.deleteBudget(id)
+        }
+    }
+
+    fun updateBudget(id: Int, budget: String) {
+        val db = AppDataBase.getInstance(requireContext()).budgetDao()
+//        val data = PaymentModes()
+        lifecycleScope.launch(Dispatchers.IO) {
+            db.updateBudget(id, budget)
+        }
+    }
+
+    private fun loadFragment(fragment: Fragment) {
+        activity?.supportFragmentManager?.beginTransaction()
+            ?.replace(R.id.fragment_container, fragment)
+            ?.addToBackStack(null)
+            ?.commit()
     }
 
 

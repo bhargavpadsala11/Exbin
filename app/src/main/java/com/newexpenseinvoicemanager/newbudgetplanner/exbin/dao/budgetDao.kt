@@ -20,6 +20,9 @@ interface budgetDao {
     @Query("SELECT * FROM BudgetDb")
     fun getAllBudget(): LiveData<List<BudgetDb>>
 
+    @Query("SELECT * FROM BudgetDb WHERE _id = :id")
+    fun getAllBudgetById(id:Int): LiveData<List<BudgetDb>>
+
 //    @Query("SELECT BudgetDb._id AS budgetId, BudgetDb.budget, BudgetDb.budgetCat, BudgetDb.catColor, BudgetDb.currentDate, incexpTbl.Id AS expenseId, BudgetDb.budget, incexpTbl.category, incexpTbl.dType, SUM(incexpTbl.amount) AS amount1, BudgetDb.budget AS amount FROM BudgetDb INNER JOIN incexpTbl ON BudgetDb.budgetCat = incexpTbl.category WHERE incexpTbl.dType = 'EXPENSE' GROUP BY incexpTbl.category")
 //    suspend fun getBudgetAndExpense(): List<BudgetAndExpense>
 
@@ -31,6 +34,12 @@ interface budgetDao {
         "WHERE BudgetDb.budgetCat = Categories.CategoryName\n" +
         "GROUP BY BudgetDb.budgetCat\n")
 suspend fun getBudgetAndExpense(): List<BudgetAndExpense>
+
+    @Query("DELETE FROM BudgetDb WHERE _id = :id")
+    fun deleteBudget(id: Int)
+
+    @Query("UPDATE BudgetDb SET budget = :budgetAmt WHERE _id = :id")
+    fun updateBudget(id: Int, budgetAmt: String)
 
 //SELECT BudgetDb._id AS budgetId, BudgetDb.budget, BudgetDb.budgetCat, BudgetDb.catColor, BudgetDb.currentDate, incexpTbl.Id AS expenseId, BudgetDb.budget, categorise.image, incexpTbl.category, incexpTbl.dType, SUM(incexpTbl.amount) AS amount1, BudgetDb.budget AS amount
 //FROM BudgetDb
