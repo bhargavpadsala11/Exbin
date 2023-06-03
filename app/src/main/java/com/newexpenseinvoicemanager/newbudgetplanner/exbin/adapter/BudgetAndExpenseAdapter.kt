@@ -14,7 +14,7 @@ import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.PaymentModes
 
 class BudgetAndExpenseAdapter(
     var budgetAndExpenseList: List<BudgetAndExpense>,
-    private val onCardClickListener: (BudgetAndExpense,String,Boolean) -> Unit
+    private val onCardClickListener: (BudgetAndExpense, String, Boolean,String) -> Unit
 ) :
     RecyclerView.Adapter<BudgetAndExpenseAdapter.ViewHolder>() {
 
@@ -23,22 +23,25 @@ class BudgetAndExpenseAdapter(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(budgetAndExpense: BudgetAndExpense) {
             //   binding.catTextView.text = budgetAndExpense.budgetCat
-            var progress : Int? = null
-            var limitShow : Boolean? = null
+            var progress: Int? = null
+            var limitShow: Boolean? = null
+            var remaining: String? =""
 
             val budgetAmount = budgetAndExpense.budget.toDoubleOrNull()
             val expenseAmount = budgetAndExpense.amount1?.toDoubleOrNull()
             val amountOfIncExpTbl = budgetAndExpense.budgetCat
-            if (amountOfIncExpTbl != null  && expenseAmount == null) {
-                binding.catTextView.text = budgetAndExpense.category
+            if (amountOfIncExpTbl != null && expenseAmount == null) {
+                binding.catTextView.text = budgetAndExpense.budgetCat
 
                 binding.remainingTxt.text = "Remaining ${budgetAndExpense.amount}"
+                remaining = budgetAndExpense.amount
             } else {
                 var sum = budgetAndExpense.amount!!.toInt() - budgetAndExpense.amount1!!.toInt()
                 binding.remainingTxt.text = "Remaining ${sum}"
+                remaining =sum.toString()
             }
             if (amountOfIncExpTbl != null && expenseAmount == null) {
-                binding.catTextView.text = budgetAndExpense.category
+                binding.catTextView.text = budgetAndExpense.budgetCat
 
                 binding.determinateBar.progress = 0
                 binding.determinateBar.progressTintList =
@@ -52,7 +55,7 @@ class BudgetAndExpenseAdapter(
                 if (budgetAmount != null && expenseAmount != null) {
                     progress = (expenseAmount / budgetAmount * 100).toInt()
                     val pro = progress
-                    Log.d("From Adapter","$pro")
+                    Log.d("From Adapter", "$pro")
                     binding.determinateBar.progress = progress!!
                     binding.determinateBar.progressTintList =
                         ColorStateList.valueOf(Color.parseColor(budgetAndExpense.catColor))
@@ -72,12 +75,23 @@ class BudgetAndExpenseAdapter(
                         limitShow = false
                     }
                 }
+                Log.d("Adap posi/prog/limit","$budgetAndExpenseList[position] $progress $limitShow")
             }
+            if (limitShow == null && progress == null) {
+                limitShow = false
+                progress = 0
+            }
+
             binding.budgetItemCard.setOnClickListener {
-                onCardClickListener(budgetAndExpenseList[position],progress.toString(),limitShow!!)
+                onCardClickListener(
+                    budgetAndExpenseList[position],
+                    progress.toString(),
+                    limitShow!!,
+                    remaining!!
+                )
+                Log.d("Adap It/prog/limit","$budgetAndExpenseList[position] $it $progress $limitShow")
 
             }
-
 
         }
     }

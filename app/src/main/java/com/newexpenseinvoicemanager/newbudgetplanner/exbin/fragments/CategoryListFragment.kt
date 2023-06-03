@@ -65,4 +65,6 @@ class CategoryListFragment : Fragment() {
         (activity as MainActivity?)!!.showBottomNavigationView()
     }
 
+
+
 }

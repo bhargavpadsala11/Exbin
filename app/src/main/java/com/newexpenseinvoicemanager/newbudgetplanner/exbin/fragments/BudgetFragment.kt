@@ -4,6 +4,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -169,7 +170,8 @@ class BudgetFragment : Fragment() {
     }
 
     fun setBudgetView(inflater: LayoutInflater, container: ViewGroup?) {
-        val adapter = BudgetAndExpenseAdapter(emptyList()) { it, progress, limitShow ->
+        val adapter = BudgetAndExpenseAdapter(emptyList()) { it, progress, limitShow, remain ->
+            Log.d("It/prog/limit", "$it $progress $limitShow")
             val bId = it.budgetId
             val bData = it
             editBudgetView = inflater.inflate(R.layout.all_budget_layout, container, false)
@@ -186,7 +188,8 @@ class BudgetFragment : Fragment() {
             val editButton = editBudgetView?.findViewById<MaterialButton>(R.id.editButton)
             val deleteButton = editBudgetView?.findViewById<AppCompatImageView>(R.id.deleteButton)
             val categoryName = editBudgetView?.findViewById<TextView>(R.id.pre_tv_cat_name)
-            val backButtonBudget = editBudgetView?.findViewById<AppCompatImageView>(R.id.backButtonBudget)
+            val backButtonBudget =
+                editBudgetView?.findViewById<AppCompatImageView>(R.id.backButtonBudget)
             budgetdetail?.visibility = View.VISIBLE
 
             backButtonBudget?.setOnClickListener {
@@ -200,8 +203,9 @@ class BudgetFragment : Fragment() {
                 budgetLimitTextView?.visibility = View.GONE
             }
             deleteButton?.setOnClickListener {
-               // Toast.makeText(requireContext(), "Button Pressed", Toast.LENGTH_SHORT).show()
-                val deleteDialog = editBudgetView?.findViewById<ConstraintLayout>(R.id.budgetDeleteCard)
+                // Toast.makeText(requireContext(), "Button Pressed", Toast.LENGTH_SHORT).show()
+                val deleteDialog =
+                    editBudgetView?.findViewById<ConstraintLayout>(R.id.budgetDeleteCard)
 //                budgetdetail?.visibility = View.GONE
                 deleteDialog?.visibility = View.VISIBLE
                 val cancelBtn = editBudgetView?.findViewById<MaterialButton>(R.id.btncancel)
@@ -275,8 +279,8 @@ class BudgetFragment : Fragment() {
             if (it.budgetCat != null && it.amount == null) {
                 remainingAmount?.setText("${it.amount}")
             } else {
-                var sum = it.amount!!.toInt() - it.amount1!!.toInt()
-                remainingAmount?.setText("$sum")
+
+                remainingAmount?.setText("$remain")
 
                 if (it.budget != null && it.amount1 != null) {
 
@@ -311,7 +315,7 @@ class BudgetFragment : Fragment() {
         if (editBudgetView != null) {
             super.onStop()
             editBudgetView?.visibility = View.GONE
-        }else{
+        } else {
             super.onStop()
         }
     }

@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.graphics.ColorUtils
@@ -48,7 +49,7 @@ class CategoryListAdapter(
         }
         val lightColor = ColorUtils.HSLToColor(hsl)
 
-
+        //Log.d("Image Code", image)
         val imageView = holder.binding.imageView
         imageView.setImageResource(image.toInt())
         imageView.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN)
@@ -57,10 +58,7 @@ class CategoryListAdapter(
         holder.binding.catehoryItem.setOnClickListener {
             onImageClickListener(list[position], "EDIT")
         }
-
-
     }
-
 
     override fun getItemCount(): Int {
         return list.size

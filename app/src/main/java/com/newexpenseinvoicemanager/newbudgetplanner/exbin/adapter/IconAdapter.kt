@@ -1,9 +1,11 @@
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
@@ -25,8 +27,10 @@ class IconAdapter(
     }
 
     override fun onBindViewHolder(holder: IconViewHolder, position: Int) {
+
         holder.iconImageView.setImageResource(icons[position])
         holder.itemView.setOnClickListener {
+            Log.d("Icon Path","$icons[position]")
             onIconSelected(icons[position])
             val cardView = mainLayout.findViewById<MaterialCardView>(R.id.colorItemCard)
             cardView.visibility = View.GONE

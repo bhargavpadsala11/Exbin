@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -15,6 +16,7 @@ import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.graphics.ColorUtils
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -126,7 +128,8 @@ class AddCategoriesFragment : Fragment() {
             R.drawable.ic_local_gas_station_24,
             R.drawable.ic_person_add_alt_24,
             R.drawable.ic_savings_24,
-            R.drawable.more
+            R.drawable.more,
+            R.drawable.icons8
 
             // Add more icons here
         )
@@ -375,8 +378,8 @@ class AddCategoriesFragment : Fragment() {
             // Add more colors here
         )
         binding.selectIcon.setOnClickListener {
-            binding.colorItemCard.visibility = View.VISIBLE
-            binding.iconRecyclerView.visibility = View.VISIBLE
+            binding.colorItemCard.visibility = VISIBLE
+            binding.iconRecyclerView.visibility = VISIBLE
             val iconAdapter = IconAdapter(icons, binding.root) { icon ->
                 selectedIcon = icon
                 updateMergedIcon()
@@ -402,8 +405,8 @@ class AddCategoriesFragment : Fragment() {
 
 
         binding.selectColor.setOnClickListener {
-            binding.colorItemCard.visibility = View.VISIBLE
-            binding.colorRecyclerView.visibility = View.VISIBLE
+            binding.colorItemCard.visibility = VISIBLE
+            binding.colorRecyclerView.visibility = VISIBLE
 
             val colorAdapter = ColorAdapter(colors, binding.root) { color ->
                 selectedColor = color
@@ -517,9 +520,12 @@ class AddCategoriesFragment : Fragment() {
     }
 
     override fun onStop() {
-        super.onStop()
         (activity as MainActivity?)!!.showBottomNavigationView()
+        super.onStop()
         deleteCategoryView?.visibility = View.GONE
+
+        binding.mainLayoutAddCategory.visibility = View.GONE
+
     }
 
 
