@@ -11,6 +11,7 @@ import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.TransectionListAdapter
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.getCurrencyClass
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.FragmentTransectionListBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
 
@@ -20,12 +21,14 @@ class TransectionListFragment : Fragment() {
     private lateinit var binding: FragmentTransectionListBinding
     private var inc: Double = 0.0
     private var exp: Double = 0.0
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentTransectionListBinding.inflate(layoutInflater)
+        val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
         val value = arguments?.getString("TRANSECTIONKEY")
         if (value == "INCOME") {
             getTotalIncome()
@@ -41,7 +44,7 @@ class TransectionListFragment : Fragment() {
             }
             dao.incexpTblDao().getAllIncomeData().observe(requireActivity()) {
                 binding.transectionRecy.adapter =
-                    TransectionListAdapter(requireContext(), it, categoryMap)
+                    TransectionListAdapter(requireContext(), it, categoryMap,currencyClass)
             }
         } else if (value == "EXPENSE") {
             getDailyAvgExp()
@@ -57,7 +60,7 @@ class TransectionListFragment : Fragment() {
             }
             dao.incexpTblDao().getAllExpenseData().observe(requireActivity()) {
                 binding.transectionRecy.adapter =
-                    TransectionListAdapter(requireContext(), it, categoryMap)
+                    TransectionListAdapter(requireContext(), it, categoryMap,currencyClass)
             }
         }
         return binding.root

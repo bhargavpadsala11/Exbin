@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.TransectionListAdapter
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.getCurrencyClass
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.FragmentTransectionBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
 
@@ -15,7 +16,6 @@ class TransectionFragment : Fragment() {
 
     private lateinit var binding : FragmentTransectionBinding
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -23,6 +23,7 @@ class TransectionFragment : Fragment() {
         // Inflate the layout for this fragment
 
         binding = FragmentTransectionBinding.inflate(layoutInflater)
+        val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
         val dao = AppDataBase.getInstance(requireContext())
         val categoryMap = mutableMapOf<String, Categories>()
         dao.categoriesDao().getAllCategory().observe(requireActivity()) { categories ->
@@ -32,7 +33,7 @@ class TransectionFragment : Fragment() {
         }
 
         dao.incexpTblDao().getAllData().observe(requireActivity()){
-            binding.transectionItem.adapter = TransectionListAdapter(requireContext(),it,categoryMap)
+            binding.transectionItem.adapter = TransectionListAdapter(requireContext(),it,categoryMap, currencyClass)
         }
 
 

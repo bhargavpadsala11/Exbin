@@ -15,6 +15,7 @@ import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.getCurrencyClass
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.CategoryItemLayoutBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.TransectionItemLayoutBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
@@ -23,7 +24,8 @@ import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.incexpTbl
 class TransectionListAdapter(
     val context: Context,
     val list: List<incexpTbl>,
-    val categoryMap: Map<String, Categories>
+    val categoryMap: Map<String, Categories>,
+    val currencyClass: getCurrencyClass
 ) :
     RecyclerView.Adapter<TransectionListAdapter.TransectionListViewHolder>() {
 
@@ -37,6 +39,7 @@ class TransectionListAdapter(
     }
 
     override fun onBindViewHolder(holder: TransectionListViewHolder, position: Int) {
+        val symb = currencyClass.getCurrencySymbol()
         val item = list[position]
         val category = categoryMap[item.category]
 
@@ -66,10 +69,10 @@ class TransectionListAdapter(
         // Set amount text and color based on dType
         if (item.dType == "EXPENSE") {
             holder.binding.traAmount.setTextColor(ContextCompat.getColor(context, R.color.transectionRed))
-            holder.binding.traAmount.text = "-${item.amount}"
+            holder.binding.traAmount.text = "$symb -${item.amount}"
         } else {
             holder.binding.traAmount.setTextColor(ContextCompat.getColor(context, R.color.transectionGreen))
-            holder.binding.traAmount.text = item.amount
+            holder.binding.traAmount.text = "$symb $item.amount"
         }
 
         holder.binding.traCategory.text = item.category

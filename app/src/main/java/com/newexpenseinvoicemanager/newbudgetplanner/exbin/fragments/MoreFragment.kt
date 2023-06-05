@@ -30,6 +30,9 @@ class MoreFragment : Fragment() {
             fragment = PaymentModeFragment()
             loadFragment(fragment)
         }
+        binding.btnCurrency.setOnClickListener {
+            loadFragment(CurrencyFragment())
+        }
         return binding.root
     }
 

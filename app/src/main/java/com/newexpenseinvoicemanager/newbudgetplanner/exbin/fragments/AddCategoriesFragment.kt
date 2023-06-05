@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.graphics.ColorUtils
@@ -526,6 +527,28 @@ class AddCategoriesFragment : Fragment() {
 
         binding.mainLayoutAddCategory.visibility = View.GONE
 
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if(deleteCategoryView?.isVisible == true){
+                    deleteCategoryView?.visibility = View.GONE
+                }else{
+                    loadFragment(CategoryListFragment())
+                }
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
+
+    private fun loadFragment(fragment: Fragment) {
+        activity?.supportFragmentManager?.beginTransaction()
+            ?.replace(R.id.fragment_container, fragment)
+            ?.addToBackStack(null)
+            ?.commit()
     }
 
 

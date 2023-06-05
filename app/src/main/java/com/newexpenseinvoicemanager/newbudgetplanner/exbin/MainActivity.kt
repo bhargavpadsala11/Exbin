@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     private var backPressedTime: Long = 0
     private val backPressedTimeout: Long = 2000 // 2 seconds
     private var isButtonVisible = false
+    private var addupdatetView: View? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,7 +79,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         fab.setOnClickListener {
-           val fragment = HomeFragment()
+            val fragment = HomeFragment()
             loadFragment(fragment)
             floatButtonShow()
         }
@@ -163,20 +164,29 @@ class MainActivity : AppCompatActivity() {
                 backPressedTime = currentTime
                 Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show()
             }
-        } else {
-//            if (currentFragment is MoreFragment) {
-//                bottomNavigationView.selectedItemId = R.id.navigation_more
-//            }else if(currentFragment is TransectionFragment){
-//                bottomNavigationView.selectedItemId = R.id.navigation_transection
-//            }else if (currentFragment is BudgetFragment){
-//                bottomNavigationView.selectedItemId = R.id.navigation_budget
-//            }
+        } else if (currentFragment is CategoryListFragment) {
+            loadFragmentForBack(MoreFragment())
+        } else if (currentFragment is PaymentModeFragment) {
+            loadFragmentForBack(MoreFragment())
+        } else if (currentFragment is AddCategoriesFragment) {
+            loadFragmentForBack(CategoryListFragment())
+        } else if (currentFragment is BudgetFragment || currentFragment is TransectionFragment || currentFragment is MoreFragment) {
+            loadFragmentForBack(HomeFragment())
+        } else if (currentFragment is TransectionListFragment) {
+            loadFragmentForBack(HomeFragment())
+        }else if(currentFragment is CurrencyFragment){
+            loadFragmentForBack(MoreFragment())
+        }else{
             super.onBackPressed()
         }
 
     }
 
-
+    fun loadFragmentForBack(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
+    }
 
 
 }

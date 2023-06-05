@@ -20,6 +20,7 @@ import com.github.mikephil.charting.utils.ColorTemplate
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.TransectionListAdapter
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.getCurrencyClass
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.FragmentHomeBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
 
@@ -30,6 +31,7 @@ class HomeFragment : Fragment() {
     private lateinit var pieChart: PieChart
     private var inc: Double = 0.0
     private var exp: Double = 0.0
+    private var crnSymb: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,6 +47,9 @@ class HomeFragment : Fragment() {
         getTotalExpense()
         getCurrentBalance()
         // createPieChart()
+        //val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
+        val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
+        crnSymb = currencyClass.getCurrencySymbol()!!
 
         val dao = AppDataBase.getInstance(requireContext())
         val categoryMap = mutableMapOf<String, Categories>()
@@ -58,7 +63,12 @@ class HomeFragment : Fragment() {
             if (transactions != null && transactions.isNotEmpty()) {
                 showData()
                 binding.homeTranRecy.adapter =
-                    TransectionListAdapter(requireContext(), transactions, categoryMap)
+                    TransectionListAdapter(
+                        requireContext(),
+                        transactions,
+                        categoryMap,
+                        currencyClass
+                    )
             } else {
                 // handle empty transaction list
                 hideData()
@@ -101,12 +111,12 @@ class HomeFragment : Fragment() {
             if (income != null) {
                 inc = income
                 val formattedAvg = String.format("%.2f", inc)
-                binding.totalIncome.setText(formattedAvg)
+                binding.totalIncome.setText("$crnSymb $formattedAvg")
                 createPieChart()
             } else {
                 // handle empty income
                 hideData()
-                binding.totalIncome.setText("00.00")
+                binding.totalIncome.setText("$crnSymb 00.00")
             }
         }
     }
@@ -118,12 +128,12 @@ class HomeFragment : Fragment() {
             if (expense != null) {
                 exp = expense
                 val formattedAvg = String.format("%.2f", exp)
-                binding.expTtl.setText(formattedAvg)
+                binding.expTtl.setText("$crnSymb $formattedAvg")
                 createPieChart()
             } else {
                 // handle empty expense
                 hideData()
-                binding.expTtl.setText("00.00")
+                binding.expTtl.setText("${crnSymb.toString()}")
             }
         }
     }
@@ -135,10 +145,10 @@ class HomeFragment : Fragment() {
             if (dailyAverage != null) {
                 val avg = dailyAverage
                 val formattedAvg = String.format("%.2f", avg)
-                binding.avgTtl.text = formattedAvg
+                binding.avgTtl.text = "$crnSymb $formattedAvg"
             } else {
                 hideData()
-                binding.avgTtl.text = "00.00"
+                binding.avgTtl.text = "$crnSymb 00.00"
             }
         }
     }
@@ -150,10 +160,10 @@ class HomeFragment : Fragment() {
             if (dailyAverage != null) {
                 val avg = dailyAverage
                 val formattedAvg = String.format("%.2f", avg)
-                binding.expAvg.text = formattedAvg
+                binding.expAvg.text = "$crnSymb $formattedAvg"
             } else {
                 hideData()
-                binding.expAvg.text = "00.00"
+                binding.expAvg.text = "$crnSymb 00.00"
             }
         }
     }

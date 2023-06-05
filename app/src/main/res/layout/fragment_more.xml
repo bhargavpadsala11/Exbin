@@ -80,6 +80,7 @@
                 android:drawableLeft="@drawable/ic_add_"
                 android:drawablePadding="8dp"
                 android:padding="8dp"
+                android:id="@+id/btn_currency"
                 android:text="Currency"
                 android:textAllCaps="false"
                 android:textColor="@color/white"

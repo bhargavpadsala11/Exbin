@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.imageview.ShapeableImageView
+import com.google.android.material.textview.MaterialTextView
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.BudgetAndExpenseAdapter
@@ -171,7 +172,7 @@ class BudgetFragment : Fragment() {
 
     fun setBudgetView(inflater: LayoutInflater, container: ViewGroup?) {
         val adapter = BudgetAndExpenseAdapter(emptyList()) { it, progress, limitShow, remain ->
-            Log.d("It/prog/limit", "$it $progress $limitShow")
+           // Log.d("It/prog/limit", "$it $progress $limitShow")
             val bId = it.budgetId
             val bData = it
             editBudgetView = inflater.inflate(R.layout.all_budget_layout, container, false)
@@ -192,8 +193,10 @@ class BudgetFragment : Fragment() {
                 editBudgetView?.findViewById<AppCompatImageView>(R.id.backButtonBudget)
             budgetdetail?.visibility = View.VISIBLE
 
+            (activity as MainActivity?)!!.hideBottomNavigationView()
             backButtonBudget?.setOnClickListener {
                 container?.removeView(editBudgetView)
+                (activity as MainActivity?)!!.showBottomNavigationView()
             }
             if (limitShow == true) {
                 budgetLimitImage?.visibility = View.VISIBLE
@@ -241,6 +244,7 @@ class BudgetFragment : Fragment() {
                 budgetBackButoon?.setOnClickListener {
                     budgetdetail?.visibility = View.VISIBLE
                     editudgetLayout?.visibility = View.GONE
+                    (activity as MainActivity?)!!.showBottomNavigationView()
                 }
                 val budgetSaveButton =
                     editBudgetView?.findViewById<MaterialButton>(R.id.edit_btn_save)
@@ -259,7 +263,7 @@ class BudgetFragment : Fragment() {
                 }
             }
 
-            val remainingAmount = editBudgetView?.findViewById<EditText>(R.id.pre_tv_amount)
+            val remainingAmount = editBudgetView?.findViewById<TextView>(R.id.pre_tv_amount)
             categoryName?.setText("${it.budgetCat}")
             val color = it.catColor
             val colorInt = Color.parseColor(color!!)
@@ -341,6 +345,7 @@ class BudgetFragment : Fragment() {
             ?.replace(R.id.fragment_container, fragment)
             ?.addToBackStack(null)
             ?.commit()
+        (activity as MainActivity?)!!.showBottomNavigationView()
     }
 
 

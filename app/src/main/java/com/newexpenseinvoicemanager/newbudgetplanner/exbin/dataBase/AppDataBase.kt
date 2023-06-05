@@ -11,7 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [PaymentModes::class, Categories::class, incexpTbl::class, BudgetDb::class], version = 13)
+@Database(entities = [PaymentModes::class, Categories::class, incexpTbl::class, BudgetDb::class,Currency::class], version = 14)
 abstract class AppDataBase : RoomDatabase() {
 
     companion object {
@@ -40,9 +40,11 @@ abstract class AppDataBase : RoomDatabase() {
                                 PaymentModes(paymentMode = PaymentModes.GOOGLE_PAY)
                             )
                             val defaultCategories = Categories.getDefaultCategories()
+                            val defaultCurrency = Currency.getDefaultCurrency()
                             CoroutineScope(Dispatchers.IO).launch {
                                 database?.paymentModesDao()?.insertAll(defaultPaymentModes)
                                 database?.categoriesDao()?.insertAll(defaultCategories)
+                                database?.currencyDao()?.insertAll(defaultCurrency)
                             }
                         }
                     })
@@ -56,4 +58,6 @@ abstract class AppDataBase : RoomDatabase() {
     abstract fun categoriesDao(): categoriesDao
     abstract fun incexpTblDao(): incexpTblDao
     abstract fun budgetDao(): budgetDao
+
+    abstract fun currencyDao():currencyDao
 }
