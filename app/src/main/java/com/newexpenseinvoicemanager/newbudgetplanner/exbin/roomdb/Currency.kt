@@ -14,7 +14,7 @@ data class Currency(
     companion object {
         fun getDefaultCurrency(): List<Currency> {
             return listOf(
-                Currency(1, "Indian Rupee", "₹",0),
+                Currency(1, "Indian Rupee", "₹",1),
                 Currency(2, "Rupiah", "Rp",0),
                 Currency(3, "Dollar", "\$",0),
                 Currency(4, "Real", "R\$",0),

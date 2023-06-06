@@ -2,11 +2,9 @@ package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.animation.Easing
@@ -14,7 +12,6 @@ import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
-import com.github.mikephil.charting.formatter.PercentFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
@@ -31,7 +28,7 @@ class HomeFragment : Fragment() {
     private lateinit var pieChart: PieChart
     private var inc: Double = 0.0
     private var exp: Double = 0.0
-    private var crnSymb: String = ""
+    var crnSymb: String? = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,16 +37,17 @@ class HomeFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(layoutInflater)
 
+        val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
         showData()
-        getTotalIncome()
-        getDailyAvg()
-        getDailyAvgExp()
-        getTotalExpense()
-        getCurrentBalance()
+        getTotalIncome(currencyClass)
+        getDailyAvg(currencyClass)
+        getDailyAvgExp(currencyClass)
+        getTotalExpense(currencyClass)
+        getCurrentBalance(currencyClass)
         // createPieChart()
         //val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
-        val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
-        crnSymb = currencyClass.getCurrencySymbol()!!
+
+       // crnSymb = currencyClass.getCurrencies()!!
 
         val dao = AppDataBase.getInstance(requireContext())
         val categoryMap = mutableMapOf<String, Categories>()
@@ -76,7 +74,7 @@ class HomeFragment : Fragment() {
         }
 
         binding.incCard.setOnClickListener {
-            if (getTotalIncome() != null) {
+            if (getTotalIncome(currencyClass) != null) {
                 val ldf = TransectionListFragment()
                 val args = Bundle()
                 args.putString("TRANSECTIONKEY", "INCOME")
@@ -89,7 +87,7 @@ class HomeFragment : Fragment() {
         }
 
         binding.expCard.setOnClickListener {
-            if (getTotalExpense() != null) {
+            if (getTotalExpense(currencyClass) != null) {
                 val ldf = TransectionListFragment()
                 val args = Bundle()
                 args.putString("TRANSECTIONKEY", "EXPENSE")
@@ -104,78 +102,98 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
-    fun getTotalIncome() {
+    fun getTotalIncome(currencyClass: getCurrencyClass) {
         val dao = AppDataBase.getInstance(requireContext()).incexpTblDao()
 
         dao.getTotalIncomeAmount().observe(requireActivity()) { income ->
             if (income != null) {
                 inc = income
                 val formattedAvg = String.format("%.2f", inc)
-                binding.totalIncome.setText("$crnSymb $formattedAvg")
+                currencyClass.getCurrencies { crnSymb ->
+                    binding.totalIncome.setText("$crnSymb $formattedAvg")
+                }
                 createPieChart()
             } else {
                 // handle empty income
                 hideData()
-                binding.totalIncome.setText("$crnSymb 00.00")
+                currencyClass.getCurrencies { crnSymb ->
+                    binding.totalIncome.setText("$crnSymb 00.00")
+                }
             }
         }
     }
 
-    fun getTotalExpense() {
+    fun getTotalExpense(currencyClass: getCurrencyClass) {
         val dao = AppDataBase.getInstance(requireContext()).incexpTblDao()
 
         dao.getTotalExpenseAmount().observe(requireActivity()) { expense ->
             if (expense != null) {
                 exp = expense
                 val formattedAvg = String.format("%.2f", exp)
-                binding.expTtl.setText("$crnSymb $formattedAvg")
+                currencyClass.getCurrencies { crnSymb ->
+                    binding.expTtl.setText("$crnSymb $formattedAvg")
+                }
                 createPieChart()
             } else {
                 // handle empty expense
                 hideData()
-                binding.expTtl.setText("${crnSymb.toString()}")
+                currencyClass.getCurrencies { crnSymb ->
+
+                    binding.expTtl.setText("$crnSymb 00.00")
+                }
             }
         }
     }
 
-    fun getDailyAvg() {
+    fun getDailyAvg(currencyClass: getCurrencyClass) {
         val dao = AppDataBase.getInstance(requireContext()).incexpTblDao()
-
         dao.getDailyAverage().observe(requireActivity()) { dailyAverage ->
             if (dailyAverage != null) {
                 val avg = dailyAverage
                 val formattedAvg = String.format("%.2f", avg)
-                binding.avgTtl.text = "$crnSymb $formattedAvg"
+                currencyClass.getCurrencies { crnSymb ->
+                    binding.avgTtl.text = "$crnSymb $formattedAvg"
+                }
             } else {
                 hideData()
-                binding.avgTtl.text = "$crnSymb 00.00"
+                currencyClass.getCurrencies { crnSymb ->
+
+                    binding.avgTtl.text = "$crnSymb 00.00"
+                }
             }
         }
     }
 
-    fun getDailyAvgExp() {
+    fun getDailyAvgExp(currencyClass: getCurrencyClass) {
         val dao = AppDataBase.getInstance(requireContext()).incexpTblDao()
 
         dao.getDailyAverageExp().observe(requireActivity()) { dailyAverage ->
             if (dailyAverage != null) {
                 val avg = dailyAverage
                 val formattedAvg = String.format("%.2f", avg)
-                binding.expAvg.text = "$crnSymb $formattedAvg"
+                currencyClass.getCurrencies { crnSymb ->
+                    binding.expAvg.text = "$crnSymb $formattedAvg"
+                }
             } else {
                 hideData()
-                binding.expAvg.text = "$crnSymb 00.00"
+                currencyClass.getCurrencies { crnSymb ->
+
+                    binding.expAvg.text = "$crnSymb 00.00"
+                }
             }
         }
     }
 
-    private fun getCurrentBalance() {
+    private fun getCurrentBalance(currencyClass: getCurrencyClass) {
         val dao = AppDataBase.getInstance(requireContext()).incexpTblDao()
 
         dao.getIncomeExpenseDifference().observe(requireActivity()) { differnce ->
 
             if (differnce != null) {
                 if (differnce >= 0) {
-                    binding.currentBalanceTxt.text = "$differnce"
+                    currencyClass.getCurrencies { crnSymb ->
+                        binding.currentBalanceTxt.text = "$crnSymb $differnce"
+                    }
                     binding.currentBalanceTxt.setTextColor(
                         ContextCompat.getColor(
                             requireContext(),
@@ -183,7 +201,9 @@ class HomeFragment : Fragment() {
                         )
                     )
                 } else {
-                    binding.currentBalanceTxt.text = "${differnce}"
+                    currencyClass.getCurrencies { crnSymb ->
+                        binding.currentBalanceTxt.text = "$crnSymb ${differnce}"
+                    }
                     binding.currentBalanceTxt.setTextColor(
                         ContextCompat.getColor(
                             requireContext(),
@@ -198,37 +218,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-
-//    private fun createPieChart() {
-//        if (inc != 0.0 && exp != 0.0) {
-//            pieChart = binding.pieChart
-//            pieChart.setUsePercentValues(true)
-//            pieChart.description.isEnabled = false
-//            pieChart.legend.isEnabled = false
-//
-//            val entries = ArrayList<PieEntry>()
-//            entries.add(PieEntry(inc.toFloat(), "Income"))
-//            entries.add(PieEntry(exp.toFloat(), "Expense"))
-//
-//            val dataSet = PieDataSet(entries, "")
-//            dataSet.colors = listOf(ColorTemplate.rgb("#4CAF50"), ColorTemplate.rgb("#F44336"))
-//
-//            val data = PieData(dataSet)
-//            data.setValueFormatter(object : ValueFormatter() {
-//                override fun getFormattedValue(value: Float): String {
-//                    return String.format("%.2f%%", value)
-//                }
-//            })
-//            data.setValueTextSize(14f)
-//            data.setValueTextColor(Color.WHITE)
-//
-//            pieChart.data = data
-//            pieChart.animateY(1000, Easing.EaseInOutQuad)
-//            pieChart.setHoleColor(Color.TRANSPARENT) // set hole color to transparent
-//            pieChart.setHoleRadius(50f) // set hole radius
-//            pieChart.invalidate()
-//        }
-//    }
 
     fun hideData() {
         binding.textviewdata.visibility = View.VISIBLE

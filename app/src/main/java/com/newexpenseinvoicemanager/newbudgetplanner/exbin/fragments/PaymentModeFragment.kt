@@ -42,12 +42,13 @@ class PaymentModeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentPaymentModeBinding.inflate(layoutInflater)
-
+        val custom = binding.appBar
+        custom.ivDelete.visibility = View.GONE
+        custom.ivBack.setOnClickListener { loadFragment(MoreFragment()) }
         val mainView = inflater.inflate(R.layout.fragment_payment_mode, container, false)
         addPaymentView = inflater.inflate(R.layout.add_payent_maode_layout, container, false)
 
         binding.addPaymentFloating.setOnClickListener {
-            Toast.makeText(requireContext(), "Button pressing", Toast.LENGTH_SHORT).show()
             // binding.addcardview.visibility = View.VISIBLE
             mainView.visibility = View.GONE
             addPaymentView?.visibility = View.VISIBLE
@@ -197,5 +198,10 @@ class PaymentModeFragment : Fragment() {
             db.deletePaymentMode(id)
         }
     }
-
+    private fun loadFragment(fragment: Fragment) {
+        activity?.supportFragmentManager?.beginTransaction()
+            ?.replace(R.id.fragment_container, fragment)
+            ?.addToBackStack(null)
+            ?.commit()
+    }
 }

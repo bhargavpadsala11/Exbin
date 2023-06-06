@@ -1,11 +1,9 @@
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
 import android.content.Context
-import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.*
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.VISIBLE
@@ -22,7 +20,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.google.android.material.button.MaterialButton
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
@@ -34,7 +31,6 @@ import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
 
 
 class AddCategoriesFragment : Fragment() {
@@ -50,66 +46,6 @@ class AddCategoriesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentAddCategoriesBinding.inflate(layoutInflater)
-
-        val value = arguments?.getString("EDIT")
-
-        if (value != null) {
-            val custom = binding.appBar
-            custom.ivTitle.setText("Manage Category")
-            val db = AppDataBase.getInstance(requireContext()).categoriesDao()
-            lifecycleScope.launch(Dispatchers.IO) {
-                val category = db.getCategoryById(value.toInt())
-                withContext(Dispatchers.Main) {
-                    binding.addCategorytxt.setText(category?.CategoryName)
-
-                    val colorInt = Color.parseColor(category?.CategoryColor!!)
-                    val hsl = FloatArray(3)
-                    ColorUtils.colorToHSL(colorInt, hsl)
-
-                    hsl[2] += 0.2f // Increase the lightness value by 20%
-                    if (hsl[2] > 1.0f) {
-                        hsl[2] = 1.0f // Cap the lightness value at 100%
-                    }
-                    val lightColor = ColorUtils.HSLToColor(hsl)
-
-
-                    val imageView = binding.mergedImage
-                    imageView.setImageResource(category.CategoryImage.toInt())
-                    imageView.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN)
-                    imageView.setBackgroundColor(lightColor)
-
-
-                    custom.ivDelete.setOnClickListener {
-                        deleteCategoryView =
-                            inflater.inflate(R.layout.custom_delete_dialog, container, false)
-                        container?.addView(deleteCategoryView)
-                        val deleteBtn =
-                            deleteCategoryView?.findViewById<MaterialButton>(R.id.btn_delete)
-                        val cancelBtn =
-                            deleteCategoryView?.findViewById<MaterialButton>(R.id.btncancel)
-                        val hintText =
-                            deleteCategoryView?.findViewById<AppCompatTextView>(R.id.tv_delete_title)
-                        hintText?.setText("Are you sure you want to delete this Category ?")
-                        deleteBtn?.setOnClickListener {
-                            val db = AppDataBase.getInstance(requireContext()).categoriesDao()
-                            lifecycleScope.launch(Dispatchers.IO) {
-                                db.deleteCategory(value.toInt())
-                            }
-                            container?.removeView(deleteCategoryView)
-                            val ldf = CategoryListFragment()
-                            val transaction = activity?.supportFragmentManager?.beginTransaction()
-                            transaction?.replace(R.id.fragment_container, ldf)
-                            transaction?.disallowAddToBackStack()
-                            transaction?.commit()
-                        }
-                        cancelBtn?.setOnClickListener {
-                            container?.removeView(deleteCategoryView)
-                        }
-                    }
-                }
-            }
-        }
-
         val icons = listOf(
             R.drawable.ic_cat_cancel,
             R.drawable.ic_add_24,
@@ -134,7 +70,6 @@ class AddCategoriesFragment : Fragment() {
 
             // Add more icons here
         )
-
         val colors = listOf(
             "#002F6C",
             "#0039A6",
@@ -378,6 +313,146 @@ class AddCategoriesFragment : Fragment() {
             "#FCE4EC"
             // Add more colors here
         )
+
+        val custom = binding.appBar
+
+
+        custom.ivBack.setOnClickListener {
+            loadFragment(CategoryListFragment())
+        }
+        custom.ivDelete.visibility = View.GONE
+        custom.ivTitle.setText("Add Category")
+        val value = arguments?.getString("EDIT")
+        if (value != null) {
+            custom.ivTitle.setText("Manage Category")
+            custom.ivDelete.visibility = View.VISIBLE
+            val db = AppDataBase.getInstance(requireContext()).categoriesDao()
+            lifecycleScope.launch(Dispatchers.IO) {
+                val category = db.getCategoryById(value.toInt())
+                withContext(Dispatchers.Main) {
+                    binding.addCategorytxt.setText(category?.CategoryName)
+
+                    val colorInt = Color.parseColor(category?.CategoryColor!!)
+                    val hsl = FloatArray(3)
+                    ColorUtils.colorToHSL(colorInt, hsl)
+
+                    hsl[2] += 0.2f // Increase the lightness value by 20%
+                    if (hsl[2] > 1.0f) {
+                        hsl[2] = 1.0f // Cap the lightness value at 100%
+                    }
+                    val lightColor = ColorUtils.HSLToColor(hsl)
+
+                    val imageView = binding.mergedImage
+                    imageView.setImageResource(category.CategoryImage.toInt())
+                    imageView.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN)
+                    imageView.setBackgroundColor(lightColor)
+//
+                    val iconImage = binding.selectIcon
+                    iconImage.setImageResource(category.CategoryImage.toInt())
+
+
+
+                    custom.ivDelete.setOnClickListener {
+                        deleteCategoryView =
+                            inflater.inflate(R.layout.custom_delete_dialog, container, false)
+                        container?.addView(deleteCategoryView)
+                        val deleteBtn =
+                            deleteCategoryView?.findViewById<MaterialButton>(R.id.btn_delete)
+                        val cancelBtn =
+                            deleteCategoryView?.findViewById<MaterialButton>(R.id.btncancel)
+                        val hintText =
+                            deleteCategoryView?.findViewById<AppCompatTextView>(R.id.tv_delete_title)
+                        hintText?.setText("Are you sure you want to delete this Category ?")
+                        deleteBtn?.setOnClickListener {
+                            val db = AppDataBase.getInstance(requireContext()).categoriesDao()
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                db.deleteCategory(value.toInt())
+                                deleteBudget(category.CategoryName)
+                            }
+                            container?.removeView(deleteCategoryView)
+                            val ldf = CategoryListFragment()
+                            val transaction = activity?.supportFragmentManager?.beginTransaction()
+                            transaction?.replace(R.id.fragment_container, ldf)
+                            transaction?.disallowAddToBackStack()
+                            transaction?.commit()
+                        }
+                        cancelBtn?.setOnClickListener {
+                            container?.removeView(deleteCategoryView)
+                        }
+                    }
+
+                    binding.selectIcon.setOnClickListener {
+                        binding.colorItemCard.visibility = VISIBLE
+                        binding.iconRecyclerView.visibility = VISIBLE
+                        val iconAdapter = IconAdapter(icons, binding.root) { icon ->
+                            selectedIcon = icon
+                            updateMergedIcon()
+                            getSelectedIcon()
+                            getSelectedColor()
+                        }
+                        binding.iconRecyclerView.adapter = iconAdapter
+                        binding.iconRecyclerView.layoutManager = GridLayoutManager(requireContext(), 4)
+
+                        binding.iconRecyclerView.addOnScrollListener(object :
+                            RecyclerView.OnScrollListener() {
+                            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                                super.onScrollStateChanged(recyclerView, newState)
+                                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                                    hideKeyboard()
+                                }
+                            }
+                        })
+
+                    }
+
+                    binding.selectColor.setOnClickListener {
+                        binding.colorItemCard.visibility = VISIBLE
+                        binding.colorRecyclerView.visibility = VISIBLE
+
+                        val colorAdapter = ColorAdapter(colors, binding.root) { color ->
+                            selectedColor = color
+                            updateMergedIcon()
+                            getSelectedIcon()
+                            getSelectedColor()
+                        }
+                        binding.colorRecyclerView.adapter = colorAdapter
+                        binding.colorRecyclerView.layoutManager = GridLayoutManager(requireContext(), 4)
+
+                        binding.colorRecyclerView.addOnScrollListener(object :
+                            RecyclerView.OnScrollListener() {
+                            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                                super.onScrollStateChanged(recyclerView, newState)
+                                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                                    hideKeyboard()
+                                }
+                            }
+                        })
+
+                    }
+
+                    binding.btnSave.setOnClickListener {
+                        if (binding.addCategorytxt.text?.isEmpty() == true) {
+                            binding.addCategorytxt.requestFocus()
+                            Toast.makeText(
+                                requireContext(),
+                                "Please write Category name",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }else{
+                            updateCategory(
+                                value.toInt(),
+                                binding.addCategorytxt.text.toString(),
+                            )
+                            updateBudget(category.CategoryName,binding.addCategorytxt.text.toString())
+                            Toast.makeText(requireContext(), "Category Updated", Toast.LENGTH_SHORT).show()
+                            loadFragment(CategoryListFragment())
+                        }
+                    }
+
+                }
+            }
+        }
+
         binding.selectIcon.setOnClickListener {
             binding.colorItemCard.visibility = VISIBLE
             binding.iconRecyclerView.visibility = VISIBLE
@@ -401,9 +476,6 @@ class AddCategoriesFragment : Fragment() {
             })
 
         }
-
-
-
 
         binding.selectColor.setOnClickListener {
             binding.colorItemCard.visibility = VISIBLE
@@ -438,6 +510,18 @@ class AddCategoriesFragment : Fragment() {
                     "Please write Category name",
                     Toast.LENGTH_SHORT
                 ).show()
+            } else if (selectedIcon == null){
+                Toast.makeText(
+                    requireContext(),
+                    "Please Select Icon",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else if (selectedColor == null){
+                Toast.makeText(
+                    requireContext(),
+                    "Please Select Color",
+                    Toast.LENGTH_SHORT
+                ).show()
             } else if (updateMergedIcon() == null) {
                 Toast.makeText(
                     requireContext(),
@@ -449,9 +533,31 @@ class AddCategoriesFragment : Fragment() {
                     binding.addCategorytxt.text.toString(),
                 )
                 Toast.makeText(requireContext(), "Category Added", Toast.LENGTH_SHORT).show()
+                clearText(binding.addCategorytxt)
             }
         }
         return binding.root
+    }
+
+    private fun deleteBudget(categoryName: String?) {
+        val db = AppDataBase.getInstance(requireContext()).budgetDao()
+        lifecycleScope.launch(Dispatchers.IO) {
+            db.deleteBudgetOnName(categoryName!!)
+        }
+    }
+
+    private fun updateBudget(categoryName: String?, newBudg: String) {
+        val db = AppDataBase.getInstance(requireContext()).budgetDao()
+        lifecycleScope.launch(Dispatchers.IO) {
+            db.updateBudgetOnName(newBudg,categoryName!!)
+        }
+    }
+
+    private fun updateCategory(id : Int,addcategory: String) {
+        val db = AppDataBase.getInstance(requireContext()).categoriesDao()
+        lifecycleScope.launch(Dispatchers.IO) {
+            db.updateCategory1(id,addcategory)
+        }
     }
 
     private fun hideKeyboard() {
@@ -465,7 +571,6 @@ class AddCategoriesFragment : Fragment() {
             val colorInt = Color.parseColor(selectedColor!!)
             val hsl = FloatArray(3)
             ColorUtils.colorToHSL(colorInt, hsl)
-            Toast.makeText(requireContext(), "$selectedColor", Toast.LENGTH_SHORT).show()
 
             hsl[2] += 0.2f // Increase the lightness value by 20%
             if (hsl[2] > 1.0f) {
@@ -509,9 +614,8 @@ class AddCategoriesFragment : Fragment() {
     }
 
 
-    private fun clearText(addcategory: EditText, addDes: EditText) {
+    private fun clearText(addcategory: EditText) {
         addcategory.setText("")
-        addDes.setText("")
     }
 
 
@@ -551,6 +655,12 @@ class AddCategoriesFragment : Fragment() {
             ?.commit()
     }
 
-
+//    else if( category.CategoryImage !=null && category.CategoryColor!=null || selectedIcon == null && selectedColor == null) {
+//        Toast.makeText(
+//            requireContext(),
+//            "Please Select Color and Icon",
+//            Toast.LENGTH_SHORT
+//        ).show()
+//    }
 
 }

@@ -41,6 +41,11 @@ suspend fun getBudgetAndExpense(): List<BudgetAndExpense>
     @Query("UPDATE BudgetDb SET budget = :budgetAmt WHERE _id = :id")
     fun updateBudget(id: Int, budgetAmt: String)
 
+    @Query("UPDATE BudgetDb SET budgetCat = :budgetC WHERE budgetCat = :oldBud")
+    fun updateBudgetOnName(budgetC: String,oldBud: String)
+
+    @Query("DELETE FROM BudgetDb WHERE budgetCat = :budgetC")
+    fun deleteBudgetOnName(budgetC: String)
 //SELECT BudgetDb._id AS budgetId, BudgetDb.budget, BudgetDb.budgetCat, BudgetDb.catColor, BudgetDb.currentDate, incexpTbl.Id AS expenseId, BudgetDb.budget, categorise.image, incexpTbl.category, incexpTbl.dType, SUM(incexpTbl.amount) AS amount1, BudgetDb.budget AS amount
 //FROM BudgetDb
 //LEFT JOIN incexpTbl ON BudgetDb.budgetCat = incexpTbl.category AND incexpTbl.dType = 'EXPENSE'

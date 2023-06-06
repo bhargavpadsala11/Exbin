@@ -19,6 +19,10 @@ class MoreFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentMoreBinding.inflate(layoutInflater)
+        val custom = binding.editBackarrow
+        custom.setOnClickListener {
+            loadFragment(HomeFragment())
+        }
         var fragment: Fragment
 
         binding.addCatBtn.setOnClickListener {

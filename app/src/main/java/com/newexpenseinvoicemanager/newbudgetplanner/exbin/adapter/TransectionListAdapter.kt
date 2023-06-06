@@ -28,7 +28,7 @@ class TransectionListAdapter(
     val currencyClass: getCurrencyClass
 ) :
     RecyclerView.Adapter<TransectionListAdapter.TransectionListViewHolder>() {
-
+var symb :String? =""
     inner class TransectionListViewHolder(val binding: TransectionItemLayoutBinding) :
         RecyclerView.ViewHolder(binding.root)
 
@@ -39,7 +39,9 @@ class TransectionListAdapter(
     }
 
     override fun onBindViewHolder(holder: TransectionListViewHolder, position: Int) {
-        val symb = currencyClass.getCurrencySymbol()
+        currencyClass.getCurrencies(){
+            symb = it
+        }
         val item = list[position]
         val category = categoryMap[item.category]
 

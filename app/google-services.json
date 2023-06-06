@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "217806348686",
+    "project_id": "exbin-258be",
+    "storage_bucket": "exbin-258be.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:217806348686:android:58d2a7df24d6b0edd984df",
+        "android_client_info": {
+          "package_name": "com.newexpenseinvoicemanager.newbudgetplanner.exbin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "217806348686-kgc5c089gpkt17ke9iupgoq2p6q5ak26.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3ALMINxTB9FujOSdH2pysr5M_GA3v8ow"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "217806348686-kgc5c089gpkt17ke9iupgoq2p6q5ak26.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

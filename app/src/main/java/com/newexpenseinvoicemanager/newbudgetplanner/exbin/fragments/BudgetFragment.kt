@@ -83,13 +83,18 @@ class BudgetFragment : Fragment() {
             val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
             val currentDate = sdf.format(Date())
             val amount = binding.amountText.text.toString()
-            insertBudget(
-                amount,
-                binding.categorySpin.selectedItem as String,
-                selectedCatColor,
-                currentDate
-            )
-            clearText()
+            if (binding.amountText.text.isEmpty()) {
+                Toast.makeText(requireContext(), "Please Enter Amount", Toast.LENGTH_SHORT).show()
+                binding.amountText.requestFocus()
+            } else {
+                insertBudget(
+                    amount,
+                    binding.categorySpin.selectedItem as String,
+                    selectedCatColor,
+                    currentDate
+                )
+                clearText()
+            }
         }
 
 
@@ -172,7 +177,7 @@ class BudgetFragment : Fragment() {
 
     fun setBudgetView(inflater: LayoutInflater, container: ViewGroup?) {
         val adapter = BudgetAndExpenseAdapter(emptyList()) { it, progress, limitShow, remain ->
-           // Log.d("It/prog/limit", "$it $progress $limitShow")
+            // Log.d("It/prog/limit", "$it $progress $limitShow")
             val bId = it.budgetId
             val bData = it
             editBudgetView = inflater.inflate(R.layout.all_budget_layout, container, false)

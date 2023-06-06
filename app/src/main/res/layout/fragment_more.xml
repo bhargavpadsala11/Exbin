@@ -223,7 +223,7 @@
                 android:background="@color/dark_main_color"
                 android:scaleType="center"
                 android:tint="@color/main_color"
-                android:src="@drawable/ic_upload"
+                android:src="@drawable/ic_dollar"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:shapeAppearanceOverlay="@style/CatagoryIconShape" />
@@ -269,7 +269,7 @@
                 android:background="@color/dark_main_color"
                 android:scaleType="center"
                 android:tint="@color/main_color"
-                android:src="@drawable/ic_backup"
+                android:src="@drawable/ic_dollar"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:shapeAppearanceOverlay="@style/CatagoryIconShape" />
@@ -315,7 +315,7 @@
                 android:background="@color/dark_main_color"
                 android:scaleType="center"
                 android:tint="@color/main_color"
-                android:src="@drawable/ic_share"
+                android:src="@drawable/ic_dollar"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:shapeAppearanceOverlay="@style/CatagoryIconShape" />
@@ -361,7 +361,7 @@
                 android:background="@color/dark_main_color"
                 android:scaleType="center"
                 android:tint="@color/main_color"
-                android:src="@drawable/ic_privacy"
+                android:src="@drawable/ic_dollar"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:shapeAppearanceOverlay="@style/CatagoryIconShape" />
@@ -404,7 +404,7 @@
                 android:background="@color/dark_main_color"
                 android:scaleType="center"
                 android:tint="@color/main_color"
-                android:src="@drawable/ic_about"
+                android:src="@drawable/ic_dollar"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:shapeAppearanceOverlay="@style/CatagoryIconShape" />
