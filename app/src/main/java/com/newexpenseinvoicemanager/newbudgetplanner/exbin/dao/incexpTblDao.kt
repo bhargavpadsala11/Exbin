@@ -20,6 +20,9 @@ interface incexpTblDao {
     @Query("SELECT * FROM incexpTbl ORDER BY date DESC")
     fun getAllData():LiveData<List<incexpTbl>>
 
+    @Query("SELECT * FROM incexpTbl WHERE date = :sDate")
+    fun getAllDataByCat(sDate:String):LiveData<List<incexpTbl>>
+
 //    @Query("SELECT * FROM incexpTbl ORDER BY date DESC LIMIT 5")
 //    fun getAllDataHome():LiveData<List<incexpTbl>>
 

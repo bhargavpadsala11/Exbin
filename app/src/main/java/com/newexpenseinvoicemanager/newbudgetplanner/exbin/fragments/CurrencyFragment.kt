@@ -33,7 +33,10 @@ class CurrencyFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentCurrencyBinding.inflate(layoutInflater)
 
-
+        val custom = binding.appBar
+        custom.ivDelete.visibility = View.GONE
+        custom.ivBack.setOnClickListener { loadFragment(MoreFragment()) }
+        custom.ivTitle.setText("Select Currency")
         val dao = AppDataBase.getInstance(requireContext()).currencyDao()
         dao.getAllCurrency().observe(requireActivity()) {
 //                Toast.makeText(requireContext(), "${dao.getAllPaymentMode()}", Toast.LENGTH_SHORT).show()
@@ -80,6 +83,7 @@ class CurrencyFragment : Fragment() {
             db.resetOtherCurrencyStatus(it)
         }
     }
+
     private fun loadFragment(fragment: Fragment) {
         activity?.supportFragmentManager?.beginTransaction()
             ?.replace(R.id.fragment_container, fragment)

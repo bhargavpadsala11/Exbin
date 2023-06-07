@@ -5,18 +5,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="2dp"
-    android:padding="8dp"
     tools:context=".fragments.TransectionFragment">
+    <include
+        android:id="@+id/app_bar"
+        layout="@layout/custom_app_bar" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/transectionItem"
         android:layout_width="match_parent"
         android:layout_height="680dp"
-        android:id="@+id/transectionItem"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/app_bar"
         tools:listitem="@layout/transection_item_layout" />
+
+    <TextView
+        android:id="@+id/tv_noDataFound"
+        android:layout_width="match_parent"
+        android:layout_height="680dp"
+        android:text="No data Found "
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/app_bar"
+        android:textSize="25sp"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:visibility="gone"
+        />
 
 
 

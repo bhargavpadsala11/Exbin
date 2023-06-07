@@ -22,6 +22,8 @@ interface categoriesDao {
     @Query("SELECT * FROM Categories")
     fun getAllCategory(): LiveData<List<Categories>>
 
+
+
     @Query("SELECT * FROM Categories WHERE CategoryName = :name")
     fun getCategoryByName(name: String): Categories?
 
@@ -34,7 +36,7 @@ interface categoriesDao {
     @Query("UPDATE Categories SET CategoryName = :categoryName,CategoryImage = :udateImage,CategoryColor = :updateColor WHERE _id = :id")
     fun updateCategory(id: Int, categoryName: String,udateImage: ByteArray?,updateColor :String?)
 
-    @Query("UPDATE Categories SET CategoryName = :categoryName WHERE _id = :id")
-    fun updateCategory1(id: Int, categoryName: String)
+    @Query("UPDATE Categories SET CategoryName = :categoryName,CategoryImage = :udateImage,CategoryColor = :updateColor WHERE _id = :id")
+    fun updateCategory1(id: Int, categoryName: String,udateImage: String?,updateColor :String?)
 
 }

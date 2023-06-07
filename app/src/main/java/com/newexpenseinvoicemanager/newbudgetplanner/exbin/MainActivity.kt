@@ -170,13 +170,22 @@ class MainActivity : AppCompatActivity() {
             loadFragmentForBack(MoreFragment())
         } else if (currentFragment is AddCategoriesFragment) {
             loadFragmentForBack(CategoryListFragment())
-        } else if (currentFragment is BudgetFragment || currentFragment is TransectionFragment || currentFragment is MoreFragment) {
+        } else if (currentFragment is BudgetFragment) {
+            bottomNavigationView.selectedItemId = R.id.navigation_home
+            loadFragmentForBack(HomeFragment())
+        } else if (currentFragment is TransectionFragment) {
+            bottomNavigationView.selectedItemId = R.id.navigation_home
+            loadFragmentForBack(HomeFragment())
+        } else if (currentFragment is MoreFragment) {
+            bottomNavigationView.selectedItemId = R.id.navigation_home
             loadFragmentForBack(HomeFragment())
         } else if (currentFragment is TransectionListFragment) {
+            bottomNavigationView.selectedItemId = R.id.navigation_home
             loadFragmentForBack(HomeFragment())
-        }else if(currentFragment is CurrencyFragment){
+        } else if (currentFragment is CurrencyFragment) {
+            bottomNavigationView.selectedItemId = R.id.navigation_more
             loadFragmentForBack(MoreFragment())
-        }else{
+        } else {
             super.onBackPressed()
         }
 

@@ -14,6 +14,7 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.TransectionListAdapter
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
@@ -36,7 +37,7 @@ class HomeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(layoutInflater)
-
+        (activity as MainActivity?)!!.showBottomNavigationView()
         val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
         showData()
         getTotalIncome(currencyClass)
@@ -97,6 +98,13 @@ class HomeFragment : Fragment() {
                 transaction?.addToBackStack(null)
                 transaction?.commit()
             }
+        }
+
+        binding.tvSeeAll.setOnClickListener {
+            val transaction = activity?.supportFragmentManager?.beginTransaction()
+            transaction?.replace(R.id.fragment_container, TransectionFragment())
+            transaction?.addToBackStack(null)
+            transaction?.commit()
         }
 
         return binding.root

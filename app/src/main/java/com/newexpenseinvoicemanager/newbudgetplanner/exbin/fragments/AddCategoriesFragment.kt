@@ -66,8 +66,13 @@ class AddCategoriesFragment : Fragment() {
             R.drawable.ic_person_add_alt_24,
             R.drawable.ic_savings_24,
             R.drawable.more,
-            R.drawable.icons8
-
+            R.drawable.icons8,
+            R.drawable.basket,
+            R.drawable.egg,
+            R.drawable.family,
+            R.drawable.fastfood,
+            R.drawable.fitness,
+            R.drawable.mortarboard
             // Add more icons here
         )
         val colors = listOf(
@@ -323,6 +328,7 @@ class AddCategoriesFragment : Fragment() {
         custom.ivDelete.visibility = View.GONE
         custom.ivTitle.setText("Add Category")
         val value = arguments?.getString("EDIT")
+        updateMergedIcon()
         if (value != null) {
             custom.ivTitle.setText("Manage Category")
             custom.ivDelete.visibility = View.VISIBLE
@@ -330,25 +336,15 @@ class AddCategoriesFragment : Fragment() {
             lifecycleScope.launch(Dispatchers.IO) {
                 val category = db.getCategoryById(value.toInt())
                 withContext(Dispatchers.Main) {
-                    binding.addCategorytxt.setText(category?.CategoryName)
-
-                    val colorInt = Color.parseColor(category?.CategoryColor!!)
-                    val hsl = FloatArray(3)
-                    ColorUtils.colorToHSL(colorInt, hsl)
-
-                    hsl[2] += 0.2f // Increase the lightness value by 20%
-                    if (hsl[2] > 1.0f) {
-                        hsl[2] = 1.0f // Cap the lightness value at 100%
+                    if (category?.CategoryColor != null && category?.CategoryImage != null){
+                        val colorInt = Color.parseColor(category?.CategoryColor)
+                        binding.selectColor.setBackgroundColor(colorInt)
+                        binding.selectIcon.setImageResource(category.CategoryImage.toInt())
                     }
-                    val lightColor = ColorUtils.HSLToColor(hsl)
-
-                    val imageView = binding.mergedImage
-                    imageView.setImageResource(category.CategoryImage.toInt())
-                    imageView.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN)
-                    imageView.setBackgroundColor(lightColor)
-//
-                    val iconImage = binding.selectIcon
-                    iconImage.setImageResource(category.CategoryImage.toInt())
+                    binding.addCategorytxt.setText(category?.CategoryName)
+                    selectedIcon = category?.CategoryImage?.toInt()
+                    selectedColor = category?.CategoryColor
+                    updateMergedIcon()
 
 
 
@@ -362,12 +358,12 @@ class AddCategoriesFragment : Fragment() {
                             deleteCategoryView?.findViewById<MaterialButton>(R.id.btncancel)
                         val hintText =
                             deleteCategoryView?.findViewById<AppCompatTextView>(R.id.tv_delete_title)
-                        hintText?.setText("Are you sure you want to delete this Category ?")
+                        hintText?.setText("Are you sure you want to delete this Category? If you delete this category it also delete all data regarding to this category")
                         deleteBtn?.setOnClickListener {
                             val db = AppDataBase.getInstance(requireContext()).categoriesDao()
                             lifecycleScope.launch(Dispatchers.IO) {
                                 db.deleteCategory(value.toInt())
-                                deleteBudget(category.CategoryName)
+                                deleteBudget(category?.CategoryName)
                             }
                             container?.removeView(deleteCategoryView)
                             val ldf = CategoryListFragment()
@@ -391,11 +387,15 @@ class AddCategoriesFragment : Fragment() {
                             getSelectedColor()
                         }
                         binding.iconRecyclerView.adapter = iconAdapter
-                        binding.iconRecyclerView.layoutManager = GridLayoutManager(requireContext(), 4)
+                        binding.iconRecyclerView.layoutManager =
+                            GridLayoutManager(requireContext(), 4)
 
                         binding.iconRecyclerView.addOnScrollListener(object :
                             RecyclerView.OnScrollListener() {
-                            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                            override fun onScrollStateChanged(
+                                recyclerView: RecyclerView,
+                                newState: Int
+                            ) {
                                 super.onScrollStateChanged(recyclerView, newState)
                                 if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
                                     hideKeyboard()
@@ -416,11 +416,15 @@ class AddCategoriesFragment : Fragment() {
                             getSelectedColor()
                         }
                         binding.colorRecyclerView.adapter = colorAdapter
-                        binding.colorRecyclerView.layoutManager = GridLayoutManager(requireContext(), 4)
+                        binding.colorRecyclerView.layoutManager =
+                            GridLayoutManager(requireContext(), 4)
 
                         binding.colorRecyclerView.addOnScrollListener(object :
                             RecyclerView.OnScrollListener() {
-                            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                            override fun onScrollStateChanged(
+                                recyclerView: RecyclerView,
+                                newState: Int
+                            ) {
                                 super.onScrollStateChanged(recyclerView, newState)
                                 if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
                                     hideKeyboard()
@@ -438,13 +442,17 @@ class AddCategoriesFragment : Fragment() {
                                 "Please write Category name",
                                 Toast.LENGTH_SHORT
                             ).show()
-                        }else{
+                        } else {
                             updateCategory(
                                 value.toInt(),
-                                binding.addCategorytxt.text.toString(),
+                                binding.addCategorytxt.text.toString(),selectedIcon.toString(),selectedColor
                             )
-                            updateBudget(category.CategoryName,binding.addCategorytxt.text.toString())
-                            Toast.makeText(requireContext(), "Category Updated", Toast.LENGTH_SHORT).show()
+                            updateBudget(
+                                category?.CategoryName,
+                                binding.addCategorytxt.text.toString(),selectedColor
+                            )
+                            Toast.makeText(requireContext(), "Category Updated", Toast.LENGTH_SHORT)
+                                .show()
                             loadFragment(CategoryListFragment())
                         }
                     }
@@ -510,13 +518,13 @@ class AddCategoriesFragment : Fragment() {
                     "Please write Category name",
                     Toast.LENGTH_SHORT
                 ).show()
-            } else if (selectedIcon == null){
+            } else if (selectedIcon == null) {
                 Toast.makeText(
                     requireContext(),
                     "Please Select Icon",
                     Toast.LENGTH_SHORT
                 ).show()
-            } else if (selectedColor == null){
+            } else if (selectedColor == null) {
                 Toast.makeText(
                     requireContext(),
                     "Please Select Color",
@@ -536,6 +544,7 @@ class AddCategoriesFragment : Fragment() {
                 clearText(binding.addCategorytxt)
             }
         }
+
         return binding.root
     }
 
@@ -546,17 +555,22 @@ class AddCategoriesFragment : Fragment() {
         }
     }
 
-    private fun updateBudget(categoryName: String?, newBudg: String) {
+    private fun updateBudget(categoryName: String?, newBudg: String, selectedColor: String?) {
         val db = AppDataBase.getInstance(requireContext()).budgetDao()
         lifecycleScope.launch(Dispatchers.IO) {
-            db.updateBudgetOnName(newBudg,categoryName!!)
+            db.updateBudgetOnName(newBudg, categoryName!!,selectedColor!!)
         }
     }
 
-    private fun updateCategory(id : Int,addcategory: String) {
+    private fun updateCategory(
+        id: Int,
+        addcategory: String,
+        selectedIcon: String?,
+        selectedColor: String?
+    ) {
         val db = AppDataBase.getInstance(requireContext()).categoriesDao()
         lifecycleScope.launch(Dispatchers.IO) {
-            db.updateCategory1(id,addcategory)
+            db.updateCategory1(id, addcategory,selectedIcon,selectedColor)
         }
     }
 
@@ -567,7 +581,60 @@ class AddCategoriesFragment : Fragment() {
     }
 
     private fun updateMergedIcon() {
-        if (selectedIcon != null && selectedColor != null) {
+        val imageView = binding.mergedImage
+        if(selectedIcon == null && selectedColor == null){
+            binding.selectIcon.setImageResource(R.drawable.ic_home)
+            val color = "#FF6200EE"
+            val colorInt = Color.parseColor(color!!)
+            binding.selectColor.setBackgroundColor(colorInt)
+            val hsl = FloatArray(3)
+            ColorUtils.colorToHSL(colorInt, hsl)
+
+            hsl[2] += 0.2f // Increase the lightness value by 20%
+            if (hsl[2] > 1.0f) {
+                hsl[2] = 1.0f // Cap the lightness value at 100%
+            }
+            val lightColor = ColorUtils.HSLToColor(hsl)
+            imageView.setImageResource(R.drawable.ic_home)
+            imageView.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN)
+            imageView.setBackgroundColor(lightColor)
+
+            selectedIcon = R.drawable.ic_home
+            selectedColor = color
+        }else if (selectedIcon != null && selectedColor == null) {
+            val color = "#FF6200EE"
+            val colorInt = Color.parseColor(color!!)
+            val hsl = FloatArray(3)
+            ColorUtils.colorToHSL(colorInt, hsl)
+
+            hsl[2] += 0.2f // Increase the lightness value by 20%
+            if (hsl[2] > 1.0f) {
+                hsl[2] = 1.0f // Cap the lightness value at 100%
+            }
+            val lightColor = ColorUtils.HSLToColor(hsl)
+
+            imageView.setImageResource(selectedIcon!!)
+            imageView.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN)
+            imageView.setBackgroundColor(lightColor)
+            selectedColor = color
+            binding.selectColor.setBackgroundColor(colorInt)
+        } else if (selectedColor != null && selectedIcon == null) {
+            val colorInt = Color.parseColor(selectedColor!!)
+            val hsl = FloatArray(3)
+            ColorUtils.colorToHSL(colorInt, hsl)
+
+            hsl[2] += 0.2f // Increase the lightness value by 20%
+            if (hsl[2] > 1.0f) {
+                hsl[2] = 1.0f // Cap the lightness value at 100%
+            }
+            val lightColor = ColorUtils.HSLToColor(hsl)
+
+            binding.selectIcon.setImageResource(R.drawable.ic_home)
+            imageView.setImageResource(R.drawable.ic_home)
+            imageView.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN)
+            imageView.setBackgroundColor(lightColor)
+            selectedIcon = R.drawable.ic_home
+        } else if (selectedIcon != null && selectedColor != null) {
             val colorInt = Color.parseColor(selectedColor!!)
             val hsl = FloatArray(3)
             ColorUtils.colorToHSL(colorInt, hsl)
@@ -579,7 +646,7 @@ class AddCategoriesFragment : Fragment() {
             val lightColor = ColorUtils.HSLToColor(hsl)
 
 
-            val imageView = binding.mergedImage
+
             imageView.setImageResource(selectedIcon!!)
             imageView.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN)
             imageView.setBackgroundColor(lightColor)
@@ -638,9 +705,9 @@ class AddCategoriesFragment : Fragment() {
 
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if(deleteCategoryView?.isVisible == true){
+                if (deleteCategoryView?.isVisible == true) {
                     deleteCategoryView?.visibility = View.GONE
-                }else{
+                } else {
                     loadFragment(CategoryListFragment())
                 }
             }

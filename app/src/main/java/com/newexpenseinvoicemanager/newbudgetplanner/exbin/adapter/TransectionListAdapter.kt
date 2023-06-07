@@ -71,10 +71,15 @@ var symb :String? =""
         // Set amount text and color based on dType
         if (item.dType == "EXPENSE") {
             holder.binding.traAmount.setTextColor(ContextCompat.getColor(context, R.color.transectionRed))
-            holder.binding.traAmount.text = "$symb -${item.amount}"
+            currencyClass.getCurrencies { symb ->
+                holder.binding.traAmount.text = "$symb -${item.amount}"
+            }
         } else {
             holder.binding.traAmount.setTextColor(ContextCompat.getColor(context, R.color.transectionGreen))
-            holder.binding.traAmount.text = "$symb $item.amount"
+            currencyClass.getCurrencies { symb ->
+                holder.binding.traAmount.text = "$symb ${item.amount}"
+            }
+
         }
 
         holder.binding.traCategory.text = item.category

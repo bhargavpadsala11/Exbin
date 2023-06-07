@@ -36,6 +36,7 @@ class BudgetFragment : Fragment() {
     private lateinit var categoryList: ArrayList<String>
     private lateinit var selectedCatColor: String
     private var currentMonth: Int = Calendar.getInstance().get(Calendar.MONTH)
+    var sMonth: String = ""
 
     //    var monthName: String = DateFormatSymbols().months[currentMonth]
     private var editBudgetView: View? = null
@@ -46,7 +47,7 @@ class BudgetFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentBudgetBinding.inflate(layoutInflater)
 
-        setBudgetView(inflater, container)
+        setBudgetView(inflater, container, sMonth)
         binding.ydtextView.visibility = View.GONE
         binding.budgetRecy.visibility = View.VISIBLE
         getCategory()
@@ -57,6 +58,7 @@ class BudgetFragment : Fragment() {
 
         val monthName = DateFormatSymbols().months[currentMonth]
         binding.monthTxt.text = monthName
+        // Toast.makeText(requireContext(), "", Toast.LENGTH_SHORT).show()
 
         // Set up the back button
         binding.backBtn.setOnClickListener {
@@ -66,6 +68,8 @@ class BudgetFragment : Fragment() {
             }
             val monthName = DateFormatSymbols().months[currentMonth]
             binding.monthTxt.text = monthName
+            sMonth = binding.monthTxt.text.toString()
+            setBudgetView(inflater, container, sMonth)
         }
 
         // Set up the next button
@@ -74,8 +78,12 @@ class BudgetFragment : Fragment() {
             if (currentMonth > 11) {
                 currentMonth = 0
             }
+//            val monthName = DateFormatSymbols().months[currentMonth]
             val monthName = DateFormatSymbols().months[currentMonth]
+
             binding.monthTxt.text = monthName
+            sMonth = binding.monthTxt.text.toString()
+            setBudgetView(inflater, container, sMonth)
         }
 
 
@@ -91,9 +99,14 @@ class BudgetFragment : Fragment() {
                     amount,
                     binding.categorySpin.selectedItem as String,
                     selectedCatColor,
-                    currentDate
+                    currentDate,
+                    sMonth
                 )
                 clearText()
+                binding.createBudget.visibility = View.VISIBLE
+                binding.saveBudget.visibility = View.GONE
+                loadFragment(BudgetFragment())
+
             }
         }
 
@@ -105,7 +118,8 @@ class BudgetFragment : Fragment() {
         amount: String,
         category: String,
         catgoryColor: String,
-        date: String
+        date: String,
+        dMonth: String
     ) {
 //        val currentMonth = Month.values()[Month.values().indexOf(Month.valueOf(java.time.LocalDate.now().month.name))]
 //        val monthString = currentMonth.getDisplayName(TextStyle.FULL, Locale.getDefault())
@@ -119,7 +133,8 @@ class BudgetFragment : Fragment() {
             budgetCat = category,
             catColor = catgoryColor,
             currentDate = date,
-            month = month_name
+            month = month_name,
+            dbMonth = dMonth
 
         )
         lifecycleScope.launch(Dispatchers.IO) {
@@ -175,7 +190,7 @@ class BudgetFragment : Fragment() {
         }
     }
 
-    fun setBudgetView(inflater: LayoutInflater, container: ViewGroup?) {
+    fun setBudgetView(inflater: LayoutInflater, container: ViewGroup?, sdMonth: String) {
         val adapter = BudgetAndExpenseAdapter(emptyList()) { it, progress, limitShow, remain ->
             // Log.d("It/prog/limit", "$it $progress $limitShow")
             val bId = it.budgetId
@@ -309,9 +324,16 @@ class BudgetFragment : Fragment() {
         binding.budgetRecy.adapter = adapter
         val dao = AppDataBase.getInstance(requireContext()).budgetDao()
         lifecycleScope.launch {
-            val budgetAndExpenseList = dao.getBudgetAndExpense()
-            adapter.budgetAndExpenseList = budgetAndExpenseList
-            adapter.notifyDataSetChanged()
+            val budgetAndExpenseList = dao.getBudgetAndExpense(sdMonth)
+            if (budgetAndExpenseList.isEmpty()) {
+                binding.ydtextView.visibility =View.VISIBLE
+                binding.budgetRecy.visibility = View.GONE
+            } else {
+                binding.budgetRecy.visibility = View.VISIBLE
+                binding.ydtextView.visibility =View.GONE
+                adapter.budgetAndExpenseList = budgetAndExpenseList
+                adapter.notifyDataSetChanged()
+            }
         }
     }
 

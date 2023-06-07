@@ -31,9 +31,9 @@ interface budgetDao {
         "FROM BudgetDb \n" +
         "LEFT JOIN incexpTbl ON BudgetDb.budgetCat = incexpTbl.category AND incexpTbl.dType = 'EXPENSE' \n" +
         "LEFT JOIN Categories ON BudgetDb.budgetCat = Categories.CategoryName\n" +
-        "WHERE BudgetDb.budgetCat = Categories.CategoryName\n" +
+        "WHERE BudgetDb.dbMonth = :sMonth AND BudgetDb.budgetCat = Categories.CategoryName\n" +
         "GROUP BY BudgetDb.budgetCat\n")
-suspend fun getBudgetAndExpense(): List<BudgetAndExpense>
+suspend fun getBudgetAndExpense(sMonth:String): List<BudgetAndExpense>
 
     @Query("DELETE FROM BudgetDb WHERE _id = :id")
     fun deleteBudget(id: Int)
@@ -41,8 +41,8 @@ suspend fun getBudgetAndExpense(): List<BudgetAndExpense>
     @Query("UPDATE BudgetDb SET budget = :budgetAmt WHERE _id = :id")
     fun updateBudget(id: Int, budgetAmt: String)
 
-    @Query("UPDATE BudgetDb SET budgetCat = :budgetC WHERE budgetCat = :oldBud")
-    fun updateBudgetOnName(budgetC: String,oldBud: String)
+    @Query("UPDATE BudgetDb SET budgetCat = :budgetC,catColor = :cColor WHERE budgetCat = :oldBud")
+    fun updateBudgetOnName(budgetC: String,oldBud: String,cColor:String)
 
     @Query("DELETE FROM BudgetDb WHERE budgetCat = :budgetC")
     fun deleteBudgetOnName(budgetC: String)

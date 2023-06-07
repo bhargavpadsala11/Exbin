@@ -87,8 +87,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/selectColor"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/selectColor"
-            app:layout_constraintEnd_toStartOf="@+id/arrow1"
-            app:srcCompat="@drawable/ic_home" />
+            app:layout_constraintEnd_toStartOf="@+id/arrow1" />
 
 
         <ImageView
@@ -111,8 +110,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:shapeAppearanceOverlay="@style/CatagoryIconShape"
-            app:srcCompat="@color/purple_500" />
+            app:shapeAppearanceOverlay="@style/CatagoryIconShape"/>
 
 
         <ImageView
@@ -136,8 +134,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/selectColor"
             app:shapeAppearanceOverlay="@style/CatagoryIconShape"
-            app:layout_constraintStart_toEndOf="@+id/arrow2"
-            app:srcCompat="@color/purple_500" />
+            app:layout_constraintStart_toEndOf="@+id/arrow2"/>
 
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

@@ -12,5 +12,6 @@ data class BudgetDb(
     val budgetCat : String = "",
     val catColor : String = "",
     val currentDate : String? = "",
-    val month :String = ""
+    val month :String = "",
+    val dbMonth :String = ""
 )

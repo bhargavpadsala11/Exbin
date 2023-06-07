@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.getCurrencyClass
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.CurrencyItemLayoutBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Currency
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.PaymentModes
@@ -16,6 +17,7 @@ class CurrencyAdapter(
     private val onImageClickListener: (Int) -> Unit
 ): RecyclerView.Adapter<CurrencyAdapter.CurrencyViewHolder>() {
     private var selectedPosition = -1
+    var symb :String? =""
     inner class CurrencyViewHolder(val binding: CurrencyItemLayoutBinding) :
         RecyclerView.ViewHolder(binding.root)
 
@@ -25,9 +27,9 @@ val binding =CurrencyItemLayoutBinding.inflate(LayoutInflater.from(context),pare
     }
 
     override fun onBindViewHolder(holder: CurrencyViewHolder, position: Int) {
-        holder.binding.tvCurrency.setText(list[position].Currency)
+        symb = list[position].CurrencySymb
+        holder.binding.tvCurrency.setText("$symb "+" "+" ${list[position].Currency}")
         holder.binding.rbCurrency.isChecked = position == selectedPosition
-        Log.d("Tag","$position")
         holder.binding.rbCurrency.setOnClickListener {
 //            selectedPosition = list[position].currencyId
             selectedPosition = holder.adapterPosition
