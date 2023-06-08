@@ -25,10 +25,12 @@ class TransectionListAdapter(
     val context: Context,
     val list: List<incexpTbl>,
     val categoryMap: Map<String, Categories>,
-    val currencyClass: getCurrencyClass
+    val currencyClass: getCurrencyClass,
+    private val onImageClickListener: (incexpTbl, String) -> Unit
 ) :
     RecyclerView.Adapter<TransectionListAdapter.TransectionListViewHolder>() {
-var symb :String? =""
+    var symb: String? = ""
+
     inner class TransectionListViewHolder(val binding: TransectionItemLayoutBinding) :
         RecyclerView.ViewHolder(binding.root)
 
@@ -39,15 +41,23 @@ var symb :String? =""
     }
 
     override fun onBindViewHolder(holder: TransectionListViewHolder, position: Int) {
-        currencyClass.getCurrencies(){
+
+        currencyClass.getCurrencies() {
             symb = it
         }
         val item = list[position]
         val category = categoryMap[item.category]
 
         // Set category icon
+        holder.binding.mcvTransectionView.setOnClickListener {
+            if (item.dType == "INCOME") {
+                onImageClickListener(item,"INCOME")
+            } else if (item.dType == "EXPENSE") {
+                onImageClickListener(item,"EXPENSE")
+            }
+        }
         if (category != null && category.CategoryImage != null) {
-           // holder.binding.imageView.setImageDrawable(byteArrayToDrawable(category.CategoryImage))
+            // holder.binding.imageView.setImageDrawable(byteArrayToDrawable(category.CategoryImage))
             val image = category.CategoryImage
             val color = category.CategoryColor
             val colorInt = Color.parseColor(color!!)
@@ -70,12 +80,22 @@ var symb :String? =""
 
         // Set amount text and color based on dType
         if (item.dType == "EXPENSE") {
-            holder.binding.traAmount.setTextColor(ContextCompat.getColor(context, R.color.transectionRed))
+            holder.binding.traAmount.setTextColor(
+                ContextCompat.getColor(
+                    context,
+                    R.color.transectionRed
+                )
+            )
             currencyClass.getCurrencies { symb ->
                 holder.binding.traAmount.text = "$symb -${item.amount}"
             }
         } else {
-            holder.binding.traAmount.setTextColor(ContextCompat.getColor(context, R.color.transectionGreen))
+            holder.binding.traAmount.setTextColor(
+                ContextCompat.getColor(
+                    context,
+                    R.color.transectionGreen
+                )
+            )
             currencyClass.getCurrencies { symb ->
                 holder.binding.traAmount.text = "$symb ${item.amount}"
             }

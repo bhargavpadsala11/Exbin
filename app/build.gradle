@@ -84,4 +84,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
 
+    //data to pdf
+        implementation 'com.itextpdf:itextpdf:5.5.13.2'
+
+
+
 }

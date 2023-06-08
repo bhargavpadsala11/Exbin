@@ -49,6 +49,7 @@
         android:layout_height="match_parent"
         android:background="@color/transhplant_color"
         android:visibility="gone"
+        android:paddingBottom="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -74,7 +75,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/siv_card_view" />
-        
+
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_apply"

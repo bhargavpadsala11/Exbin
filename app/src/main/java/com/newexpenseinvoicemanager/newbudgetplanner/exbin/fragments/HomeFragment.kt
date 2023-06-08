@@ -67,7 +67,9 @@ class HomeFragment : Fragment() {
                         transactions,
                         categoryMap,
                         currencyClass
-                    )
+                    ){value,mode ->
+
+                    }
             } else {
                 // handle empty transaction list
                 hideData()
