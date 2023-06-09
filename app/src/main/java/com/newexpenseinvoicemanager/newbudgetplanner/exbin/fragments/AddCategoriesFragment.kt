@@ -336,7 +336,7 @@ class AddCategoriesFragment : Fragment() {
             lifecycleScope.launch(Dispatchers.IO) {
                 val category = db.getCategoryById(value.toInt())
                 withContext(Dispatchers.Main) {
-                    if (category?.CategoryColor != null && category?.CategoryImage != null){
+                    if (category?.CategoryColor != null && category?.CategoryImage != null) {
                         val colorInt = Color.parseColor(category?.CategoryColor)
                         binding.selectColor.setBackgroundColor(colorInt)
                         binding.selectIcon.setImageResource(category.CategoryImage.toInt())
@@ -445,11 +445,13 @@ class AddCategoriesFragment : Fragment() {
                         } else {
                             updateCategory(
                                 value.toInt(),
-                                binding.addCategorytxt.text.toString(),selectedIcon.toString(),selectedColor
+                                binding.addCategorytxt.text.toString(),
+                                selectedIcon.toString(),
+                                selectedColor
                             )
                             updateBudget(
                                 category?.CategoryName,
-                                binding.addCategorytxt.text.toString(),selectedColor
+                                binding.addCategorytxt.text.toString(), selectedColor
                             )
                             Toast.makeText(requireContext(), "Category Updated", Toast.LENGTH_SHORT)
                                 .show()
@@ -537,11 +539,20 @@ class AddCategoriesFragment : Fragment() {
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
-                addCategory(
-                    binding.addCategorytxt.text.toString(),
-                )
-                Toast.makeText(requireContext(), "Category Added", Toast.LENGTH_SHORT).show()
-                clearText(binding.addCategorytxt)
+                val db = AppDataBase.getInstance(requireContext()).categoriesDao()
+                val existingCategory = db.getCategoryByName(binding.addCategorytxt.text.toString())
+
+                if (existingCategory == null) {
+                    addCategory(
+                        binding.addCategorytxt.text.toString(),
+                    )
+                    Toast.makeText(requireContext(), "Category Added", Toast.LENGTH_SHORT).show()
+                    clearText(binding.addCategorytxt)
+                } else {
+                    Toast.makeText(requireContext(), "Category Already Exists", Toast.LENGTH_SHORT)
+                        .show()
+                }
+
             }
         }
 
@@ -558,7 +569,7 @@ class AddCategoriesFragment : Fragment() {
     private fun updateBudget(categoryName: String?, newBudg: String, selectedColor: String?) {
         val db = AppDataBase.getInstance(requireContext()).budgetDao()
         lifecycleScope.launch(Dispatchers.IO) {
-            db.updateBudgetOnName(newBudg, categoryName!!,selectedColor!!)
+            db.updateBudgetOnName(newBudg, categoryName!!, selectedColor!!)
         }
     }
 
@@ -570,7 +581,7 @@ class AddCategoriesFragment : Fragment() {
     ) {
         val db = AppDataBase.getInstance(requireContext()).categoriesDao()
         lifecycleScope.launch(Dispatchers.IO) {
-            db.updateCategory1(id, addcategory,selectedIcon,selectedColor)
+            db.updateCategory1(id, addcategory, selectedIcon, selectedColor)
         }
     }
 
@@ -582,7 +593,7 @@ class AddCategoriesFragment : Fragment() {
 
     private fun updateMergedIcon() {
         val imageView = binding.mergedImage
-        if(selectedIcon == null && selectedColor == null){
+        if (selectedIcon == null && selectedColor == null) {
             binding.selectIcon.setImageResource(R.drawable.ic_home)
             val color = "#FF6200EE"
             val colorInt = Color.parseColor(color!!)
@@ -601,7 +612,7 @@ class AddCategoriesFragment : Fragment() {
 
             selectedIcon = R.drawable.ic_home
             selectedColor = color
-        }else if (selectedIcon != null && selectedColor == null) {
+        } else if (selectedIcon != null && selectedColor == null) {
             val color = "#FF6200EE"
             val colorInt = Color.parseColor(color!!)
             val hsl = FloatArray(3)
@@ -676,7 +687,11 @@ class AddCategoriesFragment : Fragment() {
             CategoryImage = "$selectedIcon"
         )
         lifecycleScope.launch(Dispatchers.IO) {
+
+
             db.inserCategory(data)
+//            }
+//            db.inserCategory(data)
         }
     }
 

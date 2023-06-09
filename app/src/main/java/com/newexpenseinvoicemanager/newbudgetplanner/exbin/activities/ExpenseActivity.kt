@@ -80,69 +80,26 @@ class ExpenseActivity : AppCompatActivity() {
             val note = binding.expNote.text.toString()
             val category = binding.expcategory.selectedItem as String
             val paymentModes = binding.exppaymentMode.selectedItem as String
-            insertExpsnes(amount, category, date, time, paymentModes, note, currentDate)
+            val categoryindex = binding.expcategory.selectedItemPosition.toString()
+            val paymentModesIndex = binding.exppaymentMode.selectedItemPosition.toString()
+
+            insertExpsnes(amount, category,categoryindex, date, time, paymentModes,paymentModesIndex, note, currentDate)
+
             clearText()
            // checkValidation(amount, category, date, time, paymentModes, note, currentDateTime)
         }
 
     }
 
-//    fun checkValidation(amount: String,
-//                        category: String,
-//                        date: String,
-//                        time: String,
-//                        paymentMode: String,
-//                        note: String,
-//                        currentDateTime: String){
-//        if(binding.expAmount.text.toString().isEmpty()){
-//            Toast.makeText(
-//                this,
-//                "Please Enter Amount",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        }else if (binding.expcategory.selectedItem.toString().isBlank()){
-//            Toast.makeText(
-//                this,
-//                "Please Select Category",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        } else if(binding.expdate.text.toString().isEmpty()) {
-//            Toast.makeText(
-//                this,
-//                "Please Select Date",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        } else if (binding.exptime.text.toString().isEmpty()){
-//            Toast.makeText(
-//                this,
-//                "Please Select Time",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        }else if (binding.exppaymentMode.selectedItem.toString().isBlank()){
-//            Toast.makeText(
-//                this,
-//                "Please Select Payment Mode",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        }else if(binding.expNote.text.toString().isEmpty()){
-//            Toast.makeText(
-//                this,
-//                "Please write Note",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        }else{
-//            insertExpsnes(amount, category, date, time, paymentMode, note, currentDateTime)
-//            clearText()
-//        }
-//
-//    }
 
     fun insertExpsnes(
         amount: String,
         category: String,
+        categoryIndex: String,
         date: String,
         time: String,
         paymentMode: String,
+        paymentModeIndex:String,
         note: String,
         currentDateTime: String
     ) {
@@ -150,9 +107,11 @@ class ExpenseActivity : AppCompatActivity() {
         val data = incexpTbl(
             amount = amount,
             category = category,
+            categoryIndex = categoryIndex,
             date = date,
             time = time,
             paymentMode = paymentMode,
+            paymentModeIndex = paymentModeIndex,
             note = note,
             dType = "EXPENSE",
             currentDate = currentDateTime
@@ -174,6 +133,7 @@ class ExpenseActivity : AppCompatActivity() {
                     PaymentModeList.add(0, "Select Payment Mode")
                 } else {
                     PaymentModeList.clear()
+                    PaymentModeList.add(0, "Select Payment Mode")
                     for (paymentMode in paymentModes) {
                         val mode = paymentMode.paymentMode
                         if (mode != null) {
@@ -200,6 +160,7 @@ class ExpenseActivity : AppCompatActivity() {
                     categoryList.add(0, "Select Category")
                 } else {
                     categoryList.clear()
+                    categoryList.add(0, "Select Category")
                     for (category in categories) {
                         val categoryName = category.CategoryName
                         if (categoryName != null) {

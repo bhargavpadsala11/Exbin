@@ -2,6 +2,7 @@ package com.newexpenseinvoicemanager.newbudgetplanner.exbin.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.PaymentModes
 
 @Dao
@@ -42,5 +43,11 @@ suspend fun insertDefaultPaymentModes(paymentModes: List<PaymentModes>)
 
 //@Update
 //suspend fun updatePaymentMode(paymentMode : PaymentModes)
+
+    @Query("SELECT * FROM PaymentModes WHERE paymentMode = :name")
+    fun getPaymentModeByName(name: String): PaymentModes?
+
+
+
 
 }

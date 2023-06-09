@@ -55,7 +55,7 @@ class CategoryListAdapter(
         imageView.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN)
         imageView.setBackgroundColor(lightColor)
 
-        if (list[position].categoryId <= 6) {
+        if (list[position].categoryId < 6) {
         } else {
             holder.binding.catehoryItem.setOnClickListener {
                 onImageClickListener(list[position], "EDIT")

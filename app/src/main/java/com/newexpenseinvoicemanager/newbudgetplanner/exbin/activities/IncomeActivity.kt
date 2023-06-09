@@ -25,13 +25,56 @@ class IncomeActivity : AppCompatActivity() {
     private lateinit var PaymentModeList: ArrayList<String>
     private lateinit var date: String
     private lateinit var time: String
+    private var vl: String = ""
+    private var p: String = ""
+    private var pdm: String = ""
+    private var c: String = ""
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityIncomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.title = "Income"
+        val value = intent.getStringExtra("value")
+        vl = value!!
+
+
+
+        if (value != null) {
+            getCategory()
+            getPaymentMode()
+
+            val id = intent.getStringExtra("id")
+            val amt = intent.getStringExtra("amt")
+            val cty = intent.getStringExtra("cty")
+            val dt = intent.getStringExtra("dt")
+            val pmd = intent.getStringExtra("pmd")
+            val nt = intent.getStringExtra("nt")
+            val time = intent.getStringExtra("time")
+            val ctyInd = intent.getStringExtra("ctyInd")
+            val pmInd = intent.getStringExtra("pmInd")
+
+            p = pmInd!!
+            c = ctyInd!!
+            pdm = pmd!!
+            val addIncomeBtn = binding.addIncomeBtn
+            addIncomeBtn.setText("Update Income")
+
+            binding.incAmount.setText(amt)
+//            if (ctyInd != null) {
+////                categoryList.set(ctyInd!!.toInt(),cty!!)
+//                binding.category.setSelection(ctyInd.toInt())
+//            }
+
+            binding.incdate.setText(dt)
+            binding.inctime.setText(time)
+//            if (pmInd != null) {
+////                PaymentModeList.set(pmInd!!.toInt(),pmd!!)
+//                binding.paymentMode.setSelection(pmInd.toInt())
+//            }
+            binding.incNote.setText(nt)
+        }
         getCategory()
         getPaymentMode()
 
@@ -72,28 +115,29 @@ class IncomeActivity : AppCompatActivity() {
             timePicker.show()
         }
 
-
         binding.addIncomeBtn.setOnClickListener {
-//            val currentDateTime = LocalDateTime.now().toString()
-
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            } else {
-//                TODO("VERSION.SDK_INT < O")
-//            }
 
             val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
             val currentDate = sdf.format(Date())
-            System.out.println(" C DATE is  "+currentDate)
-//            val date1 = getCurrentDateTime()
-//            val dateInString = date1.toString("yyyy/MM/dd HH:mm:ss")
-//            Log.d("Current Date","$dateInString")
+            System.out.println(" C DATE is  " + currentDate)
             val amount = binding.incAmount.text.toString()
             val note = binding.incNote.text.toString()
             val category = binding.category.selectedItem as String
+            val categoryindex = binding.category.selectedItemPosition.toString()
             val paymentModes = binding.paymentMode.selectedItem as String
-            insertIncome(amount, category, date, time, paymentModes, note, currentDate)
+            val paymentModesIndex = binding.paymentMode.selectedItemPosition.toString()
+            insertIncome(
+                amount,
+                category,
+                categoryindex,
+                date,
+                time,
+                paymentModes,
+                paymentModesIndex,
+                note,
+                currentDate
+            )
 
-           // checkValidation(amount, category, date, time, paymentModes, note, currentDateTime)
             clearText()
         }
 
@@ -102,9 +146,11 @@ class IncomeActivity : AppCompatActivity() {
     fun insertIncome(
         amount: String,
         category: String,
+        categoryIndex: String,
         date: String,
         time: String,
         paymentMode: String,
+        paymentModeIndex: String,
         note: String,
         currentDateTime: String
     ) {
@@ -112,9 +158,11 @@ class IncomeActivity : AppCompatActivity() {
         val data = incexpTbl(
             amount = amount,
             category = category,
+            categoryIndex = categoryIndex,
             date = date,
             time = time,
             paymentMode = paymentMode,
+            paymentModeIndex = paymentModeIndex,
             note = note,
             dType = "INCOME",
             currentDate = currentDateTime
@@ -136,6 +184,7 @@ class IncomeActivity : AppCompatActivity() {
                     PaymentModeList.add(0, "Select Payment Mode")
                 } else {
                     PaymentModeList.clear()
+                    PaymentModeList.add(0, "Select Payment Mode")
                     for (paymentMode in paymentModes) {
                         val mode = paymentMode.paymentMode
                         if (mode != null) {
@@ -145,58 +194,11 @@ class IncomeActivity : AppCompatActivity() {
                     val arrayAdapter =
                         ArrayAdapter(this, R.layout.dropdown_item_layout, PaymentModeList)
                     binding.paymentMode.adapter = arrayAdapter
+
                 }
             }
         }
     }
-
-//    fun checkValidation(amount: String,
-//                        category: String,
-//                        date: String,
-//                        time: String,
-//                        paymentMode: String,
-//                        note: String,
-//                        currentDateTime: String){
-//        if(binding.incAmount.text.toString().isEmpty()){
-//            Toast.makeText(
-//                this,
-//                "Please Enter Amount",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        }else if (binding.category.selectedItem.toString().isBlank()){
-//            Toast.makeText(
-//                this,
-//                "Please Select Category",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        } else if(binding.incdate.text.toString().isEmpty()) {
-//            Toast.makeText(
-//                this,
-//                "Please Select Date",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        } else if (binding.inctime.text.toString().isEmpty()){
-//            Toast.makeText(
-//                this,
-//                "Please Select Time",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        }else if (binding.paymentMode.selectedItem.toString().isBlank()){
-//            Toast.makeText(
-//                this,
-//                "Please Select Payment Mode",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        }else if(binding.incNote.text.toString().isEmpty()){
-//            Toast.makeText(
-//                this,
-//                "Please write Note",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        }else{
-//            insertIncome(amount, category, date, time, paymentMode, note, currentDateTime)
-//        }
-//    }
 
     fun getCategory() {
         categoryList = ArrayList()
@@ -209,6 +211,7 @@ class IncomeActivity : AppCompatActivity() {
                     categoryList.add(0, "Select Category")
                 } else {
                     categoryList.clear()
+                    categoryList.add(0, "Select Category")
                     for (category in categories) {
                         val categoryName = category.CategoryName
                         if (categoryName != null) {
@@ -235,5 +238,5 @@ class IncomeActivity : AppCompatActivity() {
         super.onBackPressed()
         finish()
     }
-    
+
 }

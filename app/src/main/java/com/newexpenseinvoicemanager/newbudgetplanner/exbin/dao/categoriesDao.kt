@@ -39,4 +39,5 @@ interface categoriesDao {
     @Query("UPDATE Categories SET CategoryName = :categoryName,CategoryImage = :udateImage,CategoryColor = :updateColor WHERE _id = :id")
     fun updateCategory1(id: Int, categoryName: String,udateImage: String?,updateColor :String?)
 
+
 }
