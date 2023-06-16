@@ -71,17 +71,31 @@ class PaymentModeFragment : Fragment() {
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
-                addPaymentMode(getaymentModeTextView?.text.toString())
-                mainView.visibility = View.VISIBLE
-                addPaymentView?.visibility = View.GONE
-                container?.removeView(addPaymentView)
-                getaymentModeTextView?.setText("")
+                val db = AppDataBase.getInstance(requireContext()).paymentModesDao()
+                val existingPaymentMode =
+                    db.getPaymentModeByName(getaymentModeTextView?.text.toString())
+                if (existingPaymentMode == null) {
+                    addPaymentMode(getaymentModeTextView?.text.toString())
+                    mainView.visibility = View.VISIBLE
+                    addPaymentView?.visibility = View.GONE
+                    container?.removeView(addPaymentView)
+                    getaymentModeTextView?.setText("")
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Payment Mode Already Exists",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
         cancelButton?.setOnClickListener {
             mainView.visibility = View.VISIBLE
             addPaymentView?.visibility = View.GONE
             container?.removeView(addPaymentView)
+            val getaymentModeTextView =
+                addPaymentView?.findViewById<TextInputEditText>(R.id.addPaymet)
+            getaymentModeTextView?.setText("")
         }
 
         val dao = AppDataBase.getInstance(requireContext()).paymentModesDao()
@@ -132,7 +146,8 @@ class PaymentModeFragment : Fragment() {
                     val deletePaymentModeBtn =
                         deletePaymentView?.findViewById<MaterialButton>(R.id.btn_delete)
 
-                    val deleteTitleTextView = deletePaymentView?.findViewById<AppCompatTextView>(R.id.tv_delete_title)
+                    val deleteTitleTextView =
+                        deletePaymentView?.findViewById<AppCompatTextView>(R.id.tv_delete_title)
                     deleteTitleTextView?.setText("Are you sure you want to delete this PaymentMode ?")
                     val deletePaymentModeCnlBtn =
                         deletePaymentView?.findViewById<MaterialButton>(R.id.btncancel)
@@ -191,13 +206,14 @@ class PaymentModeFragment : Fragment() {
         }
     }
 
-    fun deltePaymentMode(id : Int){
+    fun deltePaymentMode(id: Int) {
         val db = AppDataBase.getInstance(requireContext()).paymentModesDao()
 //        val data = PaymentModes()
         lifecycleScope.launch(Dispatchers.IO) {
             db.deletePaymentMode(id)
         }
     }
+
     private fun loadFragment(fragment: Fragment) {
         activity?.supportFragmentManager?.beginTransaction()
             ?.replace(R.id.fragment_container, fragment)

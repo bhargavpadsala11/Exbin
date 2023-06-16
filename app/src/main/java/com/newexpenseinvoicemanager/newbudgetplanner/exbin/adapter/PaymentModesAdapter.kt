@@ -43,6 +43,7 @@ class PaymentModesAdapter(
     }
 
     override fun onBindViewHolder(holder: PaymentModeViewHolder, position: Int) {
+       // notifyDataSetChanged()
         holder.binding.pmntdtextview.text = list[position].paymentMode
 
         if (list[position].paymentModeId <= 6) {

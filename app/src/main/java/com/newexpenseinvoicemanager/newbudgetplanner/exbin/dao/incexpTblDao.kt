@@ -32,6 +32,16 @@ interface incexpTblDao {
     @Query("SELECT * FROM incexpTbl WHERE dType = 'INCOME'")
     fun getAllIncomeData(): LiveData<List<incexpTbl>>
 
+    @Query("SELECT * FROM incexpTbl WHERE date BETWEEN :startDate AND :endDate")
+    fun getAllDataByTwoDate(startDate: String, endDate: String): LiveData<List<incexpTbl>>
+
+    @Query("SELECT * FROM incexpTbl WHERE dType = 'INCOME' AND date BETWEEN :startDate AND :endDate")
+    fun getAllIncomeDataByDate(startDate: String, endDate: String): LiveData<List<incexpTbl>>
+
+
+
+    @Query("SELECT * FROM incexpTbl WHERE dType = 'EXPENSE' AND date BETWEEN :startDate AND :endDate")
+    fun getAllExpenseDataByDate(startDate: String, endDate: String): LiveData<List<incexpTbl>>
     @Query("SELECT * FROM incexpTbl WHERE dType = 'EXPENSE'")
     fun getAllExpenseData(): LiveData<List<incexpTbl>>
 

@@ -30,6 +30,7 @@ class BudgetAndExpenseAdapter(
             val budgetAmount = budgetAndExpense.budget.toDoubleOrNull()
             val expenseAmount = budgetAndExpense.amount1?.toDoubleOrNull()
             val amountOfIncExpTbl = budgetAndExpense.budgetCat
+
             if (amountOfIncExpTbl != null && expenseAmount == null) {
                 binding.catTextView.text = budgetAndExpense.budgetCat
 
@@ -40,6 +41,7 @@ class BudgetAndExpenseAdapter(
                 binding.remainingTxt.text = "Remaining ${sum}"
                 remaining =sum.toString()
             }
+
             if (amountOfIncExpTbl != null && expenseAmount == null) {
                 binding.catTextView.text = budgetAndExpense.budgetCat
 
@@ -75,8 +77,9 @@ class BudgetAndExpenseAdapter(
                         limitShow = false
                     }
                 }
-                Log.d("Adap posi/prog/limit","$budgetAndExpenseList[position] $progress $limitShow")
+               // Log.d("Adap posi/prog/limit","$budgetAndExpenseList[position] $progress $limitShow")
             }
+
             if (limitShow == null && progress == null) {
                 limitShow = false
                 progress = 0

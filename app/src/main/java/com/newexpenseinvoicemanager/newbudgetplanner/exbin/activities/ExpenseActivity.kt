@@ -2,12 +2,14 @@ package com.newexpenseinvoicemanager.newbudgetplanner.exbin.activities
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.ActivityExpenseBinding
@@ -25,6 +27,7 @@ class ExpenseActivity : AppCompatActivity() {
     private lateinit var PaymentModeList: ArrayList<String>
     private lateinit var date: String
     private lateinit var time: String
+    private var value: String? = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,110 +35,162 @@ class ExpenseActivity : AppCompatActivity() {
         binding = ActivityExpenseBinding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.title = "Expense"
-        getCategory()
-        getPaymentMode()
+        value = intent.getStringExtra("value")
+        val SELECTED_CATEGORY = intent.getStringExtra("CATEGORY_NAME_1")
 
-        val calendar = Calendar.getInstance()
+        if (value != null) {
+            val id = intent.getStringExtra("id")
+            val amt = intent.getStringExtra("amt")
+            val cty = intent.getStringExtra("cty")
+            val dt = intent.getStringExtra("dt")
+            val pmd = intent.getStringExtra("pmd")
+            val nt = intent.getStringExtra("nt")
+            val time = intent.getStringExtra("time")
+            val ctyInd = intent.getStringExtra("ctyInd")
+            val pmInd = intent.getStringExtra("pmInd")
 
-        binding.expdate.setOnClickListener {
-            val datePicker = DatePickerDialog(
-                this,
-                { _, year, month, dayOfMonth ->
-                    calendar.set(year, month, dayOfMonth)
-                    date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(calendar.time)
-                    // Store the date in Room database
-                    binding.expdate.text = date
+        } else if (SELECTED_CATEGORY != null){
+            binding.expcategory.setOnClickListener { getCategory() }
+            binding.expcategory.setText(SELECTED_CATEGORY)
 
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            )
-            datePicker.show()
+            val calendar = Calendar.getInstance()
+
+            binding.expdate.setOnClickListener {
+                val datePicker = DatePickerDialog(
+                    this,
+                    { _, year, month, dayOfMonth ->
+                        calendar.set(year, month, dayOfMonth)
+                        date = SimpleDateFormat(
+                            "dd/MM/yyyy",
+                            Locale.getDefault()
+                        ).format(calendar.time)
+                        // Store the date in Room database
+                        binding.expdate.text = date
+
+                    },
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)
+                )
+                datePicker.show()
+            }
+
+            binding.exptime.setOnClickListener {
+                val timePicker = TimePickerDialog(
+                    this,
+                    { _, hourOfDay, minute ->
+                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                        calendar.set(Calendar.MINUTE, minute)
+                        time =
+                            SimpleDateFormat("hh:mm a", Locale.getDefault()).format(calendar.time)
+                        // Store the time in Room database
+                        binding.exptime.text = time
+
+                    },
+                    calendar.get(Calendar.HOUR_OF_DAY),
+                    calendar.get(Calendar.MINUTE),
+                    false
+                )
+                timePicker.show()
+            }
+
+            binding.addIncomeBtn.setOnClickListener {
+                val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+                val currentDate = sdf.format(Date())
+                val amount = binding.expAmount.text.toString()
+                val note = binding.expNote.text.toString()
+                val category = binding.expcategory.text.toString()
+                val paymentModes = binding.exppaymentMode.selectedItem as String
+//            val categoryindex = binding.expcategory.selectedItemPosition.toString()
+                val paymentModesIndex = binding.exppaymentMode.selectedItemPosition.toString()
+
+                insertExpsnes(
+                    amount,
+                    category,
+                    date,
+                    time,
+                    paymentModes,
+                    paymentModesIndex,
+                    note,
+                    currentDate
+                )
+
+                clearText()
+                // checkValidation(amount, category, date, time, paymentModes, note, currentDateTime)
+            }
+        } else {
+
+            getPaymentMode()
+            binding.expcategory.setOnClickListener { getCategory() }
+            val calendar = Calendar.getInstance()
+
+            binding.expdate.setOnClickListener {
+                val datePicker = DatePickerDialog(
+                    this,
+                    { _, year, month, dayOfMonth ->
+                        calendar.set(year, month, dayOfMonth)
+                        date = SimpleDateFormat(
+                            "dd/MM/yyyy",
+                            Locale.getDefault()
+                        ).format(calendar.time)
+                        // Store the date in Room database
+                        binding.expdate.text = date
+
+                    },
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)
+                )
+                datePicker.show()
+            }
+
+            binding.exptime.setOnClickListener {
+                val timePicker = TimePickerDialog(
+                    this,
+                    { _, hourOfDay, minute ->
+                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                        calendar.set(Calendar.MINUTE, minute)
+                        time =
+                            SimpleDateFormat("hh:mm a", Locale.getDefault()).format(calendar.time)
+                        // Store the time in Room database
+                        binding.exptime.text = time
+
+                    },
+                    calendar.get(Calendar.HOUR_OF_DAY),
+                    calendar.get(Calendar.MINUTE),
+                    false
+                )
+                timePicker.show()
+            }
+
+            binding.addIncomeBtn.setOnClickListener {
+                val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+                val currentDate = sdf.format(Date())
+                val amount = binding.expAmount.text.toString()
+                val note = binding.expNote.text.toString()
+                val category = binding.expcategory.text.toString()
+                val paymentModes = binding.exppaymentMode.selectedItem as String
+//            val categoryindex = binding.expcategory.selectedItemPosition.toString()
+                val paymentModesIndex = binding.exppaymentMode.selectedItemPosition.toString()
+
+                insertExpsnes(
+                    amount,
+                    category,
+                    date,
+                    time,
+                    paymentModes,
+                    paymentModesIndex,
+                    note,
+                    currentDate
+                )
+
+                clearText()
+                // checkValidation(amount, category, date, time, paymentModes, note, currentDateTime)
+            }
+
         }
-
-        binding.exptime.setOnClickListener {
-            val timePicker = TimePickerDialog(
-                this,
-                { _, hourOfDay, minute ->
-                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                    calendar.set(Calendar.MINUTE, minute)
-                    time = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(calendar.time)
-                    // Store the time in Room database
-                    binding.exptime.text = time
-
-                },
-                calendar.get(Calendar.HOUR_OF_DAY),
-                calendar.get(Calendar.MINUTE),
-                false
-            )
-            timePicker.show()
-        }
-
-
-        binding.addIncomeBtn.setOnClickListener {
-            val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
-            val currentDate = sdf.format(Date())
-            val amount = binding.expAmount.text.toString()
-            val note = binding.expNote.text.toString()
-            val category = binding.expcategory.selectedItem as String
-            val paymentModes = binding.exppaymentMode.selectedItem as String
-            insertExpsnes(amount, category, date, time, paymentModes, note, currentDate)
-            clearText()
-           // checkValidation(amount, category, date, time, paymentModes, note, currentDateTime)
-        }
-
     }
 
-//    fun checkValidation(amount: String,
-//                        category: String,
-//                        date: String,
-//                        time: String,
-//                        paymentMode: String,
-//                        note: String,
-//                        currentDateTime: String){
-//        if(binding.expAmount.text.toString().isEmpty()){
-//            Toast.makeText(
-//                this,
-//                "Please Enter Amount",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        }else if (binding.expcategory.selectedItem.toString().isBlank()){
-//            Toast.makeText(
-//                this,
-//                "Please Select Category",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        } else if(binding.expdate.text.toString().isEmpty()) {
-//            Toast.makeText(
-//                this,
-//                "Please Select Date",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        } else if (binding.exptime.text.toString().isEmpty()){
-//            Toast.makeText(
-//                this,
-//                "Please Select Time",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        }else if (binding.exppaymentMode.selectedItem.toString().isBlank()){
-//            Toast.makeText(
-//                this,
-//                "Please Select Payment Mode",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        }else if(binding.expNote.text.toString().isEmpty()){
-//            Toast.makeText(
-//                this,
-//                "Please write Note",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        }else{
-//            insertExpsnes(amount, category, date, time, paymentMode, note, currentDateTime)
-//            clearText()
-//        }
-//
-//    }
 
     fun insertExpsnes(
         amount: String,
@@ -143,6 +198,7 @@ class ExpenseActivity : AppCompatActivity() {
         date: String,
         time: String,
         paymentMode: String,
+        paymentModeIndex: String,
         note: String,
         currentDateTime: String
     ) {
@@ -153,6 +209,7 @@ class ExpenseActivity : AppCompatActivity() {
             date = date,
             time = time,
             paymentMode = paymentMode,
+            paymentModeIndex = paymentModeIndex,
             note = note,
             dType = "EXPENSE",
             currentDate = currentDateTime
@@ -161,7 +218,6 @@ class ExpenseActivity : AppCompatActivity() {
             db.inserincexpTbl(data)
         }
     }
-
 
     fun getPaymentMode() {
         PaymentModeList = ArrayList()
@@ -174,6 +230,7 @@ class ExpenseActivity : AppCompatActivity() {
                     PaymentModeList.add(0, "Select Payment Mode")
                 } else {
                     PaymentModeList.clear()
+                    PaymentModeList.add(0, "Select Payment Mode")
                     for (paymentMode in paymentModes) {
                         val mode = paymentMode.paymentMode
                         if (mode != null) {
@@ -188,30 +245,21 @@ class ExpenseActivity : AppCompatActivity() {
         }
     }
 
-
     fun getCategory() {
-        categoryList = ArrayList()
-        val dao = AppDataBase.getInstance(this).categoriesDao()
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("SELECT_CATEGORY_01", "TRUE")
+        startActivity(intent)
+        finish()
 
-        dao.getAllCategory().observe(this) { categories ->
-            if (categories != null) {
-                if (categories.isEmpty()) {
-                    categoryList.clear()
-                    categoryList.add(0, "Select Category")
-                } else {
-                    categoryList.clear()
-                    for (category in categories) {
-                        val categoryName = category.CategoryName
-                        if (categoryName != null) {
-                            categoryList.add(categoryName)
-                        }
-                    }
-                    val arrayAdapter =
-                        ArrayAdapter(this, R.layout.dropdown_item_layout, categoryList)
-                    binding.expcategory.adapter = arrayAdapter
-                }
-            }
-        }
+
+//        val args = Bundle()
+//        val fragmnet = AddCategoriesFragment()
+//        args.putString("SELECT_CATEGORY","TRUE")
+//        fragmnet.setArguments(args)
+//        supportFragmentManager.beginTransaction()
+//            .replace(R.id.fragment_container, fragmnet)
+//            .addToBackStack(null)
+//            .commit()
     }
 
     fun clearText() {
