@@ -2,28 +2,23 @@ package com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter
 
 
 import android.content.Context
-import android.content.res.Resources
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.PorterDuff
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.CategoryItemLayoutBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
-import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.PaymentModes
 
 class CategoryListAdapter(
     val context: Context,
     val list: List<Categories>,
+    INCOME_ACTIVITY: String?,
     private val onImageClickListener: (Categories, String) -> Unit
 ) :
     RecyclerView.Adapter<CategoryListAdapter.CategoryListViewHolder>() {
+    val INCOMEACTIVITY = INCOME_ACTIVITY
 
     inner class CategoryListViewHolder(val binding: CategoryItemLayoutBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -54,11 +49,16 @@ class CategoryListAdapter(
         imageView.setImageResource(image.toInt())
         imageView.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN)
         imageView.setBackgroundColor(lightColor)
-
-        if (list[position].categoryId < 6) {
-        } else {
+        if (INCOMEACTIVITY != null) {
             holder.binding.catehoryItem.setOnClickListener {
                 onImageClickListener(list[position], "EDIT")
+            }
+        } else {
+            if (list[position].categoryId < 6) {
+            } else {
+                holder.binding.catehoryItem.setOnClickListener {
+                    onImageClickListener(list[position], "EDIT")
+                }
             }
         }
     }

@@ -46,6 +46,7 @@ class AddCategoriesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentAddCategoriesBinding.inflate(layoutInflater)
+
         val icons = listOf(
             R.drawable.ic_cat_cancel,
             R.drawable.ic_add_24,
@@ -75,6 +76,7 @@ class AddCategoriesFragment : Fragment() {
             R.drawable.mortarboard
             // Add more icons here
         )
+
         val colors = listOf(
             "#002F6C",
             "#0039A6",

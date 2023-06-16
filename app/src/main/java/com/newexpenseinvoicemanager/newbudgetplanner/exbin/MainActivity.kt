@@ -40,68 +40,80 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         bottomAppBar = findViewById<BottomAppBar>(R.id.bottomAppBar)
         fab = binding.fab
+        val CHECK_VALUE = intent.getStringExtra("SELECT_CATEGORY_01")
 
-        bottomNavigationView.setOnItemSelectedListener { item ->
-            var fragment: Fragment
-            when (item.itemId) {
-                R.id.navigation_home -> {
-                    toolbar?.setTitle("Home")
-                    fragment = HomeFragment()
-                    loadFragment(fragment)
-                    true
+        if(CHECK_VALUE != null){
+            val args = Bundle()
+            args.putString("SELECT_CAT","001")
+            val fragmentManager = supportFragmentManager
+            val fragmentTransaction = fragmentManager.beginTransaction()
+            val fragment = CategoryListFragment()
+            fragment.setArguments(args)
+            fragmentTransaction.replace(R.id.fragment_container, fragment)
+            fragmentTransaction.addToBackStack(null)
+            fragmentTransaction.commit()
+        }else {
+            bottomNavigationView.setOnItemSelectedListener { item ->
+                var fragment: Fragment
+                when (item.itemId) {
+                    R.id.navigation_home -> {
+                        toolbar?.setTitle("Home")
+                        fragment = HomeFragment()
+                        loadFragment(fragment)
+                        true
+                    }
+                    R.id.navigation_transection -> {
+                        floatButtonHide()
+                        toolbar?.setTitle("Transection")
+                        fragment = TransectionFragment()
+                        loadFragment(fragment)
+                        true
+                    }
+                    R.id.navigation_add -> {
+                        floatButtonShow()
+                        true
+                    }
+                    R.id.navigation_budget -> {
+                        floatButtonHide()
+                        toolbar?.setTitle("Budget")
+                        fragment = BudgetFragment()
+                        loadFragment(fragment)
+                        true
+                    }
+                    R.id.navigation_more -> {
+                        floatButtonHide()
+                        toolbar?.setTitle("More")
+                        fragment = MoreFragment()
+                        loadFragment(fragment)
+                        true
+                    }
+                    else -> false
                 }
-                R.id.navigation_transection -> {
-                    floatButtonHide()
-                    toolbar?.setTitle("Transection")
-                    fragment = TransectionFragment()
-                    loadFragment(fragment)
-                    true
-                }
-                R.id.navigation_add -> {
-                    floatButtonShow()
-                    true
-                }
-                R.id.navigation_budget -> {
-                    floatButtonHide()
-                    toolbar?.setTitle("Budget")
-                    fragment = BudgetFragment()
-                    loadFragment(fragment)
-                    true
-                }
-                R.id.navigation_more -> {
-                    floatButtonHide()
-                    toolbar?.setTitle("More")
-                    fragment = MoreFragment()
-                    loadFragment(fragment)
-                    true
-                }
-                else -> false
+            }
+            fab.setOnClickListener {
+                val fragment = HomeFragment()
+                loadFragment(fragment)
+                floatButtonShow()
+            }
+            binding.inc.setOnClickListener {
+                val intent = Intent(this, IncomeActivity::class.java)
+                val options = ActivityOptionsCompat.makeCustomAnimation(
+                    this,
+                    android.R.anim.slide_in_left,
+                    android.R.anim.slide_out_right,
+                )
+                ActivityCompat.startActivity(this, intent, options.toBundle())
+            }
+            binding.exp.setOnClickListener {
+                val intent = Intent(this, ExpenseActivity::class.java)
+                val options = ActivityOptionsCompat.makeCustomAnimation(
+                    this,
+                    android.R.anim.slide_in_left,
+                    android.R.anim.slide_out_right,
+                )
+                ActivityCompat.startActivity(this, intent, options.toBundle())
             }
         }
-        fab.setOnClickListener {
-            val fragment = HomeFragment()
-            loadFragment(fragment)
-            floatButtonShow()
-        }
-        binding.inc.setOnClickListener {
-            val intent = Intent(this, IncomeActivity::class.java)
-            val options = ActivityOptionsCompat.makeCustomAnimation(
-                this,
-                android.R.anim.slide_in_left,
-                android.R.anim.slide_out_right,
-            )
-            ActivityCompat.startActivity(this, intent, options.toBundle())
-        }
-        binding.exp.setOnClickListener {
-            val intent = Intent(this, ExpenseActivity::class.java)
-            val options = ActivityOptionsCompat.makeCustomAnimation(
-                this,
-                android.R.anim.slide_in_left,
-                android.R.anim.slide_out_right,
-            )
-            ActivityCompat.startActivity(this, intent, options.toBundle())
-        }
-
     }
 
 
@@ -146,12 +158,12 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
-        var fragment: Fragment
-        fragment = HomeFragment()
-        loadFragment(fragment)
-    }
+//    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+//        super.onCreate(savedInstanceState, persistentState)
+//        var fragment: Fragment
+//        fragment = HomeFragment()
+//        loadFragment(fragment)
+//    }
 
     override fun onBackPressed() {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
@@ -186,7 +198,7 @@ class MainActivity : AppCompatActivity() {
             bottomNavigationView.selectedItemId = R.id.navigation_more
             loadFragmentForBack(MoreFragment())
         } else {
-            super.onBackPressed()
+            finish()
         }
 
     }

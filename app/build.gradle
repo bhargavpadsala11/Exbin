@@ -33,7 +33,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    buildFeatures{
+    buildFeatures {
         viewBinding true
     }
 }
@@ -53,11 +53,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation 'com.google.android.material:material:1.3.0-alpha03’'
 
-    //SQLITE DEPENDENCY
-//    implementation' androidx.sqlite:sqlite-ktx:2.3.1'
-//
-//    // Implementation of the AndroidX SQLite interfaces via the Android framework APIs.
-//    implementation 'androidx.sqlite:sqlite-framework:2.3.1'
 
     def room_version = "2.5.1"
 
@@ -85,7 +80,14 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics-ktx'
 
     //data to pdf
-        implementation 'com.itextpdf:itextpdf:5.5.13.2'
+    implementation 'com.itextpdf:itextpdf:5.5.13.2'
+    //data to EXCEL
+
+    implementation 'com.opencsv:opencsv:5.5.2'
+// drive upload
+    implementation 'com.google.android.gms:play-services-drive:17.0.0'
+    implementation 'com.google.android.gms:play-services-auth:19.2.0'
+
 
 
 

@@ -233,6 +233,109 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_converter"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transhplant_color"
+        android:visibility="gone"
+        android:paddingBottom="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/siv_card_view1"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:background="@drawable/shape_delete_dialog"
+            app:cardCornerRadius="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/ll_lin"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_marginHorizontal="8dp"
+            android:background="@color/red"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/siv_card_view1" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_pdf1"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/red"
+            android:src="@drawable/ic_pdf"
+            android:scaleType="center"
+            app:layout_constraintBottom_toBottomOf="@+id/ll_lin"
+            app:layout_constraintEnd_toEndOf="@+id/ll_lin"
+            app:layout_constraintStart_toStartOf="@+id/ll_lin"
+            app:layout_constraintTop_toTopOf="@+id/ll_lin"
+            app:shapeAppearanceOverlay="@style/Circular" />
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/btncancel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ll_lin">
+
+            <RadioButton
+                android:id="@+id/rdb_pdf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create PDF" />
+
+            <RadioButton
+                android:id="@+id/rdb_excel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create Excel" />
+
+
+        </RadioGroup>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btncancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:backgroundTint="@color/dark_main_color"
+            android:padding="13dp"
+            android:text="CANCEL"
+            android:textColor="@color/main_color"
+            app:cornerRadius="12dp"
+            app:layout_constraintBottom_toBottomOf="@+id/siv_card_view1"
+            app:layout_constraintEnd_toStartOf="@+id/btn_delete"
+            app:layout_constraintStart_toStartOf="@id/siv_card_view1" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_delete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:backgroundTint="@color/main_color"
+            android:padding="13dp"
+            android:text="SELECT"
+            android:textColor="@color/white"
+            app:cornerRadius="12dp"
+            app:layout_constraintBottom_toBottomOf="@+id/siv_card_view1"
+            app:layout_constraintEnd_toEndOf="@+id/siv_card_view1"
+            app:layout_constraintStart_toEndOf="@+id/btncancel" />
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 
 

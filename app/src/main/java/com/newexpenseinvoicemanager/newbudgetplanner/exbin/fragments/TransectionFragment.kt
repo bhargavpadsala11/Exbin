@@ -2,11 +2,16 @@ package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
 
 import android.app.DatePickerDialog
+import android.content.Context
 import android.content.Intent
+import android.media.MediaScannerConnection
 import android.os.Bundle
+import android.os.Environment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
@@ -26,8 +31,10 @@ import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.getCurrencyC
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.FragmentTransectionBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.incexpTbl
+import com.opencsv.CSVWriter
 import java.io.File
 import java.io.FileOutputStream
+import java.io.FileWriter
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -38,6 +45,7 @@ class TransectionFragment : Fragment() {
     private var sDate: String = ""
     private var lDate: String = ""
     private var tMode: String = ""
+    private var PDF_OR_EXCEL :Boolean = true
 
 
     override fun onCreateView(
@@ -48,7 +56,9 @@ class TransectionFragment : Fragment() {
         binding = FragmentTransectionBinding.inflate(layoutInflater)
 
         val custom = binding.appBar
+        custom.ivPdf.visibility = View.VISIBLE
         val filter = binding.clFliter
+        val createFilter = binding.clConverter
 
         custom.ivBack.setOnClickListener { loadFragment(HomeFragment()) }
         custom.ivTitle.setText("Transaction List")
@@ -66,14 +76,6 @@ class TransectionFragment : Fragment() {
         }
         val inComeButton = binding.btnIncome
         val exPenseButton = binding.btnExpense
-
-        custom.ivTitle.setOnClickListener {
-            //generatePdf(it, categoryMap, currencyClass)
-            dao.incexpTblDao().getAllData().observe(requireActivity()) {
-                generatePdf(it, categoryMap, currencyClass)
-            }
-
-        }
 
 
         dao.incexpTblDao().getAllData().observe(requireActivity()) {
@@ -95,7 +97,14 @@ class TransectionFragment : Fragment() {
         binding.tvAddEnddate.setOnClickListener {
             getLastDate()
         }
-
+        ViewCompat.setBackgroundTintList(
+            inComeButton,
+            ContextCompat.getColorStateList(requireContext(), R.color.white)
+        )
+        ViewCompat.setBackgroundTintList(
+            exPenseButton,
+            ContextCompat.getColorStateList(requireContext(), R.color.white)
+        )
         binding.btnIncome.setOnClickListener {
             tMode = "INCOME"
 //            binding.btnIncome.requestFocus()
@@ -103,7 +112,10 @@ class TransectionFragment : Fragment() {
                 inComeButton,
                 ContextCompat.getColorStateList(requireContext(), R.color.dark_main_color)
             )
-            exPenseButton.backgroundTintList = null
+            ViewCompat.setBackgroundTintList(
+                exPenseButton,
+                ContextCompat.getColorStateList(requireContext(), R.color.white)
+            )
 
         }
 
@@ -114,7 +126,11 @@ class TransectionFragment : Fragment() {
                 exPenseButton,
                 ContextCompat.getColorStateList(requireContext(), R.color.dark_main_color)
             )
-            inComeButton.backgroundTintList = null
+            ViewCompat.setBackgroundTintList(
+                inComeButton,
+                ContextCompat.getColorStateList(requireContext(), R.color.white)
+            )
+
         }
 
         binding.btnReset.setOnClickListener {
@@ -151,6 +167,34 @@ class TransectionFragment : Fragment() {
 
         custom.ivDelete.setOnClickListener {
             filter.visibility = View.VISIBLE
+        }
+
+        custom.ivPdf.setOnClickListener {
+            createFilter.visibility = View.VISIBLE
+            binding.rdbPdf.setOnClickListener {
+                PDF_OR_EXCEL = true
+            }
+
+            binding.rdbExcel.setOnClickListener {
+                PDF_OR_EXCEL = false
+            }
+
+            binding.btnDelete.setOnClickListener {
+                if (PDF_OR_EXCEL == true){
+                    dao.incexpTblDao().getAllData().observe(requireActivity()) {
+                        generatePdf(it, categoryMap, currencyClass)
+                    }
+                }else{
+                    dao.incexpTblDao().getAllData().observe(requireActivity()) {
+                        val adapter = adapterOfTransection(it, categoryMap, currencyClass)
+                        exportToExcel(adapter,requireContext())
+                    }
+                }
+            }
+
+            binding.btncancel.setOnClickListener {
+                createFilter.visibility = View.GONE
+            }
         }
 
         return binding.root
@@ -234,10 +278,10 @@ class TransectionFragment : Fragment() {
     ) {
         val document = Document()
         val fileName = "transaction_list.pdf"
-        val filePath = requireContext().getExternalFilesDir(null)?.absolutePath + "/" + fileName
+        val filePath = File(requireContext().filesDir,fileName)
         val outputStream = FileOutputStream(filePath)
         PdfWriter.getInstance(document, outputStream)
-
+//        requireContext().getExternalFilesDir(null)?.absolutePath + "/" + fileName
         document.open()
 
         // Add adapter data to PDF
@@ -288,16 +332,87 @@ class TransectionFragment : Fragment() {
         document.close()
 
         // Open the PDF file
-        val file = File(filePath)
+//        val file = File(filePath)
+//        val uri = FileProvider.getUriForFile(
+//            requireContext(),
+//            "${requireContext().packageName}.provider",
+//            file
+//        )
+//        val intent = Intent(Intent.ACTION_VIEW)
+//        intent.setDataAndType(uri, "provider/pdf")
+//        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         val uri = FileProvider.getUriForFile(
             requireContext(),
             "${requireContext().packageName}.provider",
-            file
+            filePath
         )
+
+        // Create an intent to view the CSV file
         val intent = Intent(Intent.ACTION_VIEW)
         intent.setDataAndType(uri, "application/pdf")
-        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-        startActivity(intent)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        if (intent.resolveActivity(requireContext().packageManager) != null) {
+            // Start the activity
+            requireContext().startActivity(intent)
+
+            // Display a toast message with the file path
+            Toast.makeText(context, "File saved to $filePath", Toast.LENGTH_LONG).show()
+//            Log.d("Path Tag","$filePath")
+        } else {
+            // Show an error message
+            Toast.makeText(context, "No app found to open PDF file", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun exportToExcel(adapter: TransectionListAdapter, context: Context) {
+        // Get the data from your adapter
+        val data = adapter.list
+
+        // Create a new CSV writer
+        val fileName = "Transaction.csv"
+        val file = File(context.filesDir, fileName)
+        val writer = CSVWriter(FileWriter(file))
+
+        // Write the header row
+        writer.writeNext(arrayOf("Category", "Amount", "Date", "Note"))
+
+        // Write the data to the CSV file
+        for (item in data) {
+            val category = item.category
+            val amount = if (item.dType == "EXPENSE") "-${item.amount}" else "${item.amount}"
+            val date = item.date
+            val note = item.note
+            writer.writeNext(arrayOf(category, amount, date, note))
+        }
+
+        // Close the writer
+        writer.close()
+
+        // Get the file URI using a FileProvider
+        val uri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.provider",
+            file
+        )
+
+        // Create an intent to view the CSV file
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setDataAndType(uri, "text/csv")
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+        // Check if there is an app that can handle the intent
+        if (intent.resolveActivity(context.packageManager) != null) {
+            // Start the activity
+            context.startActivity(intent)
+
+            // Display a toast message with the file path
+            val filePath = file.absolutePath
+            Toast.makeText(context, "File saved to $filePath", Toast.LENGTH_LONG).show()
+            Log.d("Path Tag","$filePath")
+        } else {
+            // Show an error message
+            Toast.makeText(context, "No app found to open CSV file", Toast.LENGTH_SHORT).show()
+        }
     }
 
     fun adapterOfTransection(
@@ -350,5 +465,6 @@ class TransectionFragment : Fragment() {
         }
         return adapter
     }
+
 
 }

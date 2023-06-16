@@ -137,64 +137,64 @@ class TransectionListFragment : Fragment() {
         (activity as MainActivity?)!!.showBottomNavigationView()
     }
 
-    fun getTotalIncome() {
-        val dao = AppDataBase.getInstance(requireContext()).incexpTblDao()
-
-        dao.getTotalIncomeAmount().observe(requireActivity()) { income ->
-            if (income != null) {
-                inc = income
-                val formattedAvg = String.format("%.2f", inc)
-                binding.totalIncome.setText(formattedAvg)
-            } else {
-                // handle empty income
-                binding.totalIncome.setText("00.00")
-            }
-        }
-    }
-
-    fun getTotalExpense() {
-        val dao = AppDataBase.getInstance(requireContext()).incexpTblDao()
-
-        dao.getTotalExpenseAmount().observe(requireActivity()) { expense ->
-            if (expense != null) {
-                exp = expense
-                val formattedAvg = String.format("%.2f", exp)
-                binding.totalIncome.setText(formattedAvg)
-
-            } else {
-                // handle empty expense
-                binding.totalIncome.setText("00.00")
-            }
-        }
-    }
-
-    fun getDailyAvg() {
-        val dao = AppDataBase.getInstance(requireContext()).incexpTblDao()
-
-        dao.getDailyAverage().observe(requireActivity()) { dailyAverage ->
-            if (dailyAverage != null) {
-                val avg = dailyAverage
-                val formattedAvg = String.format("%.2f", avg)
-                binding.avgTtl.text = formattedAvg
-            } else {
-                binding.avgTtl.text = "00.00"
-            }
-        }
-    }
-
-    fun getDailyAvgExp() {
-        val dao = AppDataBase.getInstance(requireContext()).incexpTblDao()
-
-        dao.getDailyAverageExp().observe(requireActivity()) { dailyAverage ->
-            if (dailyAverage != null) {
-                val avg = dailyAverage
-                val formattedAvg = String.format("%.2f", avg)
-                binding.avgTtl.text = formattedAvg
-            } else {
-                binding.avgTtl.text = "00.00"
-            }
-        }
-    }
+//    fun getTotalIncome() {
+//        val dao = AppDataBase.getInstance(requireContext()).incexpTblDao()
+//
+//        dao.getTotalIncomeAmount().observe(requireActivity()) { income ->
+//            if (income != null) {
+//                inc = income
+//                val formattedAvg = String.format("%.2f", inc)
+//                binding.totalIncome.setText(formattedAvg)
+//            } else {
+//                // handle empty income
+//                binding.totalIncome.setText("00.00")
+//            }
+//        }
+//    }
+//
+//    fun getTotalExpense() {
+//        val dao = AppDataBase.getInstance(requireContext()).incexpTblDao()
+//
+//        dao.getTotalExpenseAmount().observe(requireActivity()) { expense ->
+//            if (expense != null) {
+//                exp = expense
+//                val formattedAvg = String.format("%.2f", exp)
+//                binding.totalIncome.setText(formattedAvg)
+//
+//            } else {
+//                // handle empty expense
+//                binding.totalIncome.setText("00.00")
+//            }
+//        }
+//    }
+//
+//    fun getDailyAvg() {
+//        val dao = AppDataBase.getInstance(requireContext()).incexpTblDao()
+//
+//        dao.getDailyAverage().observe(requireActivity()) { dailyAverage ->
+//            if (dailyAverage != null) {
+//                val avg = dailyAverage
+//                val formattedAvg = String.format("%.2f", avg)
+//                binding.avgTtl.text = formattedAvg
+//            } else {
+//                binding.avgTtl.text = "00.00"
+//            }
+//        }
+//    }
+//
+//    fun getDailyAvgExp() {
+//        val dao = AppDataBase.getInstance(requireContext()).incexpTblDao()
+//
+//        dao.getDailyAverageExp().observe(requireActivity()) { dailyAverage ->
+//            if (dailyAverage != null) {
+//                val avg = dailyAverage
+//                val formattedAvg = String.format("%.2f", avg)
+//                binding.avgTtl.text = formattedAvg
+//            } else {
+//                binding.avgTtl.text = "00.00"
+//            }
+//        }
+//    }
 
     private fun loadFragment(fragment: Fragment) {
         activity?.supportFragmentManager?.beginTransaction()
@@ -252,16 +252,6 @@ class TransectionListFragment : Fragment() {
         categoryMap: MutableMap<String, Categories>,
         currencyClass: getCurrencyClass
     ) {
-        getDailyAvgExp()
-        getTotalExpense()
-        binding.crdTrns.visibility = View.VISIBLE
-        binding.crdTrns.setCardBackgroundColor(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.transectionRed
-            )
-        )
-
         dao.incexpTblDao().getAllExpenseData().observe(requireActivity()) {
             binding.transectionRecy.adapter =
                 TransectionListAdapter(
@@ -281,15 +271,7 @@ class TransectionListFragment : Fragment() {
         categoryMap: MutableMap<String, Categories>,
         currencyClass: getCurrencyClass
     ) {
-        getTotalIncome()
-        getDailyAvg()
-        binding.crdTrns.visibility = View.VISIBLE
-        binding.crdTrns.setCardBackgroundColor(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.transectionGreen
-            )
-        )
+
 
         dao.incexpTblDao().getAllIncomeData().observe(requireActivity()) {
             binding.transectionRecy.adapter =
