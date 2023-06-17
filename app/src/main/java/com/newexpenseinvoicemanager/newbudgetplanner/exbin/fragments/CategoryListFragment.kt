@@ -87,6 +87,7 @@ class CategoryListFragment : Fragment() {
                     if (INCOME_ACTIVITY != null && INCOME_ACTIVITY == "001") {
                         binding.floatingActionButton.visibility = View.GONE
 
+
                         if (buttonClicked != null) {
                             val intent = Intent(requireContext(), IncomeActivity::class.java)
                             intent.putExtra("CATEGORY_NAME_1", "${Category.CategoryName}")

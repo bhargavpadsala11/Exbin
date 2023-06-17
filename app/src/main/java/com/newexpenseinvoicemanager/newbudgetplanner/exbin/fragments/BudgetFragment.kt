@@ -217,6 +217,7 @@ class BudgetFragment : Fragment() {
             backButtonBudget?.setOnClickListener {
                 container?.removeView(editBudgetView)
                 (activity as MainActivity?)!!.showBottomNavigationView()
+
             }
             if (limitShow == true) {
                 budgetLimitImage?.visibility = View.VISIBLE
@@ -264,7 +265,6 @@ class BudgetFragment : Fragment() {
                 budgetBackButoon?.setOnClickListener {
                     budgetdetail?.visibility = View.VISIBLE
                     editudgetLayout?.visibility = View.GONE
-                    (activity as MainActivity?)!!.showBottomNavigationView()
                 }
                 val budgetSaveButton =
                     editBudgetView?.findViewById<MaterialButton>(R.id.edit_btn_save)

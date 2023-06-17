@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.RecyclerView
@@ -55,8 +56,10 @@ class CategoryListAdapter(
             }
         } else {
             if (list[position].categoryId < 6) {
+                holder.binding.btneditmode.visibility = View.GONE
             } else {
-                holder.binding.catehoryItem.setOnClickListener {
+                holder.binding.btneditmode.visibility = View.VISIBLE
+                holder.binding.btneditmode.setOnClickListener {
                     onImageClickListener(list[position], "EDIT")
                 }
             }
