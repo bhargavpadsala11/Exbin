@@ -45,7 +45,7 @@
         android:layout_marginHorizontal="6dp"
         android:backgroundTint="@color/main_color"
         android:padding="10dp"
-        android:text="Cancle"
+        android:text="Cancel"
         android:textAllCaps="false"
         app:layout_constraintEnd_toStartOf="@id/mb_currency_set"
         android:textColor="@color/white"

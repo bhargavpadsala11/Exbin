@@ -32,18 +32,18 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
-                        android:gravity="center"
-                        android:text="Income"
-                        android:textSize="20sp"
+                        android:layout_marginStart="10dp"
+                        android:text="INCOME"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
-                        android:gravity="center"
-                        android:text="Expense"
-                        android:textSize="20sp"
+                        android:paddingStart="10dp"
+                        android:text="EXPENSE"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -56,10 +56,10 @@
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="0dp"
                         android:layout_height="130dp"
-                        android:layout_margin="10dp"
+                        android:layout_marginHorizontal="10dp"
                         android:layout_weight="1"
                         android:id="@+id/incCard"
-                        app:cardBackgroundColor="#41C85D"
+                        app:cardBackgroundColor="#0FC36F"
                         app:cardCornerRadius="10dp">
 
                         <LinearLayout
@@ -73,9 +73,9 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="2"
                                 android:text="Total"
+                                android:textStyle="bold"
                                 android:textColor="#FFFFFF"
-                                android:textSize="20sp"
-                                android:textStyle="bold" />
+                                android:textSize="14sp" />
 
                             <TextView
                                 android:id="@+id/totalIncome"
@@ -85,13 +85,12 @@
                                 android:gravity="end"
                                 android:text="00.00"
                                 android:textColor="#FFFFFF"
-                                android:textSize="20sp" />
+                                android:textSize="16sp" />
 
                             <View
                                 android:id="@+id/divider1"
                                 android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:layout_weight="1"
+                                android:layout_height="2dp"
                                 android:background="?android:attr/listDivider"
                                 android:backgroundTint="@color/white" />
 
@@ -101,8 +100,8 @@
                                 android:layout_weight="2"
                                 android:text="Daily Average"
                                 android:textColor="#FFFFFF"
-                                android:textSize="20sp"
-                                android:textStyle="bold" />
+                                android:textStyle="bold"
+                                android:textSize="14sp" />
 
                             <TextView
                                 android:id="@+id/avgTtl"
@@ -112,7 +111,7 @@
                                 android:gravity="end"
                                 android:text="00.00"
                                 android:textColor="#FFFFFF"
-                                android:textSize="20sp"
+                                android:textSize="16sp"
                                 android:textStyle="bold" />
 
                         </LinearLayout>
@@ -121,10 +120,10 @@
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="0dp"
                         android:layout_height="130dp"
-                        android:layout_margin="10dp"
+                        android:layout_marginHorizontal="10dp"
                         android:layout_weight="1"
                         android:id="@+id/expCard"
-                        app:cardBackgroundColor="#F25459"
+                        app:cardBackgroundColor="#E64A61"
                         app:cardCornerRadius="10dp">
 
                         <LinearLayout
@@ -139,8 +138,8 @@
                                 android:layout_weight="2"
                                 android:text="Total"
                                 android:textColor="#FFFFFF"
-                                android:textSize="20sp"
-                                android:textStyle="bold" />
+                                android:textStyle="bold"
+                                android:textSize="14sp" />
 
                             <TextView
                                 android:id="@+id/expTtl"
@@ -150,13 +149,12 @@
                                 android:gravity="end"
                                 android:text="00.00"
                                 android:textColor="#FFFFFF"
-                                android:textSize="20sp" />
+                                android:textSize="16sp" />
 
                             <View
                                 android:id="@+id/divider"
                                 android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:layout_weight="1"
+                                android:layout_height="2dp"
                                 android:background="?android:attr/listDivider"
                                 android:backgroundTint="@color/white" />
 
@@ -166,8 +164,8 @@
                                 android:layout_weight="2"
                                 android:text="Daily Average"
                                 android:textColor="#FFFFFF"
-                                android:textSize="20sp"
-                                android:textStyle="bold" />
+                                android:textStyle="bold"
+                                android:textSize="14sp" />
 
                             <TextView
                                 android:id="@+id/expAvg"
@@ -177,7 +175,7 @@
                                 android:gravity="end"
                                 android:text="00.00"
                                 android:textColor="#FFFFFF"
-                                android:textSize="20sp"
+                                android:textSize="16sp"
                                 android:textStyle="bold" />
 
                         </LinearLayout>
@@ -261,10 +259,12 @@
                 android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/transection_item_layout" />
-            <TextView
+
+            <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
                 android:id="@+id/textviewdata"
+                android:src="@drawable/iv_warning_nodata"
                 android:text="No Transecation...!!\n Please add transection"
                 android:gravity="center"
                 android:textSize="30sp"

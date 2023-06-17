@@ -167,7 +167,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Create Budget"
+            android:text="Edit Budget"
             android:textColor="@color/black"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -175,10 +175,10 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/backButtonBudget"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:id="@+id/backButtonBudget"
             android:src="@drawable/ic_left_back"
             android:tint="@color/black"
             app:layout_constraintBottom_toBottomOf="@id/pre_title"

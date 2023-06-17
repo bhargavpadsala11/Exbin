@@ -17,10 +17,11 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/exbinlogo"
+        android:icon="@mipmap/exbinlogo"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Exbin"
+        android:requestLegacyExternalStorage="true"
         tools:targetApi="31">
         <provider
             android:name="androidx.core.content.FileProvider"

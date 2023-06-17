@@ -82,7 +82,6 @@
         android:text="Are you sure you want to delete this record ?"
         android:textColor="@color/black"
         android:textSize="20sp"
-        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/btn_delete"
         app:layout_constraintEnd_toEndOf="@+id/siv_card_view"
         app:layout_constraintStart_toStartOf="@+id/siv_card_view"

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-     <color name="main_color">#7f3dff</color>
+    <color name="main_color">#7f3dff</color>
     <color name="dark_main_color">#eee6fe</color>
     <color name="transhplant_color">#66000000</color>
     <color name="purple_200">#FFBB86FC</color>
@@ -21,10 +21,14 @@
     <color name="AddIncBgcard">#F1F3F3</color>
 
 
-        <color name="Cat_color1">#FF0000</color>
-        <color name="Cat_color2">#00FF00</color>
-        <color name="Cat_color3">#0000FF</color>
-        <!-- Add more colors here -->
+    <color name="navcolorred">#E64A61</color>
+    <color name="navcolorred1">#770000</color>
+    <color name="navcolorgreen">#0FC36F</color>
+    <color name="navcolorgreen1">#205720</color>
+    <color name="Cat_color1">#FF0000</color>
+    <color name="Cat_color2">#00FF00</color>
+    <color name="Cat_color3">#0000FF</color>
+    <!-- Add more colors here -->
     <color name="transectionRed">#F20000</color>
     <color name="transectionGreen">#00F200</color>
     <color name="button_background_color">#2196F3</color>
@@ -34,9 +38,6 @@
     <color name="bottom_nav_icon_unselected_color">#757575</color>
     <color name="bottom_nav_text_selected_color">#2196F3</color>
     <color name="bottom_nav_text_unselected_color">#757575</color>
-
-
-
 
 
 </resources>

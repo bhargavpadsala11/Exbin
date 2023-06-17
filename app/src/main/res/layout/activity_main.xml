@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
@@ -49,11 +48,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
-        android:paddingBottom="20dp"
+        android:layout_marginBottom="4dp"
+        app:elevation="50dp"
         android:src="@drawable/ic_add_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:backgroundTint="@color/main_color"
+        app:tint="@color/white" />
+
     <LinearLayout
         android:id="@+id/floating_buttons_layout"
         android:layout_width="wrap_content"
@@ -70,7 +73,9 @@
             android:id="@+id/inc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/purple_500"
+            android:layout_margin="5dp"
+            app:backgroundTint="@color/navcolorgreen"
+            app:tint="@color/navcolorgreen1"
             android:clickable="true"
             android:src="@drawable/ic_income"
             android:visibility="gone" />
@@ -79,8 +84,9 @@
             android:id="@+id/exp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:backgroundTint="@color/purple_500"
+            android:layout_margin="5dp"
+            app:backgroundTint="@color/navcolorred"
+            app:tint="@color/navcolorred1"
             android:clickable="true"
             android:src="@drawable/ic_expense"
             android:visibility="gone" />
