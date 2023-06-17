@@ -9,9 +9,9 @@
 
 
 
-    <meta-data
-        android:name="com.google.android.gms.drive.FILE_ID"
-        android:value="resource_id:YOUR_RESOURCE_ID" />
+<!--    <meta-data-->
+<!--        android:name="com.google.android.gms.drive.FILE_ID"-->
+<!--        android:value="resource_id:YOUR_RESOURCE_ID" />-->
 
     <application
         android:allowBackup="true"

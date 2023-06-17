@@ -45,7 +45,7 @@ class TransectionFragment : Fragment() {
     private var sDate: String = ""
     private var lDate: String = ""
     private var tMode: String = ""
-    private var PDF_OR_EXCEL :Boolean = true
+    private var PDF_OR_EXCEL: Boolean = true
 
 
     override fun onCreateView(
@@ -79,7 +79,12 @@ class TransectionFragment : Fragment() {
 
 
         dao.incexpTblDao().getAllData().observe(requireActivity()) {
-            binding.transectionItem.adapter = adapterOfTransection(it, categoryMap, currencyClass)
+            val adapter = adapterOfTransection(it, categoryMap, currencyClass)
+//            MobileAds.initialize(requireContext()) {
+            binding.transectionItem.adapter
+            //adapter.loadAds()
+//            }
+
         }
 
         binding.tvStartdate.setOnClickListener {
@@ -180,14 +185,14 @@ class TransectionFragment : Fragment() {
             }
 
             binding.btnDelete.setOnClickListener {
-                if (PDF_OR_EXCEL == true){
+                if (PDF_OR_EXCEL == true) {
                     dao.incexpTblDao().getAllData().observe(requireActivity()) {
                         generatePdf(it, categoryMap, currencyClass)
                     }
-                }else{
+                } else {
                     dao.incexpTblDao().getAllData().observe(requireActivity()) {
                         val adapter = adapterOfTransection(it, categoryMap, currencyClass)
-                        exportToExcel(adapter,requireContext())
+                        exportToExcel(adapter, requireContext())
                     }
                 }
             }
@@ -278,7 +283,7 @@ class TransectionFragment : Fragment() {
     ) {
         val document = Document()
         val fileName = "transaction_list.pdf"
-        val filePath = File(requireContext().filesDir,fileName)
+        val filePath = File(requireContext().filesDir, fileName)
         val outputStream = FileOutputStream(filePath)
         PdfWriter.getInstance(document, outputStream)
 //        requireContext().getExternalFilesDir(null)?.absolutePath + "/" + fileName
@@ -408,7 +413,7 @@ class TransectionFragment : Fragment() {
             // Display a toast message with the file path
             val filePath = file.absolutePath
             Toast.makeText(context, "File saved to $filePath", Toast.LENGTH_LONG).show()
-            Log.d("Path Tag","$filePath")
+            Log.d("Path Tag", "$filePath")
         } else {
             // Show an error message
             Toast.makeText(context, "No app found to open CSV file", Toast.LENGTH_SHORT).show()
@@ -436,30 +441,30 @@ class TransectionFragment : Fragment() {
             val catIndex = value.categoryIndex
             val pmtIndex = value.paymentModeIndex
             if (mode == "INCOME") {
-                val intent = Intent(requireContext(),IncomeActivity::class.java)
-                intent.putExtra("value","true")
-                intent.putExtra("id",id)
-                intent.putExtra("amt",amaount)
-                intent.putExtra("cty",category)
-                intent.putExtra("dt",date)
-                intent.putExtra("pmd",pMode)
-                intent.putExtra("nt",note)
-                intent.putExtra("ctyInd",catIndex)
-                intent.putExtra("pmInd",pmtIndex)
-                intent.putExtra("time",time)
+                val intent = Intent(requireContext(), IncomeActivity::class.java)
+                intent.putExtra("value", "true")
+                intent.putExtra("id", id)
+                intent.putExtra("amt", amaount)
+                intent.putExtra("cty", category)
+                intent.putExtra("dt", date)
+                intent.putExtra("pmd", pMode)
+                intent.putExtra("nt", note)
+                intent.putExtra("ctyInd", catIndex)
+                intent.putExtra("pmInd", pmtIndex)
+                intent.putExtra("time", time)
                 startActivity(intent)
             } else if (mode == "EXPENSE") {
-                val intent = Intent(requireContext(),ExpenseActivity::class.java)
-                intent.putExtra("value","true")
-                intent.putExtra("id",id)
-                intent.putExtra("amt",amaount)
-                intent.putExtra("cty",category)
-                intent.putExtra("dt",date)
-                intent.putExtra("pmd",pMode)
-                intent.putExtra("nt",note)
-                intent.putExtra("ctyInd",catIndex)
-                intent.putExtra("pmInd",pmtIndex)
-                intent.putExtra("time",time)
+                val intent = Intent(requireContext(), ExpenseActivity::class.java)
+                intent.putExtra("value", "true")
+                intent.putExtra("id", id)
+                intent.putExtra("amt", amaount)
+                intent.putExtra("cty", category)
+                intent.putExtra("dt", date)
+                intent.putExtra("pmd", pMode)
+                intent.putExtra("nt", note)
+                intent.putExtra("ctyInd", catIndex)
+                intent.putExtra("pmInd", pmtIndex)
+                intent.putExtra("time", time)
                 startActivity(intent)
             }
         }

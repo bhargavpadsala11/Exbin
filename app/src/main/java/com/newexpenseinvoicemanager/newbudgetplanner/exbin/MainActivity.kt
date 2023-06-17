@@ -39,12 +39,13 @@ class MainActivity : AppCompatActivity() {
         val toolbar = getSupportActionBar();
         bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         bottomAppBar = findViewById<BottomAppBar>(R.id.bottomAppBar)
+
         fab = binding.fab
         val CHECK_VALUE = intent.getStringExtra("SELECT_CATEGORY_01")
 
-        if(CHECK_VALUE != null){
+        if (CHECK_VALUE != null) {
             val args = Bundle()
-            args.putString("SELECT_CAT","001")
+            args.putString("SELECT_CAT", "001")
             val fragmentManager = supportFragmentManager
             val fragmentTransaction = fragmentManager.beginTransaction()
             val fragment = CategoryListFragment()
@@ -52,7 +53,7 @@ class MainActivity : AppCompatActivity() {
             fragmentTransaction.replace(R.id.fragment_container, fragment)
             fragmentTransaction.addToBackStack(null)
             fragmentTransaction.commit()
-        }else {
+        } else {
             bottomNavigationView.setOnItemSelectedListener { item ->
                 var fragment: Fragment
                 when (item.itemId) {
