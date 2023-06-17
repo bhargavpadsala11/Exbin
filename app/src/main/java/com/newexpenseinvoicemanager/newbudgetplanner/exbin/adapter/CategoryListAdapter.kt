@@ -53,6 +53,7 @@ class CategoryListAdapter(
         if (INCOMEACTIVITY != null) {
             holder.binding.catehoryItem.setOnClickListener {
                 onImageClickListener(list[position], "EDIT")
+                holder.binding.btneditmode.visibility = View.GONE
             }
         } else {
             if (list[position].categoryId < 6) {

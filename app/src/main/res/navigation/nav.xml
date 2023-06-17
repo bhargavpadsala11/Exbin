@@ -30,4 +30,34 @@
         android:name="com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments.AddCategoriesFragment"
         android:label="fragment_add_cateory"
         tools:layout="@layout/fragment_add_categories" />
+    <fragment
+        android:id="@+id/expenseActivity"
+        android:name="com.newexpenseinvoicemanager.newbudgetplanner.exbin.activities.ExpenseActivity"
+        android:label="activity_expense"
+        tools:layout="@layout/activity_expense" >
+        <action
+            android:id="@+id/action_expenseActivity_to_categoryListFragment"
+            app:destination="@id/categoryListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/incomeActivity"
+        android:name="com.newexpenseinvoicemanager.newbudgetplanner.exbin.activities.IncomeActivity"
+        android:label="activity_income"
+        tools:layout="@layout/activity_income" >
+        <action
+            android:id="@+id/action_incomeActivity_to_categoryListFragment"
+            app:destination="@id/categoryListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/categoryListFragment"
+        android:name="com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments.CategoryListFragment"
+        android:label="fragment_category_list"
+        tools:layout="@layout/fragment_category_list" >
+        <action
+            android:id="@+id/action_categoryListFragment_to_incomeActivity"
+            app:destination="@id/incomeActivity" />
+        <action
+            android:id="@+id/action_categoryListFragment_to_expenseActivity"
+            app:destination="@id/expenseActivity" />
+    </fragment>
 </navigation>

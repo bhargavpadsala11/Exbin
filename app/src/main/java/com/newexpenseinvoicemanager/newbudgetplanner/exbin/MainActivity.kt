@@ -97,22 +97,12 @@ class MainActivity : AppCompatActivity() {
                 floatButtonShow()
             }
             binding.inc.setOnClickListener {
-                val intent = Intent(this, IncomeActivity::class.java)
-                val options = ActivityOptionsCompat.makeCustomAnimation(
-                    this,
-                    android.R.anim.slide_in_left,
-                    android.R.anim.slide_out_right,
-                )
-                ActivityCompat.startActivity(this, intent, options.toBundle())
+                floatButtonHide()
+                loadFragment(IncomeActivity())
             }
             binding.exp.setOnClickListener {
-                val intent = Intent(this, ExpenseActivity::class.java)
-                val options = ActivityOptionsCompat.makeCustomAnimation(
-                    this,
-                    android.R.anim.slide_in_left,
-                    android.R.anim.slide_out_right,
-                )
-                ActivityCompat.startActivity(this, intent, options.toBundle())
+                floatButtonHide()
+                loadFragment(ExpenseActivity())
             }
         }
     }
@@ -198,6 +188,12 @@ class MainActivity : AppCompatActivity() {
         } else if (currentFragment is CurrencyFragment) {
             bottomNavigationView.selectedItemId = R.id.navigation_more
             loadFragmentForBack(MoreFragment())
+        }else if (currentFragment is IncomeActivity) {
+            bottomNavigationView.selectedItemId = R.id.navigation_home
+            loadFragmentForBack(HomeFragment())
+        }else if (currentFragment is ExpenseActivity) {
+            bottomNavigationView.selectedItemId = R.id.navigation_home
+            loadFragmentForBack(HomeFragment())
         } else {
             finish()
         }

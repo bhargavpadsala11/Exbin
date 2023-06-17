@@ -46,15 +46,16 @@ class IncomeActivity : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = ActivityIncomeBinding.inflate(layoutInflater)
-        
+
 //        supportActionBar?.title = "Income"
 //
-//        value = intent.getStringExtra("value")
-//        val SELECTED_CATEGORY = intent.getStringExtra("CATEGORY_NAME_1")
+        value = arguments?.getString("value")
+        val SELECTED_CATEGORY = arguments?.getString("CATEGORY")
+//        val value = arguments?.getString("CATEGORY_NAME_1")
+//        Toast.makeText(requireContext(), "$value", Toast.LENGTH_SHORT).show()
 
 
-//
-//        if (value != null) {
+        if (value != null) {
 //            vl = value!!
 //            val id = intent.getStringExtra("id")
 //            val amt = intent.getStringExtra("amt")
@@ -77,85 +78,92 @@ class IncomeActivity : Fragment() {
 //            binding.incdate.setText(dt)
 //            binding.inctime.setText(time)
 //            binding.incNote.setText(nt)
-//
-//        } else if (SELECTED_CATEGORY != null) {
-//
-//            binding.category.setOnClickListener {
-//                getCategory()
-//            }
-//            binding.category.setText(SELECTED_CATEGORY)
-//            getPaymentMode()
-//
-//            val calendar = Calendar.getInstance()
-//
-//            binding.incdate.setOnClickListener {
-//                val datePicker = DatePickerDialog(
-//                    requireContext(),
-//                    { _, year, month, dayOfMonth ->
-//                        calendar.set(year, month, dayOfMonth)
-//                        date = SimpleDateFormat(
-//                            "dd/MM/yyyy",
-//                            Locale.getDefault()
-//                        ).format(calendar.time)
-//                        // Store the date in Room database
-//                        binding.incdate.text = date
-//                    },
-//                    calendar.get(Calendar.YEAR),
-//                    calendar.get(Calendar.MONTH),
-//                    calendar.get(Calendar.DAY_OF_MONTH)
-//                )
-//                datePicker.show()
-//            }
-//
-//            binding.inctime.setOnClickListener {
-//                val timePicker = TimePickerDialog(
-//                    requireContext(),
-//                    { _, hourOfDay, minute ->
-//                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-//                        calendar.set(Calendar.MINUTE, minute)
-//                        time =
-//                            SimpleDateFormat("hh:mm a", Locale.getDefault()).format(calendar.time)
-//                        // Store the time in Room database
-//                        binding.inctime.text = time
-//
-//                    },
-//                    calendar.get(Calendar.HOUR_OF_DAY),
-//                    calendar.get(Calendar.MINUTE),
-//                    false
-//                )
-//                timePicker.show()
-//            }
-//
-//            binding.addIncomeBtn.setOnClickListener {
-//
-//                val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
-//                val currentDate = sdf.format(Date())
-//                System.out.println(" C DATE is  " + currentDate)
-//                val amount = binding.incAmount.text.toString()
-//                val note = binding.incNote.text.toString()
-//               val category = binding.category.text.toString()
-//               // val categoryindex = binding.category.selectedItemPosition.toString()
-//                val paymentModes = binding.paymentMode.selectedItem as String
-//                val paymentModesIndex = binding.paymentMode.selectedItemPosition.toString()
-//                insertIncome(
-//                    amount,
-//                    category,
-//                    date,
-//                    time,
-//                    paymentModes,
-//                    paymentModesIndex,
-//                    note,
-//                    currentDate
-//                )
-//
-//                clearText()
-//            }
-//        }else {
+
+        } else if (SELECTED_CATEGORY != null) {
+
             binding.category.setOnClickListener {
                 getCategory()
             }
+            binding.category.setText(SELECTED_CATEGORY)
+            Toast.makeText(requireContext(), "$SELECTED_CATEGORY", Toast.LENGTH_SHORT).show()
             getPaymentMode()
 
+            val calendar = Calendar.getInstance()
+
+            binding.incdate.setOnClickListener {
+                val datePicker = DatePickerDialog(
+                    requireContext(),
+                    { _, year, month, dayOfMonth ->
+                        calendar.set(year, month, dayOfMonth)
+                        date = SimpleDateFormat(
+                            "dd/MM/yyyy",
+                            Locale.getDefault()
+                        ).format(calendar.time)
+                        // Store the date in Room database
+                        binding.incdate.text = date
+                    },
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)
+                )
+                datePicker.show()
+            }
+
+            binding.inctime.setOnClickListener {
+                val timePicker = TimePickerDialog(
+                    requireContext(),
+                    { _, hourOfDay, minute ->
+                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                        calendar.set(Calendar.MINUTE, minute)
+                        time =
+                            SimpleDateFormat("hh:mm a", Locale.getDefault()).format(calendar.time)
+                        // Store the time in Room database
+                        binding.inctime.text = time
+
+                    },
+                    calendar.get(Calendar.HOUR_OF_DAY),
+                    calendar.get(Calendar.MINUTE),
+                    false
+                )
+                timePicker.show()
+            }
+
+            binding.addIncomeBtn.setOnClickListener {
+
+                val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+                val currentDate = sdf.format(Date())
+                System.out.println(" C DATE is  " + currentDate)
+                val amount = binding.incAmount.text.toString()
+                val note = binding.incNote.text.toString()
+                val category = binding.category.text.toString()
+                // val categoryindex = binding.category.selectedItemPosition.toString()
+                val paymentModes = binding.paymentMode.selectedItem as String
+                val paymentModesIndex = binding.paymentMode.selectedItemPosition.toString()
+                insertIncome(
+                    amount,
+                    category,
+                    date,
+                    time,
+                    paymentModes,
+                    paymentModesIndex,
+                    note,
+                    currentDate
+                )
+
+                clearText()
+            }
+        } else {
+            binding.category.setOnClickListener {
+                getCategory()
+            }
+            binding.category.setOnClickListener { getCategory() }
+            getPaymentMode()
+            if (value != null) {
+                binding.category.setText(value)
+                Toast.makeText(requireContext(), "$value", Toast.LENGTH_SHORT).show()
+
+
+            }
             val calendar = Calendar.getInstance()
 
             binding.incdate.setOnClickListener {
@@ -219,10 +227,11 @@ class IncomeActivity : Fragment() {
                     currentDate
                 )
 
-                clearText()
+//                clearText()
             }
+        }
 
-return binding.root
+        return binding.root
     }
 
     fun insertIncome(
@@ -271,7 +280,11 @@ return binding.root
                         }
                     }
                     val arrayAdapter =
-                        ArrayAdapter(requireContext(), R.layout.dropdown_item_layout, PaymentModeList)
+                        ArrayAdapter(
+                            requireContext(),
+                            R.layout.dropdown_item_layout,
+                            PaymentModeList
+                        )
                     binding.paymentMode.adapter = arrayAdapter
 //                    if (vl != null){
 //                        if (p != null) {
@@ -290,8 +303,8 @@ return binding.root
     }
 
     fun getCategory() {
-        val intent = Intent(requireContext(),MainActivity::class.java)
-        intent.putExtra("SELECT_CATEGORY_01","TRUE")
+        val intent = Intent(requireContext(), MainActivity::class.java)
+        intent.putExtra("SELECT_CATEGORY_01", "TRUE")
         startActivity(intent)
 //        val args = Bundle()
 //        args.putString("SELECT_CAT", "001")
@@ -300,7 +313,6 @@ return binding.root
 //        supportFragmentManager.beginTransaction()
 //            .replace(R.id.fragment_container1, fragment)
 //            .commit()
-
 
 
 //        val args = Bundle()
@@ -321,6 +333,16 @@ return binding.root
         Toast.makeText(requireContext(), "Income Added Successfully", Toast.LENGTH_SHORT).show()
     }
 
+    override fun onResume() {
+        super.onResume()
+        (activity as MainActivity?)!!.hideBottomNavigationView()
+    }
+
+    override fun onStop() {
+        (activity as MainActivity?)!!.showBottomNavigationView()
+        super.onStop()
+
+    }
 
 
 }

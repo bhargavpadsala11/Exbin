@@ -5,9 +5,13 @@ import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
@@ -21,7 +25,7 @@ import java.time.LocalDateTime
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ExpenseActivity : AppCompatActivity() {
+class ExpenseActivity : Fragment() {
     private lateinit var binding: ActivityExpenseBinding
     private lateinit var categoryList: ArrayList<String>
     private lateinit var PaymentModeList: ArrayList<String>
@@ -29,104 +33,105 @@ class ExpenseActivity : AppCompatActivity() {
     private lateinit var time: String
     private var value: String? = ""
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = ActivityExpenseBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        supportActionBar?.title = "Expense"
-        value = intent.getStringExtra("value")
-        val SELECTED_CATEGORY = intent.getStringExtra("CATEGORY_NAME_1")
 
-        if (value != null) {
-            val id = intent.getStringExtra("id")
-            val amt = intent.getStringExtra("amt")
-            val cty = intent.getStringExtra("cty")
-            val dt = intent.getStringExtra("dt")
-            val pmd = intent.getStringExtra("pmd")
-            val nt = intent.getStringExtra("nt")
-            val time = intent.getStringExtra("time")
-            val ctyInd = intent.getStringExtra("ctyInd")
-            val pmInd = intent.getStringExtra("pmInd")
-
-        } else if (SELECTED_CATEGORY != null){
-            binding.expcategory.setOnClickListener { getCategory() }
-            binding.expcategory.setText(SELECTED_CATEGORY)
-
-            val calendar = Calendar.getInstance()
-
-            binding.expdate.setOnClickListener {
-                val datePicker = DatePickerDialog(
-                    this,
-                    { _, year, month, dayOfMonth ->
-                        calendar.set(year, month, dayOfMonth)
-                        date = SimpleDateFormat(
-                            "dd/MM/yyyy",
-                            Locale.getDefault()
-                        ).format(calendar.time)
-                        // Store the date in Room database
-                        binding.expdate.text = date
-
-                    },
-                    calendar.get(Calendar.YEAR),
-                    calendar.get(Calendar.MONTH),
-                    calendar.get(Calendar.DAY_OF_MONTH)
-                )
-                datePicker.show()
-            }
-
-            binding.exptime.setOnClickListener {
-                val timePicker = TimePickerDialog(
-                    this,
-                    { _, hourOfDay, minute ->
-                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                        calendar.set(Calendar.MINUTE, minute)
-                        time =
-                            SimpleDateFormat("hh:mm a", Locale.getDefault()).format(calendar.time)
-                        // Store the time in Room database
-                        binding.exptime.text = time
-
-                    },
-                    calendar.get(Calendar.HOUR_OF_DAY),
-                    calendar.get(Calendar.MINUTE),
-                    false
-                )
-                timePicker.show()
-            }
-
-            binding.addIncomeBtn.setOnClickListener {
-                val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
-                val currentDate = sdf.format(Date())
-                val amount = binding.expAmount.text.toString()
-                val note = binding.expNote.text.toString()
-                val category = binding.expcategory.text.toString()
-                val paymentModes = binding.exppaymentMode.selectedItem as String
-//            val categoryindex = binding.expcategory.selectedItemPosition.toString()
-                val paymentModesIndex = binding.exppaymentMode.selectedItemPosition.toString()
-
-                insertExpsnes(
-                    amount,
-                    category,
-                    date,
-                    time,
-                    paymentModes,
-                    paymentModesIndex,
-                    note,
-                    currentDate
-                )
-
-                clearText()
-                // checkValidation(amount, category, date, time, paymentModes, note, currentDateTime)
-            }
-        } else {
-
+//        supportActionBar?.title = "Expense"
+//        value = intent.getStringExtra("value")
+//        val SELECTED_CATEGORY = intent.getStringExtra("CATEGORY_NAME_1")
+//
+//        if (value != null) {
+//            val id = intent.getStringExtra("id")
+//            val amt = intent.getStringExtra("amt")
+//            val cty = intent.getStringExtra("cty")
+//            val dt = intent.getStringExtra("dt")
+//            val pmd = intent.getStringExtra("pmd")
+//            val nt = intent.getStringExtra("nt")
+//            val time = intent.getStringExtra("time")
+//            val ctyInd = intent.getStringExtra("ctyInd")
+//            val pmInd = intent.getStringExtra("pmInd")
+//
+//        } else if (SELECTED_CATEGORY != null){
+//            binding.expcategory.setOnClickListener { getCategory() }
+//            binding.expcategory.setText(SELECTED_CATEGORY)
+//
+//            val calendar = Calendar.getInstance()
+//
+//            binding.expdate.setOnClickListener {
+//                val datePicker = DatePickerDialog(
+//                    this,
+//                    { _, year, month, dayOfMonth ->
+//                        calendar.set(year, month, dayOfMonth)
+//                        date = SimpleDateFormat(
+//                            "dd/MM/yyyy",
+//                            Locale.getDefault()
+//                        ).format(calendar.time)
+//                        // Store the date in Room database
+//                        binding.expdate.text = date
+//
+//                    },
+//                    calendar.get(Calendar.YEAR),
+//                    calendar.get(Calendar.MONTH),
+//                    calendar.get(Calendar.DAY_OF_MONTH)
+//                )
+//                datePicker.show()
+//            }
+//
+//            binding.exptime.setOnClickListener {
+//                val timePicker = TimePickerDialog(
+//                    this,
+//                    { _, hourOfDay, minute ->
+//                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+//                        calendar.set(Calendar.MINUTE, minute)
+//                        time =
+//                            SimpleDateFormat("hh:mm a", Locale.getDefault()).format(calendar.time)
+//                        // Store the time in Room database
+//                        binding.exptime.text = time
+//
+//                    },
+//                    calendar.get(Calendar.HOUR_OF_DAY),
+//                    calendar.get(Calendar.MINUTE),
+//                    false
+//                )
+//                timePicker.show()
+//            }
+//
+//            binding.addIncomeBtn.setOnClickListener {
+//                val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+//                val currentDate = sdf.format(Date())
+//                val amount = binding.expAmount.text.toString()
+//                val note = binding.expNote.text.toString()
+//                val category = binding.expcategory.text.toString()
+//                val paymentModes = binding.exppaymentMode.selectedItem as String
+////            val categoryindex = binding.expcategory.selectedItemPosition.toString()
+//                val paymentModesIndex = binding.exppaymentMode.selectedItemPosition.toString()
+//
+//                insertExpsnes(
+//                    amount,
+//                    category,
+//                    date,
+//                    time,
+//                    paymentModes,
+//                    paymentModesIndex,
+//                    note,
+//                    currentDate
+//                )
+//
+//                clearText()
+//                // checkValidation(amount, category, date, time, paymentModes, note, currentDateTime)
+//            }
+//        } else {
+//
             getPaymentMode()
             binding.expcategory.setOnClickListener { getCategory() }
             val calendar = Calendar.getInstance()
 
             binding.expdate.setOnClickListener {
                 val datePicker = DatePickerDialog(
-                    this,
+                    requireContext(),
                     { _, year, month, dayOfMonth ->
                         calendar.set(year, month, dayOfMonth)
                         date = SimpleDateFormat(
@@ -146,7 +151,7 @@ class ExpenseActivity : AppCompatActivity() {
 
             binding.exptime.setOnClickListener {
                 val timePicker = TimePickerDialog(
-                    this,
+                    requireContext(),
                     { _, hourOfDay, minute ->
                         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                         calendar.set(Calendar.MINUTE, minute)
@@ -188,7 +193,8 @@ class ExpenseActivity : AppCompatActivity() {
                 // checkValidation(amount, category, date, time, paymentModes, note, currentDateTime)
             }
 
-        }
+
+        return binding.root
     }
 
 
@@ -202,7 +208,7 @@ class ExpenseActivity : AppCompatActivity() {
         note: String,
         currentDateTime: String
     ) {
-        val db = AppDataBase.getInstance(this).incexpTblDao()
+        val db = AppDataBase.getInstance(requireContext()).incexpTblDao()
         val data = incexpTbl(
             amount = amount,
             category = category,
@@ -221,9 +227,9 @@ class ExpenseActivity : AppCompatActivity() {
 
     fun getPaymentMode() {
         PaymentModeList = ArrayList()
-        val dao = AppDataBase.getInstance(this).paymentModesDao()
+        val dao = AppDataBase.getInstance(requireContext()).paymentModesDao()
 
-        dao.getAllPaymentMode().observe(this) { paymentModes ->
+        dao.getAllPaymentMode().observe(requireActivity()) { paymentModes ->
             if (paymentModes != null) {
                 if (paymentModes.isEmpty()) {
                     PaymentModeList.clear()
@@ -238,7 +244,7 @@ class ExpenseActivity : AppCompatActivity() {
                         }
                     }
                     val arrayAdapter =
-                        ArrayAdapter(this, R.layout.dropdown_item_layout, PaymentModeList)
+                        ArrayAdapter(requireContext(), R.layout.dropdown_item_layout, PaymentModeList)
                     binding.exppaymentMode.adapter = arrayAdapter
                 }
             }
@@ -246,10 +252,9 @@ class ExpenseActivity : AppCompatActivity() {
     }
 
     fun getCategory() {
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(requireContext(), MainActivity::class.java)
         intent.putExtra("SELECT_CATEGORY_01", "TRUE")
         startActivity(intent)
-        finish()
 
 
 //        val args = Bundle()
@@ -267,11 +272,17 @@ class ExpenseActivity : AppCompatActivity() {
         binding.expNote.setText("")
         binding.expdate.setText("")
         binding.exptime.setText("")
-        Toast.makeText(this, "Expense Added Successfully", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), "Expense Added Successfully", Toast.LENGTH_SHORT).show()
+    }
+    override fun onResume() {
+        super.onResume()
+        (activity as MainActivity?)!!.hideBottomNavigationView()
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        finish()
+    override fun onStop() {
+        (activity as MainActivity?)!!.showBottomNavigationView()
+        super.onStop()
+
     }
+
 }

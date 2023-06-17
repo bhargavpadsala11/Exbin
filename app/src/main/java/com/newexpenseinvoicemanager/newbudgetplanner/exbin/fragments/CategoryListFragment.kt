@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
@@ -89,9 +90,18 @@ class CategoryListFragment : Fragment() {
 
 
                         if (buttonClicked != null) {
-                            val intent = Intent(requireContext(), IncomeActivity::class.java)
-                            intent.putExtra("CATEGORY_NAME_1", "${Category.CategoryName}")
-                            startActivity(intent)
+                            val ldf = IncomeActivity()
+                            val args = Bundle()
+                            args.putString("CATEGORY", "${Category.CategoryName}")
+                            ldf.setArguments(args)
+                            //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
+                            activity?.supportFragmentManager?.beginTransaction()
+                                ?.replace(R.id.fragment_container, IncomeActivity())
+                                ?.addToBackStack(null)
+                                ?.commit()
+//                            val intent = Intent(requireContext(), IncomeActivity::class.java)
+//                            intent.putExtra("CATEGORY_NAME_1", "${Category.CategoryName}")
+//                            startActivity(intent)
                         }
                     }
                 }
