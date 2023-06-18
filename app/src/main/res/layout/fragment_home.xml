@@ -267,9 +267,9 @@
                 android:text="No Transecation...!!\n Please add transection"
                 android:gravity="center"
                 android:textSize="30sp"
-                android:textStyle="bold"/>
-<!--                android:src="@drawable/iv_warning_nodata"
--->
+                android:textStyle="bold"
+                android:src="@drawable/iv_warning_nodata"/>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>
