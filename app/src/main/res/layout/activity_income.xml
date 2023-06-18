@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.IncomeActivity">
+    tools:context=".fragments.IncomeActivity">
 
     <FrameLayout
         android:id="@+id/fragment_container"
@@ -45,16 +45,16 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Amount"
+                    android:text="Category"
                     android:textColor="@color/AddIncomeText"
                     android:textSize="25sp" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/incAmount"
+                <TextView
+                    android:id="@+id/category"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Amount"
-                    android:inputType="number"
+                    android:hint="Select Category"
+                    android:inputType="none"
                     android:textSize="25sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
@@ -78,16 +78,16 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Category"
+                    android:text="Amount"
                     android:textColor="@color/AddIncomeText"
                     android:textSize="25sp" />
 
-                <TextView
-                    android:id="@+id/category"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/incAmount"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Select Category"
-                    android:inputType="none"
+                    android:hint="Amount"
+                    android:inputType="number"
                     android:textSize="25sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>

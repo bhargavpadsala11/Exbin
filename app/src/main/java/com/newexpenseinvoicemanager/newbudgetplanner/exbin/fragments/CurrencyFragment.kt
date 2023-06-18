@@ -24,72 +24,77 @@ import kotlinx.coroutines.launch
 
 class CurrencyFragment : Fragment() {
     private lateinit var binding: FragmentCurrencyBinding
-    private var currencyId: Int? = null
+    private var selectedCurrencyId: Int? = null
+    private var selectedCurrencyPosition: Int? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        binding = FragmentCurrencyBinding.inflate(layoutInflater)
+        binding = FragmentCurrencyBinding.inflate(inflater, container, false)
 
         val custom = binding.appBar
         custom.ivDelete.visibility = View.GONE
         custom.ivBack.setOnClickListener { loadFragment(MoreFragment()) }
-        custom.ivTitle.setText("Select Currency")
+        custom.ivTitle.text = "Select Currency"
+
         val dao = AppDataBase.getInstance(requireContext()).currencyDao()
-        dao.getAllCurrency().observe(requireActivity()) {
-//                Toast.makeText(requireContext(), "${dao.getAllPaymentMode()}", Toast.LENGTH_SHORT).show()
+        dao.getAllCurrency().observe(viewLifecycleOwner) { currencies ->
             val layoutManager = LinearLayoutManager(requireContext())
-            val recy = binding.rvCurrency
-            recy.layoutManager = layoutManager
-            val adapter = CurrencyAdapter(requireContext(), it) {
-                currencyId = it
+            binding.rvCurrency.layoutManager = layoutManager
+            val adapter = CurrencyAdapter(requireContext(), currencies) { currencyId ->
+                selectedCurrencyId = currencyId
             }
-            recy.adapter = adapter
+            binding.rvCurrency.adapter = adapter
+
+            // Find the index of the selected currency
+            val selectedIndex = currencies.indexOfFirst { it.CurrencyStatus == 1 }
+            if (selectedIndex != -1) {
+                adapter.selectedPosition = selectedIndex
+                selectedCurrencyId = currencies[selectedIndex].currencyId
+                adapter.notifyDataSetChanged()
+                binding.rvCurrency.scrollToPosition(selectedIndex)
+            }
         }
 
         binding.mbCurrencySet.setOnClickListener {
-            updateCurrencyStatus(currencyId!!)
+            selectedCurrencyId?.let { currencyId ->
+                updateCurrencyStatus(currencyId)
+            }
 
-//            val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
-//            currencyClass.getCurrencies()
-//            val currencySymbol = currencyClass.getCurrencySymbol()
-
-        }
-        binding.mbCurrencyCnl.setOnClickListener {
             loadFragment(MoreFragment())
         }
 
+        binding.mbCurrencyCnl.setOnClickListener {
+            loadFragment(MoreFragment())
+        }
 
         return binding.root
     }
 
     override fun onResume() {
         super.onResume()
-        (activity as MainActivity?)!!.hideBottomNavigationView()
+        (activity as MainActivity).hideBottomNavigationView()
     }
 
     override fun onStop() {
-        (activity as MainActivity?)!!.showBottomNavigationView()
         super.onStop()
-
+        (activity as MainActivity).showBottomNavigationView()
     }
 
-    fun updateCurrencyStatus(it: Int) {
+    private fun updateCurrencyStatus(currencyId: Int) {
         val db = AppDataBase.getInstance(requireContext()).currencyDao()
         lifecycleScope.launch(Dispatchers.IO) {
-            db.updateStatus(it)
-            db.resetOtherCurrencyStatus(it)
+            db.updateStatus(currencyId)
+            db.resetOtherCurrencyStatus(currencyId)
         }
     }
 
     private fun loadFragment(fragment: Fragment) {
-        activity?.supportFragmentManager?.beginTransaction()
-            ?.replace(R.id.fragment_container, fragment)
-            ?.addToBackStack(null)
-            ?.commit()
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }
-
-

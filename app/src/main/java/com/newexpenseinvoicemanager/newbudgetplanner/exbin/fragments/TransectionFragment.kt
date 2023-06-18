@@ -23,8 +23,6 @@ import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
 import com.itextpdf.text.pdf.PdfWriter
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
-import com.newexpenseinvoicemanager.newbudgetplanner.exbin.activities.ExpenseActivity
-import com.newexpenseinvoicemanager.newbudgetplanner.exbin.activities.IncomeActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.TransectionListAdapter
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.getCurrencyClass
@@ -74,6 +72,7 @@ class TransectionFragment : Fragment() {
                 categoryMap[category.CategoryName!!] = category
             }
         }
+        getTransecton(currencyClass)
         val inComeButton = binding.btnIncome
         val exPenseButton = binding.btnExpense
 
@@ -102,14 +101,7 @@ class TransectionFragment : Fragment() {
         binding.tvAddEnddate.setOnClickListener {
             getLastDate()
         }
-        ViewCompat.setBackgroundTintList(
-            inComeButton,
-            ContextCompat.getColorStateList(requireContext(), R.color.white)
-        )
-        ViewCompat.setBackgroundTintList(
-            exPenseButton,
-            ContextCompat.getColorStateList(requireContext(), R.color.white)
-        )
+
         binding.btnIncome.setOnClickListener {
             tMode = "INCOME"
 //            binding.btnIncome.requestFocus()
@@ -144,8 +136,14 @@ class TransectionFragment : Fragment() {
             tMode = ""
             filter.visibility = View.GONE
             getTransecton(currencyClass)
-            inComeButton.backgroundTintList = null
-            exPenseButton.backgroundTintList = null
+            ViewCompat.setBackgroundTintList(
+                inComeButton,
+                ContextCompat.getColorStateList(requireContext(), R.color.white)
+            )
+            ViewCompat.setBackgroundTintList(
+                exPenseButton,
+                ContextCompat.getColorStateList(requireContext(), R.color.white)
+            )
         }
 
         binding.btnApply.setOnClickListener {

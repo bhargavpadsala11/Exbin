@@ -1,6 +1,7 @@
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.view.View
@@ -9,12 +10,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.newexpenseinvoicemanager.newbudgetplanner.exbin.activities.ExpenseActivity
-import com.newexpenseinvoicemanager.newbudgetplanner.exbin.activities.IncomeActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.ActivityMainBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments.*
 
@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private val backPressedTimeout: Long = 2000 // 2 seconds
     private var isButtonVisible = false
     private var addupdatetView: View? = null
+    private var currentFragment: Fragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -157,8 +158,8 @@ class MainActivity : AppCompatActivity() {
 //    }
 
     override fun onBackPressed() {
-        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
-        if (currentFragment is HomeFragment) {
+         currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+        if (currentFragment is HomeFragment|| currentFragment == null) {
             bottomNavigationView.selectedItemId = R.id.navigation_home
             val currentTime = System.currentTimeMillis()
             if (currentTime - backPressedTime < backPressedTimeout) {
@@ -168,7 +169,14 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show()
             }
         } else if (currentFragment is CategoryListFragment) {
-            loadFragmentForBack(MoreFragment())
+            val categoryListFragment = currentFragment as CategoryListFragment
+            val isDataTrueOrNot = categoryListFragment.getIsData()
+
+            if (isDataTrueOrNot != null && isDataTrueOrNot == "INCOME_ACTIVITY") {
+                loadFragmentForBack(IncomeActivity())
+            } else {
+                loadFragmentForBack(MoreFragment())
+            }
         } else if (currentFragment is PaymentModeFragment) {
             loadFragmentForBack(MoreFragment())
         } else if (currentFragment is AddCategoriesFragment) {
@@ -188,10 +196,10 @@ class MainActivity : AppCompatActivity() {
         } else if (currentFragment is CurrencyFragment) {
             bottomNavigationView.selectedItemId = R.id.navigation_more
             loadFragmentForBack(MoreFragment())
-        }else if (currentFragment is IncomeActivity) {
+        } else if (currentFragment is IncomeActivity) {
             bottomNavigationView.selectedItemId = R.id.navigation_home
             loadFragmentForBack(HomeFragment())
-        }else if (currentFragment is ExpenseActivity) {
+        } else if (currentFragment is ExpenseActivity) {
             bottomNavigationView.selectedItemId = R.id.navigation_home
             loadFragmentForBack(HomeFragment())
         } else {
@@ -205,6 +213,25 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.fragment_container, fragment)
             .commit()
     }
+
+//    private fun arePermissionsGranted(): Boolean {
+//        val permissions = arrayOf(
+//            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//            Manifest.permission.READ_EXTERNAL_STORAGE,
+//            Manifest.permission.INTERNET,
+//            Manifest.permission.GET_ACCOUNTS,
+//            Manifest.permission.USE_CREDENTIALS
+//        )
+//
+//        for (permission in permissions) {
+//            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+//                return false
+//            }
+//        }
+//
+//        return true
+//    }
+
 
 
 }
