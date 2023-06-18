@@ -158,8 +158,8 @@ class MainActivity : AppCompatActivity() {
 //    }
 
     override fun onBackPressed() {
-         currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
-        if (currentFragment is HomeFragment|| currentFragment == null) {
+        currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+        if (currentFragment is HomeFragment || currentFragment == null) {
             bottomNavigationView.selectedItemId = R.id.navigation_home
             val currentTime = System.currentTimeMillis()
             if (currentTime - backPressedTime < backPressedTimeout) {
@@ -231,7 +231,6 @@ class MainActivity : AppCompatActivity() {
 //
 //        return true
 //    }
-
 
 
 }

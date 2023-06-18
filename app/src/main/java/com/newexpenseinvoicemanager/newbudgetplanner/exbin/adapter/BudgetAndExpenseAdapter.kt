@@ -14,7 +14,7 @@ import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.PaymentModes
 
 class BudgetAndExpenseAdapter(
     var budgetAndExpenseList: List<BudgetAndExpense>,
-    private val onCardClickListener: (BudgetAndExpense, String, Boolean,String) -> Unit
+    private val onCardClickListener: (BudgetAndExpense, String, Boolean, String) -> Unit
 ) :
     RecyclerView.Adapter<BudgetAndExpenseAdapter.ViewHolder>() {
 
@@ -25,7 +25,7 @@ class BudgetAndExpenseAdapter(
             //   binding.catTextView.text = budgetAndExpense.budgetCat
             var progress: Int? = null
             var limitShow: Boolean? = null
-            var remaining: String? =""
+            var remaining: String? = ""
 
             val budgetAmount = budgetAndExpense.budget.toDoubleOrNull()
             val expenseAmount = budgetAndExpense.amount1?.toDoubleOrNull()
@@ -39,7 +39,7 @@ class BudgetAndExpenseAdapter(
             } else {
                 var sum = budgetAndExpense.amount!!.toInt() - budgetAndExpense.amount1!!.toInt()
                 binding.remainingTxt.text = "Remaining ${sum}"
-                remaining =sum.toString()
+                remaining = sum.toString()
             }
 
             if (amountOfIncExpTbl != null && expenseAmount == null) {
@@ -77,7 +77,7 @@ class BudgetAndExpenseAdapter(
                         limitShow = false
                     }
                 }
-               // Log.d("Adap posi/prog/limit","$budgetAndExpenseList[position] $progress $limitShow")
+                // Log.d("Adap posi/prog/limit","$budgetAndExpenseList[position] $progress $limitShow")
             }
 
             if (limitShow == null && progress == null) {
@@ -92,7 +92,10 @@ class BudgetAndExpenseAdapter(
                     limitShow!!,
                     remaining!!
                 )
-                Log.d("Adap It/prog/limit","$budgetAndExpenseList[position] $it $progress $limitShow")
+                Log.d(
+                    "Adap It/prog/limit",
+                    "$budgetAndExpenseList[position] $it $progress $limitShow"
+                )
 
             }
 
