@@ -366,6 +366,7 @@ class AddCategoriesFragment : Fragment() {
                             lifecycleScope.launch(Dispatchers.IO) {
                                 db.deleteCategory(value.toInt())
                                 deleteBudget(category?.CategoryName)
+                                deleteincomeexpense(category?.CategoryName)
                             }
                             container?.removeView(deleteCategoryView)
                             val ldf = CategoryListFragment()
@@ -454,6 +455,10 @@ class AddCategoriesFragment : Fragment() {
                             updateBudget(
                                 category?.CategoryName,
                                 binding.addCategorytxt.text.toString(), selectedColor
+                            )
+                            updateincCat(
+                                category?.CategoryName,
+                                binding.addCategorytxt.text.toString()
                             )
                             Toast.makeText(requireContext(), "Category Updated", Toast.LENGTH_SHORT)
                                 .show()
@@ -568,10 +573,24 @@ class AddCategoriesFragment : Fragment() {
         }
     }
 
+    private fun deleteincomeexpense(categoryName: String?) {
+        val db = AppDataBase.getInstance(requireContext()).incexpTblDao()
+        lifecycleScope.launch(Dispatchers.IO) {
+            db.deleteincomeexpense(categoryName!!)
+        }
+    }
+
     private fun updateBudget(categoryName: String?, newBudg: String, selectedColor: String?) {
         val db = AppDataBase.getInstance(requireContext()).budgetDao()
         lifecycleScope.launch(Dispatchers.IO) {
             db.updateBudgetOnName(newBudg, categoryName!!, selectedColor!!)
+        }
+    }
+
+    private fun updateincCat(categoryName: String?, newBudg: String) {
+        val db = AppDataBase.getInstance(requireContext()).incexpTblDao()
+        lifecycleScope.launch(Dispatchers.IO) {
+            db.updateIncExpOnName(newBudg, categoryName!!)
         }
     }
 

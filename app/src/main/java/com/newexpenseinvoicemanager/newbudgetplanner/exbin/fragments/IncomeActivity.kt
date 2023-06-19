@@ -32,8 +32,8 @@ class IncomeActivity : Fragment() {
     private lateinit var binding: ActivityIncomeBinding
     private lateinit var categoryList: ArrayList<String>
     private lateinit var PaymentModeList: ArrayList<String>
-    private lateinit var date: String
-    private lateinit var time: String
+    private var date: String? = ""
+    private var time: String? = ""
     private var vl: String? = ""
     private var p: String = ""
     private var pdm: String = ""
@@ -46,7 +46,12 @@ class IncomeActivity : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = ActivityIncomeBinding.inflate(layoutInflater)
-
+        val custom = binding.appBar
+        custom.ivDelete.visibility = View.GONE
+        custom.ivTitle.setText("Add Income")
+        custom.ivBack.setOnClickListener {
+            loadFragment(HomeFragment())
+        }
 //        supportActionBar?.title = "Income"
 //
         value = arguments?.getString("value")
@@ -80,12 +85,29 @@ class IncomeActivity : Fragment() {
 //            binding.incNote.setText(nt)
 
         } else if (SELECTED_CATEGORY != null) {
+            val amnt = arguments?.getString("amnt_vle")
+                val nte = arguments?.getString("nte_vle")
+            if (amnt != null && nte != null){
+                binding.incAmount.setText(amnt)
+                binding.incNote.setText(nte)
+            }else if(amnt == null && nte != null){
+                binding.incNote.setText(nte)
+            }else if(nte == null && amnt != null){
+                binding.incAmount.setText(amnt)
+            }
+            val sdf = SimpleDateFormat("dd/M/yyyy")
+            val sdf_1 = SimpleDateFormat("hh:mm a")
+            val defaulttDate = sdf.format(Date())
+            val defaultTime = sdf_1.format(Date())
+            binding.incdate.setText(defaulttDate)
+            binding.inctime.setText(defaultTime)
+
 
             binding.category.setOnClickListener {
                 getCategory()
             }
             binding.category.setText(SELECTED_CATEGORY)
-            Toast.makeText(requireContext(), "$SELECTED_CATEGORY", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(requireContext(), "$SELECTED_CATEGORY", Toast.LENGTH_SHORT).show()
             getPaymentMode()
 
             val calendar = Calendar.getInstance()
@@ -130,29 +152,16 @@ class IncomeActivity : Fragment() {
 
             binding.addIncomeBtn.setOnClickListener {
 
-                val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
-                val currentDate = sdf.format(Date())
-                System.out.println(" C DATE is  " + currentDate)
-                val amount = binding.incAmount.text.toString()
-                val note = binding.incNote.text.toString()
-                val category = binding.category.text.toString()
-                // val categoryindex = binding.category.selectedItemPosition.toString()
-                val paymentModes = binding.paymentMode.selectedItem as String
-                val paymentModesIndex = binding.paymentMode.selectedItemPosition.toString()
-                insertIncome(
-                    amount,
-                    category,
-                    date,
-                    time,
-                    paymentModes,
-                    paymentModesIndex,
-                    note,
-                    currentDate
-                )
+                validationOfData()
 
-                clearText()
             }
         } else {
+            val sdf = SimpleDateFormat("dd/M/yyyy")
+            val sdf_1 = SimpleDateFormat("hh:mm a")
+            val defaulttDate = sdf.format(Date())
+            val defaultTime = sdf_1.format(Date())
+            binding.incdate.setText(defaulttDate)
+            binding.inctime.setText(defaultTime)
             binding.category.setOnClickListener {
                 getCategory()
             }
@@ -160,7 +169,7 @@ class IncomeActivity : Fragment() {
             getPaymentMode()
             if (value != null) {
                 binding.category.setText(value)
-              //  Toast.makeText(requireContext(), "$value", Toast.LENGTH_SHORT).show()
+                //  Toast.makeText(requireContext(), "$value", Toast.LENGTH_SHORT).show()
 
 
             }
@@ -206,28 +215,7 @@ class IncomeActivity : Fragment() {
             }
 
             binding.addIncomeBtn.setOnClickListener {
-
-                val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
-                val currentDate = sdf.format(Date())
-                System.out.println(" C DATE is  " + currentDate)
-                val amount = binding.incAmount.text.toString()
-                val note = binding.incNote.text.toString()
-                val category = binding.category.text.toString()
-//                val categoryindex = binding.category.selectedItemPosition.toString()
-                val paymentModes = binding.paymentMode.selectedItem as String
-                val paymentModesIndex = binding.paymentMode.selectedItemPosition.toString()
-                insertIncome(
-                    amount,
-                    category,
-                    date,
-                    time,
-                    paymentModes,
-                    paymentModesIndex,
-                    note,
-                    currentDate
-                )
-
-//                clearText()
+                validationOfData()
             }
         }
         binding.category.setOnClickListener {
@@ -235,6 +223,50 @@ class IncomeActivity : Fragment() {
         }
 
         return binding.root
+    }
+
+    fun validationOfData() {
+        if (binding.category.text.toString() == "Select Category" || binding.category.text.toString()
+                .isEmpty()
+        ) {
+            binding.category.requestFocus()
+            binding.category.error = "Select Category"
+        } else if(binding.incAmount.text.toString() == "Amount" || binding.incAmount.text.toString().isEmpty()) {
+            binding.incAmount.requestFocus()
+            binding.incAmount.error = "Empty"
+        } else if(binding.incdate.text.toString()
+                .isEmpty() || binding.incdate.text.toString() == "Date"
+        ) {
+            binding.incdate.requestFocus()
+            binding.incdate.error = "Empty"
+        } else if(binding.paymentMode.selectedItem.toString() == "Select Payment Mode"
+        ) {
+            binding.paymentMode.requestFocus()
+            Toast.makeText(requireContext(), "Please Select Payment mode", Toast.LENGTH_SHORT).show()
+        } else if(binding.incNote.text.toString().isEmpty()) {
+            binding.incNote.requestFocus()
+            binding.incNote.error = "Empty"
+        } else {
+            val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+            val currentDate = sdf.format(Date())
+            val amount = binding.incAmount.text.toString()
+            val note = binding.incNote.text.toString()
+            val category = binding.category.text.toString()
+//                val categoryindex = binding.category.selectedItemPosition.toString()
+            val paymentModes = binding.paymentMode.selectedItem as String
+            val paymentModesIndex = binding.paymentMode.selectedItemPosition.toString()
+            insertIncome(
+                amount,
+                category,
+                date!!,
+                time!!,
+                paymentModes,
+                paymentModesIndex,
+                note,
+                currentDate
+            )
+            clearText()
+        }
     }
 
     fun insertIncome(
@@ -289,29 +321,18 @@ class IncomeActivity : Fragment() {
                             PaymentModeList
                         )
                     binding.paymentMode.adapter = arrayAdapter
-//                    if (vl != null){
-//                        if (p != null) {
-//                            Toast.makeText(requireContext(), "$pdm", Toast.LENGTH_SHORT).show()
-//                            val position = PaymentModeList.indexOf(p)
-//                            if (position != -1) {
-//                                Toast.makeText(requireContext(), "$pdm", Toast.LENGTH_SHORT).show()
-//                                binding.paymentMode.setSelection(position)
-//                            }
-//                        }
-//
-//                    }
+
                 }
             }
         }
     }
 
     fun getCategory() {
-//        val intent = Intent(requireContext(), MainActivity::class.java)
-//        intent.putExtra("SELECT_CATEGORY_01", "TRUE")
-//        startActivity(intent)
         val ldf = CategoryListFragment()
         val args = Bundle()
         args.putString("SELECT_CAT_INC", "001")
+        args.putString("AMNT_VL","${binding.incAmount.text.toString()}")
+        args.putString("NOTE_VL","${binding.incNote.text.toString()}")
         ldf.setArguments(args)
         //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
         activity?.supportFragmentManager?.beginTransaction()
@@ -339,6 +360,13 @@ class IncomeActivity : Fragment() {
         super.onStop()
 
     }
+    private fun loadFragment(fragment: Fragment) {
+        activity?.supportFragmentManager?.beginTransaction()
+            ?.replace(R.id.fragment_container, fragment)
+            ?.addToBackStack(null)
+            ?.commit()
+    }
+
 
 
 }

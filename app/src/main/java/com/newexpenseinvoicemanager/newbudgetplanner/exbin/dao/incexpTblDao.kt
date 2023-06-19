@@ -60,6 +60,13 @@ interface incexpTblDao {
     @Query("SELECT SUM(CASE WHEN dType = 'INCOME' THEN amount ELSE 0 END) - SUM(CASE WHEN dType = 'EXPENSE' THEN amount ELSE 0 END) AS difference FROM incexpTbl")
     fun getIncomeExpenseDifference(): LiveData<Double>
 
+    @Query("DELETE FROM incexpTbl WHERE category = :budgetC")
+    fun deleteincomeexpense(budgetC: String)
+
+    @Query("UPDATE incexpTbl SET category = :budgetC WHERE category = :oldBud")
+    fun updateIncExpOnName(budgetC: String,oldBud: String)
+
+
 
 
 }

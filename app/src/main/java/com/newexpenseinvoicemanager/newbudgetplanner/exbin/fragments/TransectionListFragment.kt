@@ -37,7 +37,7 @@ class TransectionListFragment : Fragment() {
         custom.ivBack.setOnClickListener {
             loadFragment(HomeFragment())
         }
-        custom.ivDelete.setImageResource(R.drawable.ic_filter)
+        custom.ivDelete.visibility = View.GONE
 
         val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
 
@@ -54,73 +54,10 @@ class TransectionListFragment : Fragment() {
         if (value == "INCOME") {
             custom.ivTitle.setText("Income Transection")
             getIncomeData(dao, categoryMap, currencyClass)
-            custom.ivDelete.setOnClickListener {
-                binding.clFliter.visibility = View.VISIBLE
-            }
+
         } else if (value == "EXPENSE") {
             custom.ivTitle.setText("Expense Transection")
             getExpenseData(dao, categoryMap, currencyClass)
-            custom.ivDelete.setOnClickListener {
-                binding.clFliter.visibility = View.VISIBLE
-            }
-        }
-
-        binding.tvStartdate.setOnClickListener {
-            getStartDate()
-        }
-
-        binding.tvEnddate.setOnClickListener {
-            getLastDate()
-        }
-
-        binding.tvAddStartdate.setOnClickListener {
-            getStartDate()
-        }
-
-        binding.tvAddEnddate.setOnClickListener {
-            getLastDate()
-        }
-
-        binding.btnApply.setOnClickListener {
-            if (value == "INCOME") {
-                dao.incexpTblDao().getAllIncomeDataByDate(sDate, lDate).observe(requireActivity()) {
-                    binding.transectionRecy.adapter =
-                        TransectionListAdapter(
-                            requireContext(),
-                            it,
-                            categoryMap,
-                            currencyClass
-                        ) { value, mode ->
-
-                        }
-                }
-            } else if (value == "EXPENSE") {
-                dao.incexpTblDao().getAllExpenseDataByDate(sDate, lDate)
-                    .observe(requireActivity()) {
-                        binding.transectionRecy.adapter =
-                            TransectionListAdapter(
-                                requireContext(),
-                                it,
-                                categoryMap,
-                                currencyClass
-                            ) { value, mode ->
-
-                            }
-                    }
-            }
-        }
-
-        binding.btnReset.setOnClickListener {
-            sDate = ""
-            lDate = ""
-            if (value == "INCOME") {
-                getIncomeData(dao, categoryMap, currencyClass)
-                binding.clFliter.visibility = View.GONE
-            } else if (value == "EXPENSE") {
-                getExpenseData(dao, categoryMap, currencyClass)
-                binding.clFliter.visibility = View.GONE
-            }
-
 
         }
 

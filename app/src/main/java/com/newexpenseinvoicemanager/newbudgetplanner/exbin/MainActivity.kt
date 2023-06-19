@@ -1,6 +1,7 @@
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -28,6 +29,8 @@ class MainActivity : AppCompatActivity() {
     private var isButtonVisible = false
     private var addupdatetView: View? = null
     private var currentFragment: Fragment? = null
+    private lateinit var sharedPreferences: SharedPreferences
+    private val PERMISSION_REQUEST_CODE = 123
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +40,10 @@ class MainActivity : AppCompatActivity() {
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.fragment_container, fragment)
         transaction.commit()
+        sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        if (!isPermissionGranted()) {
+            requestPermission()
+        }
         val toolbar = getSupportActionBar();
         bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         bottomAppBar = findViewById<BottomAppBar>(R.id.bottomAppBar)
@@ -93,6 +100,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             fab.setOnClickListener {
+                bottomNavigationView.selectedItemId = R.id.navigation_home
                 val fragment = HomeFragment()
                 loadFragment(fragment)
                 floatButtonShow()
@@ -231,6 +239,27 @@ class MainActivity : AppCompatActivity() {
 //
 //        return true
 //    }
+ fun isPermissionGranted(): Boolean {
+    return sharedPreferences.getBoolean("permission_granted", false)
+}
 
+    private fun requestPermission() {
+        val permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(permission), PERMISSION_REQUEST_CODE)
+        }
+    }
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted
+                sharedPreferences.edit().putBoolean("permission_granted", true).apply()
+            } else {
+                // Permission denied
+                // Handle the case where the permission is denied by showing a message or taking appropriate action
+            }
+        }
+    }
 
 }

@@ -31,14 +31,21 @@ import com.google.android.gms.drive.*
 import com.google.android.gms.drive.query.Filters
 import com.google.android.gms.drive.query.Query
 import com.google.android.gms.drive.query.SearchableField
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 
 
 private const val REQUEST_CODE_SIGN_IN = 1001
-class MoreFragment : Fragment() {
 
+
+class MoreFragment : Fragment() {
     private lateinit var binding: FragmentMoreBinding
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var progressDialog: ProgressDialog
+    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var gso: GoogleSignInOptions
+    private lateinit var gsc: GoogleSignInClient
 
 
     override fun onCreateView(
@@ -50,7 +57,11 @@ class MoreFragment : Fragment() {
             .requestScopes(Drive.SCOPE_FILE)
             .build()
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), signInOptions)
+        gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .build()
 
+        gsc = GoogleSignIn.getClient(requireActivity(), gso)
         // Create a progress dialog
         progressDialog = ProgressDialog(requireContext())
         progressDialog.setMessage("Exporting database to Google Drive...")
@@ -77,12 +88,33 @@ class MoreFragment : Fragment() {
         }
 
         binding.clTakeDrive.setOnClickListener {
-            signInToGoogle()
+            val account = GoogleSignIn.getLastSignedInAccount(requireContext())
+
+            if (account != null) {
+                Toast.makeText(requireContext(), "${account.displayName}", Toast.LENGTH_SHORT)
+                    .show()
+            } else {
+                SignIn()
+            }
         }
         binding.clRestore.setOnClickListener {
             importDatabase(requireContext())
         }
         return binding.root
+    }
+
+    private fun SignIn() {
+        val intent = googleSignInClient.signInIntent
+        startActivityForResult(intent, 100)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == 100) {
+            val account = GoogleSignIn.getSignedInAccountFromIntent(data)
+            account.getResult(ApiException::class.java)
+        }
     }
 
     private fun loadFragment(fragment: Fragment) {
@@ -184,7 +216,11 @@ class MoreFragment : Fragment() {
         query.addOnSuccessListener { metadataBuffer ->
             if (metadataBuffer.count > 0) {
                 progressDialog.dismiss()
-                Toast.makeText(context, "Database file already exists on Google Drive", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    "Database file already exists on Google Drive",
+                    Toast.LENGTH_SHORT
+                ).show()
             } else {
                 val changeSet = MetadataChangeSet.Builder()
                     .setTitle(destinationFileName)
@@ -208,60 +244,82 @@ class MoreFragment : Fragment() {
 
                             driveResourceClient.getRootFolder()
                                 .addOnSuccessListener { rootFolder ->
-                                    driveResourceClient.createFile(rootFolder, changeSet, driveContents)
+                                    driveResourceClient.createFile(
+                                        rootFolder,
+                                        changeSet,
+                                        driveContents
+                                    )
                                         .addOnSuccessListener {
                                             progressDialog.dismiss()
-                                            Toast.makeText(context, "Database exported to Google Drive", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(
+                                                context,
+                                                "Database exported to Google Drive",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                         }
                                         .addOnFailureListener {
                                             progressDialog.dismiss()
-                                            Toast.makeText(context, "Failed to create file on Google Drive", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(
+                                                context,
+                                                "Failed to create file on Google Drive",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                         }
                                 }
                                 .addOnFailureListener {
                                     progressDialog.dismiss()
-                                    Toast.makeText(context, "Failed to get root folder", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Failed to get root folder",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                         } catch (e: IOException) {
                             progressDialog.dismiss()
                             e.printStackTrace()
-                            Toast.makeText(context, "Failed to export database", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Failed to export database", Toast.LENGTH_SHORT)
+                                .show()
                         }
                     }
                     .addOnFailureListener {
                         progressDialog.dismiss()
-                        Toast.makeText(context, "Failed to create drive contents", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Failed to create drive contents",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
             }
             metadataBuffer.release()
         }
         query.addOnFailureListener {
             progressDialog.dismiss()
-            Toast.makeText(context, "Failed to export database to Google Drive", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Failed to export database to Google Drive", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_SIGN_IN) {
-            when (resultCode) {
-                Activity.RESULT_OK -> {
-                    val account = GoogleSignIn.getSignedInAccountFromIntent(data).getResult(ApiException::class.java)
-                    if (account != null) {
-                        exportDatabaseToDrive(account)
-                    } else {
-                        progressDialog.dismiss()
-                        Toast.makeText(context, "Failed to sign in to Google account ????", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                else -> {
-                    progressDialog.dismiss()
-                    Toast.makeText(context, "Failed to sign in to Google account !!!!", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (requestCode == REQUEST_CODE_SIGN_IN) {
+//            when (resultCode) {
+//                Activity.RESULT_OK -> {
+//                    val account = GoogleSignIn.getSignedInAccountFromIntent(data).getResult(ApiException::class.java)
+//                    if (account != null) {
+//                        exportDatabaseToDrive(account)
+//                    } else {
+//                        progressDialog.dismiss()
+//                        Toast.makeText(context, "Failed to sign in to Google account ????", Toast.LENGTH_SHORT).show()
+//                    }
+//                }
+//                else -> {
+//                    progressDialog.dismiss()
+//                    Toast.makeText(context, "Failed to sign in to Google account !!!!", Toast.LENGTH_SHORT).show()
+//                }
+//            }
+//        }
+//    }
 
 }
 

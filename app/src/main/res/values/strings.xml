@@ -10,4 +10,6 @@
     <string name="budgetText">You don\'t have a budget.\n Let\'s make one so you in control.
     </string>
     <string name="budget_amount">Remaining</string>
+    <string name="def_web_client_id">228833443645-4ohv61pv3dgs3gg7fv1pgdr81tbvci1g.apps.googleusercontent.com</string>
+
 </resources>
