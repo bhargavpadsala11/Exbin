@@ -45,7 +45,7 @@
                     android:layout_height="wrap_content"
                     android:text="Category"
                     android:textColor="@color/AddIncomeText"
-                    android:textSize="25sp" />
+                    android:textSize="22sp" />
 
                 <TextView
                     android:id="@+id/category"
@@ -53,7 +53,7 @@
                     android:layout_height="wrap_content"
                     android:hint="Select Category"
                     android:inputType="none"
-                    android:textSize="25sp" />
+                    android:textSize="18sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -78,7 +78,7 @@
                     android:layout_height="wrap_content"
                     android:text="Amount"
                     android:textColor="@color/AddIncomeText"
-                    android:textSize="25sp" />
+                    android:textSize="22sp" />
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/incAmount"
@@ -86,7 +86,7 @@
                     android:layout_height="wrap_content"
                     android:hint="Amount"
                     android:inputType="number"
-                    android:textSize="25sp" />
+                    android:textSize="18sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -111,7 +111,7 @@
                     android:layout_height="wrap_content"
                     android:text="Date/Time"
                     android:textColor="@color/AddIncomeText"
-                    android:textSize="25sp" />
+                    android:textSize="22sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -124,7 +124,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Date"
-                        android:textSize="25sp" />
+                        android:textSize="18sp" />
 
                     <TextView
                         android:id="@+id/inctime"
@@ -132,7 +132,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Time"
-                        android:textSize="25sp" />
+                        android:textSize="18sp" />
                 </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
@@ -158,7 +158,7 @@
                     android:layout_height="wrap_content"
                     android:text="Mode"
                     android:textColor="@color/AddIncomeText"
-                    android:textSize="25sp" />
+                    android:textSize="22sp" />
 
                 <Spinner
                     android:id="@+id/paymentMode"
@@ -166,7 +166,7 @@
                     android:layout_height="wrap_content"
                     android:hint="Amount"
                     android:inputType="none"
-                    android:textSize="25sp" />
+                    android:textSize="18sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -191,14 +191,14 @@
                     android:layout_height="wrap_content"
                     android:text="Note"
                     android:textColor="@color/AddIncomeText"
-                    android:textSize="25sp" />
+                    android:textSize="22sp" />
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/incNote"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Note"
-                    android:textSize="25sp" />
+                    android:textSize="18sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -210,6 +210,16 @@
             android:elevation="8dp"
             android:text="Add Income"
             app:cardCornerRadius="20dp"
-            app:cardElevation="8dp" />
+            app:cardElevation="8dp"
+            android:layout_marginHorizontal="14dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/main_color"
+            android:padding="12dp"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:cornerRadius="14dp" />
+
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

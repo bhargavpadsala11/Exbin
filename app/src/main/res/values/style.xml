@@ -9,7 +9,7 @@
     </style>
 
     <style name="SpinnerShape" parent="">
-        <item name="cornerSize">30%</item>
+        <item name="cornerSize">24%</item>
     </style>
 
     <style name="customRoundedImageView" parent="">
