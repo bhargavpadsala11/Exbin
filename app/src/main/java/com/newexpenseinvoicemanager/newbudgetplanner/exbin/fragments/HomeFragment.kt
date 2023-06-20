@@ -39,7 +39,7 @@ class HomeFragment : Fragment() {
         binding = FragmentHomeBinding.inflate(layoutInflater)
         (activity as MainActivity?)!!.showBottomNavigationView()
         val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
-        showData()
+       // showData()
         getTotalIncome(currencyClass)
         getDailyAvg(currencyClass)
         getDailyAvgExp(currencyClass)

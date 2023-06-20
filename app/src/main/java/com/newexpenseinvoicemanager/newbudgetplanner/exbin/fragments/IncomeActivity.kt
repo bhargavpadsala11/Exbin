@@ -99,6 +99,8 @@ class IncomeActivity : Fragment() {
             val sdf_1 = SimpleDateFormat("hh:mm a")
             val defaulttDate = sdf.format(Date())
             val defaultTime = sdf_1.format(Date())
+            date = defaulttDate
+            time = defaultTime
             binding.incdate.setText(defaulttDate)
             binding.inctime.setText(defaultTime)
 
@@ -160,6 +162,8 @@ class IncomeActivity : Fragment() {
             val sdf_1 = SimpleDateFormat("hh:mm a")
             val defaulttDate = sdf.format(Date())
             val defaultTime = sdf_1.format(Date())
+            date = defaulttDate
+            time = defaultTime
             binding.incdate.setText(defaulttDate)
             binding.inctime.setText(defaultTime)
             binding.category.setOnClickListener {
@@ -344,8 +348,8 @@ class IncomeActivity : Fragment() {
     fun clearText() {
         binding.incAmount.setText("")
         binding.incNote.setText("")
-        binding.incdate.setText("")
-        binding.inctime.setText("")
+        binding.incdate.setText("$date")
+        binding.inctime.setText("$time")
         binding.category.setText("")
         Toast.makeText(requireContext(), "Income Added Successfully", Toast.LENGTH_SHORT).show()
     }

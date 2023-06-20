@@ -17,7 +17,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.imageview.ShapeableImageView
-import com.google.android.material.textview.MaterialTextView
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.BudgetAndExpenseAdapter
@@ -48,15 +47,20 @@ class BudgetFragment : Fragment() {
         binding = FragmentBudgetBinding.inflate(layoutInflater)
 
         setBudgetView(inflater, container, sMonth)
-        binding.ydtextView.visibility = View.GONE
-        binding.budgetRecy.visibility = View.VISIBLE
+//        binding.ydtextView.visibility = View.GONE
+//        binding.budgetRecy.visibility = View.VISIBLE
         getCategory()
         binding.materialButton.setOnClickListener {
             binding.createBudget.visibility = View.GONE
             binding.saveBudget.visibility = View.VISIBLE
         }
+        val adapter = BudgetAndExpenseAdapter(emptyList()) { it, progress, limitShow, remain ->}
 
         val monthName = DateFormatSymbols().months[currentMonth]
+        sMonth = monthName
+        if (sMonth!=null){
+            setBudgetView(inflater, container, sMonth)
+        }
         binding.monthTxt.text = monthName
         // Toast.makeText(requireContext(), "", Toast.LENGTH_SHORT).show()
 
@@ -70,6 +74,11 @@ class BudgetFragment : Fragment() {
             binding.monthTxt.text = monthName
             sMonth = binding.monthTxt.text.toString()
             setBudgetView(inflater, container, sMonth)
+            getBudgetByMonth(monthName,adapter)
+           // adapter.notifyDataSetChanged()
+//            Toast.makeText(requireContext(), "$sMonth", Toast.LENGTH_SHORT).show()
+//            Log.d("bck Mont","$sMonth")
+
         }
 
         // Set up the next button
@@ -84,6 +93,10 @@ class BudgetFragment : Fragment() {
             binding.monthTxt.text = monthName
             sMonth = binding.monthTxt.text.toString()
             setBudgetView(inflater, container, sMonth)
+           // getBudgetByMonth(monthName,adapter)
+            adapter.notifyDataSetChanged()
+//            Toast.makeText(requireContext(), "$sMonth", Toast.LENGTH_SHORT).show()
+//            Log.d("nxt Mont","$sMonth")
         }
 
 
@@ -95,18 +108,32 @@ class BudgetFragment : Fragment() {
                 Toast.makeText(requireContext(), "Please Enter Amount", Toast.LENGTH_SHORT).show()
                 binding.amountText.requestFocus()
             } else {
-                insertBudget(
-                    amount,
-                    binding.categorySpin.selectedItem as String,
-                    selectedCatColor,
-                    currentDate,
-                    sMonth
-                )
-                clearText()
-                binding.createBudget.visibility = View.VISIBLE
-                binding.saveBudget.visibility = View.GONE
-                loadFragment(BudgetFragment())
+                if (sMonth == null){
+                    insertBudget(
+                        amount,
+                        binding.categorySpin.selectedItem as String,
+                        selectedCatColor,
+                        currentDate,
+                        monthName
+                    )
+                    clearText()
+                    binding.createBudget.visibility = View.VISIBLE
+                    binding.saveBudget.visibility = View.GONE
+                    loadFragment(BudgetFragment())
+                }else {
 
+                    insertBudget(
+                        amount,
+                        binding.categorySpin.selectedItem as String,
+                        selectedCatColor,
+                        currentDate,
+                        sMonth
+                    )
+                    clearText()
+                    binding.createBudget.visibility = View.VISIBLE
+                    binding.saveBudget.visibility = View.GONE
+                    loadFragment(BudgetFragment())
+                }
             }
         }
 
@@ -192,6 +219,7 @@ class BudgetFragment : Fragment() {
 
     fun setBudgetView(inflater: LayoutInflater, container: ViewGroup?, sdMonth: String) {
         val adapter = BudgetAndExpenseAdapter(emptyList()) { it, progress, limitShow, remain ->
+
             // Log.d("It/prog/limit", "$it $progress $limitShow")
             val bId = it.budgetId
             val bData = it
@@ -326,15 +354,23 @@ class BudgetFragment : Fragment() {
         lifecycleScope.launch {
             val budgetAndExpenseList = dao.getBudgetAndExpense(sdMonth)
             if (budgetAndExpenseList.isEmpty()) {
-                binding.ydtextView.visibility =View.VISIBLE
+                binding.ydtextView.visibility = View.VISIBLE
                 binding.budgetRecy.visibility = View.GONE
+//                Log.d("from if Mont","$sdMonth")
             } else {
+//                Log.d("from else Mont","$sdMonth")
                 binding.budgetRecy.visibility = View.VISIBLE
-                binding.ydtextView.visibility =View.GONE
+                binding.ydtextView.visibility = View.GONE
                 adapter.budgetAndExpenseList = budgetAndExpenseList
                 adapter.notifyDataSetChanged()
+//                Toast.makeText(requireContext(), "Button pressed And data avilable", Toast.LENGTH_SHORT).show()
             }
         }
+       
+    }
+    
+    fun getBudgetByMonth(sdMonth: String, adapter: BudgetAndExpenseAdapter){
+
     }
 
     fun clearText() {

@@ -29,8 +29,8 @@ class ExpenseActivity : Fragment() {
     private lateinit var binding: ActivityExpenseBinding
     private lateinit var categoryList: ArrayList<String>
     private lateinit var PaymentModeList: ArrayList<String>
-    private lateinit var date: String
-    private lateinit var time: String
+    private var date: String? = ""
+    private var time: String? = ""
     private var value: String? = ""
 
     override fun onCreateView(
@@ -76,6 +76,8 @@ class ExpenseActivity : Fragment() {
             val sdf_1 = SimpleDateFormat("hh:mm a")
             val defaulttDate = sdf.format(Date())
             val defaultTime = sdf_1.format(Date())
+            date = defaulttDate
+            time = defaultTime
             binding.expdate.setText(defaulttDate)
             binding.exptime.setText(defaultTime)
 //            Toast.makeText(requireContext(), "Selected $SELECTED_CATEGORY", Toast.LENGTH_SHORT).show()
@@ -133,6 +135,8 @@ class ExpenseActivity : Fragment() {
             val sdf_1 = SimpleDateFormat("hh:mm a")
             val defaulttDate = sdf.format(Date())
             val defaultTime = sdf_1.format(Date())
+            date = defaulttDate
+            time = defaultTime
             binding.expdate.setText(defaulttDate)
             binding.exptime.setText(defaultTime)
             binding.expcategory.setText(SELECTED_CATEGORY)
@@ -265,8 +269,8 @@ class ExpenseActivity : Fragment() {
     fun clearText() {
         binding.expAmount.setText("")
         binding.expNote.setText("")
-        binding.expdate.setText("")
-        binding.exptime.setText("")
+        binding.expdate.setText("$date")
+        binding.exptime.setText("$time")
         binding.expcategory.setText("")
         Toast.makeText(requireContext(), "Expense Added Successfully", Toast.LENGTH_SHORT).show()
     }
@@ -319,8 +323,8 @@ class ExpenseActivity : Fragment() {
             insertExpsnes(
                 amount,
                 category,
-                date,
-                time,
+                date!!,
+                time!!,
                 paymentModes,
                 paymentModesIndex,
                 note,

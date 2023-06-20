@@ -36,6 +36,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+       // MobileAds.initialize(this){}
+//        val adLoader = AdLoader.Builder(this, "ca-app-pub-3940256099942544/2247696110")
+//            .forNativeAd { ad : NativeAd ->
+//                // Show the ad.
+//            }
+//            .withAdListener(object : AdListener() {
+//                override fun onAdFailedToLoad(adError: LoadAdError) {
+//                    // Handle the failure by logging, altering the UI, and so on.
+//                }
+//            })
+//            .build()
+//        adLoader.loadAd(AdRequest.Builder().build())
+
         val fragment = HomeFragment()
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.fragment_container, fragment)
