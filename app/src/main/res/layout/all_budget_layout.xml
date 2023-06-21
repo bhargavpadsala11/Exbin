@@ -363,7 +363,7 @@
             android:id="@+id/siv_card_view"
             android:layout_width="match_parent"
             android:layout_height="220dp"
-            android:background="@drawable/shape_delete_dialog"
+            android:background="@drawable/shape_delete_dialogbottom"
             app:cardCornerRadius="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
