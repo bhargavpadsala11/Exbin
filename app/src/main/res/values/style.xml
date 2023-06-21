@@ -33,5 +33,8 @@
         <item name="cornerSizeTopRight">40dp</item>
     </style>
 
+    <style name="DateDialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/main_color</item>
+    </style>
 
 </resources>
