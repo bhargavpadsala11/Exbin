@@ -7,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.BudgetAndExpense
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.BudgetDb
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
 
 @Dao
 interface budgetDao {
@@ -22,12 +23,14 @@ interface budgetDao {
 
     @Query("SELECT * FROM BudgetDb WHERE _id = :id")
     fun getAllBudgetById(id:Int): LiveData<List<BudgetDb>>
+    @Query("SELECT * FROM BudgetDb WHERE budgetCat = :Catname AND dbMonth = :MonthName")
+    fun getBudgetByName(Catname: String,MonthName:String): BudgetDb?
 
 //    @Query("SELECT BudgetDb._id AS budgetId, BudgetDb.budget, BudgetDb.budgetCat, BudgetDb.catColor, BudgetDb.currentDate, incexpTbl.Id AS expenseId, BudgetDb.budget, incexpTbl.category, incexpTbl.dType, SUM(incexpTbl.amount) AS amount1, BudgetDb.budget AS amount FROM BudgetDb INNER JOIN incexpTbl ON BudgetDb.budgetCat = incexpTbl.category WHERE incexpTbl.dType = 'EXPENSE' GROUP BY incexpTbl.category")
 //    suspend fun getBudgetAndExpense(): List<BudgetAndExpense>
 
     //SELECT BudgetDb._id AS budgetId, BudgetDb.budget, BudgetDb.budgetCat, BudgetDb.catColor, BudgetDb.currentDate, incexpTbl.Id AS expenseId, BudgetDb.budget, incexpTbl.category, incexpTbl.dType, SUM(incexpTbl.amount) AS amount1, BudgetDb.budget AS amount FROM BudgetDb LEFT JOIN incexpTbl ON BudgetDb.budgetCat = incexpTbl.category AND incexpTbl.dType = 'EXPENSE' GROUP BY BudgetDb.budgetCat
-@Query("SELECT BudgetDb._id AS budgetId, BudgetDb.budget, BudgetDb.budgetCat, BudgetDb.catColor, BudgetDb.currentDate, incexpTbl.Id AS expenseId, BudgetDb.budget, incexpTbl.category, incexpTbl.dType, SUM(incexpTbl.amount) AS amount1, BudgetDb.budget AS amount,Categories.CategoryImage AS catImage \n" +
+@Query("SELECT BudgetDb._id AS budgetId, BudgetDb.budget, BudgetDb.budgetCat, BudgetDb.catColor, BudgetDb.currentDate, incexpTbl.Id AS expenseId, BudgetDb.budget, incexpTbl.category, incexpTbl.dType, SUM(CASE WHEN incexpTbl.sMonth = :sMonth THEN incexpTbl.amount ELSE 0 END) AS amount1, BudgetDb.budget AS amount,Categories.CategoryImage AS catImage \n" +
         "FROM BudgetDb \n" +
         "LEFT JOIN incexpTbl ON BudgetDb.budgetCat = incexpTbl.category AND incexpTbl.dType = 'EXPENSE' \n" +
         "LEFT JOIN Categories ON BudgetDb.budgetCat = Categories.CategoryName\n" +

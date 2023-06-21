@@ -30,10 +30,13 @@ class CategoryListFragment : Fragment() {
 
 
         val INCOME_ACTIVITY = arguments?.getString("SELECT_CAT_INC")
+        val INCOME_ACTIVITY_UPDATE = arguments?.getString("SELECT_CAT_INC_FOR_UPDATE")
+
+        val EXPENSE_ACTIVITY_UPDATE = arguments?.getString("SELECT_CAT_EXP_FOR_UPDATE")
         val EXPENSE_ACTIVITY = arguments?.getString("SELECT_CAT_EXP")
 
 //        vle = INCOME_ACTIVITY!!
-        if (INCOME_ACTIVITY == null && EXPENSE_ACTIVITY == null) {
+        if (INCOME_ACTIVITY == null && EXPENSE_ACTIVITY == null && INCOME_ACTIVITY_UPDATE == null && EXPENSE_ACTIVITY_UPDATE == null) {
             custom.ivBack.visibility = View.VISIBLE
             custom.ivBack.setOnClickListener {
                 loadFragment(MoreFragment())
@@ -51,7 +54,9 @@ class CategoryListFragment : Fragment() {
                     requireContext(),
                     it,
                     INCOME_ACTIVITY,
-                    EXPENSE_ACTIVITY
+                    EXPENSE_ACTIVITY,
+                    INCOME_ACTIVITY_UPDATE,
+                    EXPENSE_ACTIVITY_UPDATE
                 ) { Category, buttonClicked ->
                     if (buttonClicked == "EDIT") {
                         val ldf = AddCategoriesFragment()
@@ -81,6 +86,7 @@ class CategoryListFragment : Fragment() {
             binding.floatingActionButton.visibility = View.GONE
             val dao = AppDataBase.getInstance(requireContext()).categoriesDao()
             dao.getAllCategory().observe(requireActivity()) {
+//                Toast.makeText(requireContext(), "$INCOME_ACTIVITY_UPDATE", Toast.LENGTH_SHORT).show()
 //                Toast.makeText(requireContext(), "${dao.getAllPaymentMode()}", Toast.LENGTH_SHORT).show()
                 val layoutManager = LinearLayoutManager(requireContext())
                 val recy = binding.recyclerView
@@ -90,132 +96,196 @@ class CategoryListFragment : Fragment() {
                     requireContext(),
                     it,
                     INCOME_ACTIVITY,
-                    EXPENSE_ACTIVITY
+                    EXPENSE_ACTIVITY,
+                    INCOME_ACTIVITY_UPDATE,
+                    EXPENSE_ACTIVITY_UPDATE
                 ) { Category, buttonClicked ->
 
-                    if (INCOME_ACTIVITY != null && INCOME_ACTIVITY == "001") {
+                    if (INCOME_ACTIVITY_UPDATE != null && INCOME_ACTIVITY_UPDATE == "11") {
+//                        Toast.makeText(requireContext(), "Income Update", Toast.LENGTH_SHORT).show()
+                        val ID_ = arguments?.getString("id")
+                        val AMNT_ = arguments?.getString("amt")
+                        val DATE_ = arguments?.getString("dt")
+                        val TIME_ = arguments?.getString("time")
+                        val PAY_ = arguments?.getString("pmd")
+                        val PAY_MD_ = arguments?.getString("PMIND")
+                        val NOTE_ = arguments?.getString("nt")
+                        val SMONTH_ = arguments?.getString("month")
+                        if (buttonClicked != null) {
+                            if (INCOME_ACTIVITY_UPDATE == "11") {
+                                val ldf = IncomeActivity()
+                                val args = Bundle()
+                                args.putString("INC_", "INCOME")
+                                args.putString("id", ID_)
+                                args.putString("amt", AMNT_)
+                                args.putString("dt", DATE_)
+                                args.putString("pmd", PAY_)
+                                args.putString("nt", NOTE_)
+                                args.putString("time", TIME_)
+                                args.putString("month",SMONTH_)
+                                args.putString("PMIND",PAY_MD_)
+                                args.putString("CATEGORY_Update", "${Category.CategoryName}")
+                                ldf.setArguments(args)
+                                //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
+                                activity?.supportFragmentManager?.beginTransaction()
+                                    ?.replace(R.id.fragment_container, ldf)
+                                    ?.commit()
+                            }
+                        }
+                    } else if (EXPENSE_ACTIVITY_UPDATE != null && EXPENSE_ACTIVITY_UPDATE == "22") {
+                        val ID_ = arguments?.getString("id")
+                        val AMNT_ = arguments?.getString("amt")
+                        val DATE_ = arguments?.getString("dt")
+                        val TIME_ = arguments?.getString("time")
+                        val PAY_ = arguments?.getString("pmd")
+                        val PAY_MD_ = arguments?.getString("PMIND")
+                        val NOTE_ = arguments?.getString("nt")
+                        val SMONTH_ = arguments?.getString("month")
+                        if (buttonClicked != null) {
+                            if (EXPENSE_ACTIVITY_UPDATE == "22") {
+                                val ldf = ExpenseActivity()
+                                val args = Bundle()
+                                args.putString("EXP_", "EXPENSE")
+                                args.putString("id", ID_)
+                                args.putString("amt", AMNT_)
+                                args.putString("dt", DATE_)
+                                args.putString("pmd", PAY_)
+                                args.putString("nt", NOTE_)
+                                args.putString("time", TIME_)
+                                args.putString("month",SMONTH_)
+                                args.putString("PMIND",PAY_MD_)
+                                args.putString("CATEGORY_Update", "${Category.CategoryName}")
+                                ldf.setArguments(args)
+                                //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
+                                activity?.supportFragmentManager?.beginTransaction()
+                                    ?.replace(R.id.fragment_container, ldf)
+                                    ?.commit()
+                            }
+                        }
+                    } else{
+                        if (INCOME_ACTIVITY != null && INCOME_ACTIVITY == "001") {
 
-                        val amnt = arguments?.getString("AMNT_VL")
-                        val nte = arguments?.getString("NOTE_VL")
-                        if (amnt != null && nte == null) {
-                            if (buttonClicked != null) {
-                                if (INCOME_ACTIVITY == "001") {
-                                    val ldf = IncomeActivity()
-                                    val args = Bundle()
-                                    args.putString("CATEGORY", "${Category.CategoryName}")
-                                    args.putString("amnt_vle","$amnt")
-                                    ldf.setArguments(args)
-                                    //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
-                                    activity?.supportFragmentManager?.beginTransaction()
-                                        ?.replace(R.id.fragment_container, ldf)
-                                        ?.commit()
+                            val amnt = arguments?.getString("AMNT_VL")
+                            val nte = arguments?.getString("NOTE_VL")
+                            if (amnt != null && nte == null) {
+                                if (buttonClicked != null) {
+                                    if (INCOME_ACTIVITY == "001") {
+                                        val ldf = IncomeActivity()
+                                        val args = Bundle()
+                                        args.putString("CATEGORY", "${Category.CategoryName}")
+                                        args.putString("amnt_vle", "$amnt")
+                                        ldf.setArguments(args)
+                                        //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
+                                        activity?.supportFragmentManager?.beginTransaction()
+                                            ?.replace(R.id.fragment_container, ldf)
+                                            ?.commit()
+                                    }
+                                }
+                            } else if (amnt == null && nte != null) {
+                                if (buttonClicked != null) {
+                                    if (INCOME_ACTIVITY == "001") {
+                                        val ldf = IncomeActivity()
+                                        val args = Bundle()
+                                        args.putString("CATEGORY", "${Category.CategoryName}")
+                                        args.putString("nte_vle", "$nte")
+                                        ldf.setArguments(args)
+                                        //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
+                                        activity?.supportFragmentManager?.beginTransaction()
+                                            ?.replace(R.id.fragment_container, ldf)
+                                            ?.commit()
+                                    }
+                                }
+                            } else if (amnt != null && nte != null) {
+                                if (buttonClicked != null) {
+                                    if (INCOME_ACTIVITY == "001") {
+                                        val ldf = IncomeActivity()
+                                        val args = Bundle()
+                                        args.putString("CATEGORY", "${Category.CategoryName}")
+                                        args.putString("nte_vle", "$nte")
+                                        args.putString("amnt_vle", "$amnt")
+                                        ldf.setArguments(args)
+                                        //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
+                                        activity?.supportFragmentManager?.beginTransaction()
+                                            ?.replace(R.id.fragment_container, ldf)
+                                            ?.commit()
+                                    }
+                                }
+                            } else {
+                                if (buttonClicked != null) {
+                                    if (INCOME_ACTIVITY == "001") {
+                                        val ldf = IncomeActivity()
+                                        val args = Bundle()
+                                        args.putString("CATEGORY", "${Category.CategoryName}")
+                                        ldf.setArguments(args)
+                                        //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
+                                        activity?.supportFragmentManager?.beginTransaction()
+                                            ?.replace(R.id.fragment_container, ldf)
+                                            ?.commit()
+                                    }
                                 }
                             }
-                        } else if (amnt == null && nte != null) {
-                            if (buttonClicked != null) {
-                                if (INCOME_ACTIVITY == "001") {
-                                    val ldf = IncomeActivity()
-                                    val args = Bundle()
-                                    args.putString("CATEGORY", "${Category.CategoryName}")
-                                    args.putString("nte_vle","$nte")
-                                    ldf.setArguments(args)
-                                    //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
-                                    activity?.supportFragmentManager?.beginTransaction()
-                                        ?.replace(R.id.fragment_container, ldf)
-                                        ?.commit()
+                        } else {
+                            custom.ivBack.visibility = View.GONE
+                            binding.floatingActionButton.visibility = View.GONE
+                            val amnt = arguments?.getString("AMNT_VL")
+                            val nte = arguments?.getString("NOTE_VL")
+                            val ldf = ExpenseActivity()
+                            if (amnt != null && nte == null) {
+                                if (buttonClicked != null) {
+                                    if (EXPENSE_ACTIVITY == "002") {
+
+                                        val args = Bundle()
+                                        args.putString("CATEGORY1", "${Category.CategoryName}")
+                                        args.putString("amnt_vle", "$amnt")
+                                        ldf.setArguments(args)
+                                        //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
+                                        activity?.supportFragmentManager?.beginTransaction()
+                                            ?.replace(R.id.fragment_container, ldf)
+                                            ?.commit()
+                                    }
                                 }
-                            }
-                        } else if (amnt != null && nte != null){
-                            if (buttonClicked != null) {
-                                if (INCOME_ACTIVITY == "001") {
-                                    val ldf = IncomeActivity()
-                                    val args = Bundle()
-                                    args.putString("CATEGORY", "${Category.CategoryName}")
-                                    args.putString("nte_vle","$nte")
-                                    args.putString("amnt_vle","$amnt")
-                                    ldf.setArguments(args)
-                                    //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
-                                    activity?.supportFragmentManager?.beginTransaction()
-                                        ?.replace(R.id.fragment_container, ldf)
-                                        ?.commit()
+                            } else if (amnt == null && nte != null) {
+                                if (buttonClicked != null) {
+                                    if (EXPENSE_ACTIVITY == "002") {
+                                        val args = Bundle()
+                                        args.putString("CATEGORY1", "${Category.CategoryName}")
+                                        args.putString("nte_vle", "$nte")
+                                        ldf.setArguments(args)
+                                        //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
+                                        activity?.supportFragmentManager?.beginTransaction()
+                                            ?.replace(R.id.fragment_container, ldf)
+                                            ?.commit()
+                                    }
                                 }
-                            }
-                        }else{
-                            if (buttonClicked != null) {
-                                if (INCOME_ACTIVITY == "001") {
-                                    val ldf = IncomeActivity()
-                                    val args = Bundle()
-                                    args.putString("CATEGORY", "${Category.CategoryName}")
-                                    ldf.setArguments(args)
-                                    //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
-                                    activity?.supportFragmentManager?.beginTransaction()
-                                        ?.replace(R.id.fragment_container, ldf)
-                                        ?.commit()
+                            } else if (amnt != null && nte != null) {
+                                if (buttonClicked != null) {
+                                    if (EXPENSE_ACTIVITY == "002") {
+                                        val args = Bundle()
+                                        args.putString("CATEGORY1", "${Category.CategoryName}")
+                                        args.putString("nte_vle", "$nte")
+                                        args.putString("amnt_vle", "$amnt")
+                                        ldf.setArguments(args)
+                                        //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
+                                        activity?.supportFragmentManager?.beginTransaction()
+                                            ?.replace(R.id.fragment_container, ldf)
+                                            ?.commit()
+                                    }
+                                }
+                            } else {
+                                if (buttonClicked != null) {
+                                    if (EXPENSE_ACTIVITY == "002") {
+                                        val args = Bundle()
+                                        args.putString("CATEGORY1", "${Category.CategoryName}")
+                                        ldf.setArguments(args)
+                                        //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
+                                        activity?.supportFragmentManager?.beginTransaction()
+                                            ?.replace(R.id.fragment_container, ldf)
+                                            ?.commit()
+                                    }
                                 }
                             }
                         }
-                    } else {
-                        custom.ivBack.visibility = View.GONE
-                        binding.floatingActionButton.visibility = View.GONE
-                        val amnt = arguments?.getString("AMNT_VL")
-                        val nte = arguments?.getString("NOTE_VL")
-                        val ldf = ExpenseActivity()
-                        if (amnt != null && nte == null) {
-                            if (buttonClicked != null) {
-                                if (EXPENSE_ACTIVITY == "002") {
-
-                                    val args = Bundle()
-                                    args.putString("CATEGORY1", "${Category.CategoryName}")
-                                    args.putString("amnt_vle","$amnt")
-                                    ldf.setArguments(args)
-                                    //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
-                                    activity?.supportFragmentManager?.beginTransaction()
-                                        ?.replace(R.id.fragment_container, ldf)
-                                        ?.commit()
-                                }
-                            }
-                        } else if (amnt == null && nte != null) {
-                            if (buttonClicked != null) {
-                                if (EXPENSE_ACTIVITY == "002") {
-                                    val args = Bundle()
-                                    args.putString("CATEGORY1", "${Category.CategoryName}")
-                                    args.putString("nte_vle","$nte")
-                                    ldf.setArguments(args)
-                                    //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
-                                    activity?.supportFragmentManager?.beginTransaction()
-                                        ?.replace(R.id.fragment_container, ldf)
-                                        ?.commit()
-                                }
-                            }
-                        } else if (amnt != null && nte != null){
-                            if (buttonClicked != null) {
-                                if (EXPENSE_ACTIVITY == "002") {
-                                    val args = Bundle()
-                                    args.putString("CATEGORY1", "${Category.CategoryName}")
-                                    args.putString("nte_vle","$nte")
-                                    args.putString("amnt_vle","$amnt")
-                                    ldf.setArguments(args)
-                                    //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
-                                    activity?.supportFragmentManager?.beginTransaction()
-                                        ?.replace(R.id.fragment_container, ldf)
-                                        ?.commit()
-                                }
-                            }
-                        }else{
-                            if (buttonClicked != null) {
-                                if (EXPENSE_ACTIVITY == "002") {
-                                    val args = Bundle()
-                                    args.putString("CATEGORY1", "${Category.CategoryName}")
-                                    ldf.setArguments(args)
-                                    //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
-                                    activity?.supportFragmentManager?.beginTransaction()
-                                        ?.replace(R.id.fragment_container, ldf)
-                                        ?.commit()
-                                }
-                            }
-                        }
-                    }
-
+                }
                 }
                 recy.adapter = adapter
             }

@@ -74,7 +74,6 @@ class BudgetFragment : Fragment() {
             binding.monthTxt.text = monthName
             sMonth = binding.monthTxt.text.toString()
             setBudgetView(inflater, container, sMonth)
-            getBudgetByMonth(monthName,adapter)
            // adapter.notifyDataSetChanged()
 //            Toast.makeText(requireContext(), "$sMonth", Toast.LENGTH_SHORT).show()
 //            Log.d("bck Mont","$sMonth")
@@ -108,7 +107,14 @@ class BudgetFragment : Fragment() {
                 Toast.makeText(requireContext(), "Please Enter Amount", Toast.LENGTH_SHORT).show()
                 binding.amountText.requestFocus()
             } else {
+
+
                 if (sMonth == null){
+                    val db = AppDataBase.getInstance(requireContext()).budgetDao()
+                    val existingBudget = db.getBudgetByName(binding.categorySpin.selectedItem as String,monthName)
+                    if (existingBudget != null){
+                        Toast.makeText(requireContext(), "Budget Already exists", Toast.LENGTH_SHORT).show()
+                    }else{
                     insertBudget(
                         amount,
                         binding.categorySpin.selectedItem as String,
@@ -119,20 +125,25 @@ class BudgetFragment : Fragment() {
                     clearText()
                     binding.createBudget.visibility = View.VISIBLE
                     binding.saveBudget.visibility = View.GONE
-                    loadFragment(BudgetFragment())
+                    loadFragment(BudgetFragment())}
                 }else {
-
-                    insertBudget(
-                        amount,
-                        binding.categorySpin.selectedItem as String,
-                        selectedCatColor,
-                        currentDate,
-                        sMonth
-                    )
-                    clearText()
-                    binding.createBudget.visibility = View.VISIBLE
-                    binding.saveBudget.visibility = View.GONE
-                    loadFragment(BudgetFragment())
+                    val db = AppDataBase.getInstance(requireContext()).budgetDao()
+                    val existingBudget = db.getBudgetByName(binding.categorySpin.selectedItem as String,sMonth)
+                    if (existingBudget != null){
+                        Toast.makeText(requireContext(), "Budget Already exists", Toast.LENGTH_SHORT).show()
+                    }else {
+                        insertBudget(
+                            amount,
+                            binding.categorySpin.selectedItem as String,
+                            selectedCatColor,
+                            currentDate,
+                            sMonth
+                        )
+                        clearText()
+                        binding.createBudget.visibility = View.VISIBLE
+                        binding.saveBudget.visibility = View.GONE
+                        loadFragment(BudgetFragment())
+                    }
                 }
             }
         }
@@ -368,10 +379,7 @@ class BudgetFragment : Fragment() {
         }
        
     }
-    
-    fun getBudgetByMonth(sdMonth: String, adapter: BudgetAndExpenseAdapter){
 
-    }
 
     fun clearText() {
         binding.amountText.setText("")

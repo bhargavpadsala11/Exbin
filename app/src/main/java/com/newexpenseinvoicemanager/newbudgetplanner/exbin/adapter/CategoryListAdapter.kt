@@ -17,11 +17,15 @@ class CategoryListAdapter(
     val list: List<Categories>,
     INCOME_ACTIVITY: String?,
     EXPENSE_ACTIVITY: String?,
+    INCOME_UPDATE: String?,
+    EXPENSE_Update: String?,
     private val onImageClickListener: (Categories, String) -> Unit
 ) :
     RecyclerView.Adapter<CategoryListAdapter.CategoryListViewHolder>() {
     val INCOMEACTIVITY = INCOME_ACTIVITY
     val EXPENSEACTIVITY = EXPENSE_ACTIVITY
+    val INCOMEACTIVITYUP = INCOME_UPDATE
+    val EXPENSEACTIVITYUP = EXPENSE_Update
 
     inner class CategoryListViewHolder(val binding: CategoryItemLayoutBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -52,7 +56,7 @@ class CategoryListAdapter(
         imageView.setImageResource(image.toInt())
         imageView.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN)
         imageView.setBackgroundColor(lightColor)
-        if (INCOMEACTIVITY != null || EXPENSEACTIVITY != null) {
+        if (INCOMEACTIVITY != null || EXPENSEACTIVITY != null || INCOMEACTIVITYUP != null || EXPENSEACTIVITYUP != null) {
             holder.binding.catehoryItem.setOnClickListener {
                 onImageClickListener(list[position], "EDIT")
                 holder.binding.btneditmode.visibility = View.GONE

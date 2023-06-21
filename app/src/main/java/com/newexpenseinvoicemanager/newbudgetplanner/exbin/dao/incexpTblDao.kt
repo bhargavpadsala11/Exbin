@@ -66,6 +66,12 @@ interface incexpTblDao {
     @Query("UPDATE incexpTbl SET category = :budgetC WHERE category = :oldBud")
     fun updateIncExpOnName(budgetC: String,oldBud: String)
 
+    @Query("DELETE FROM incexpTbl WHERE Id = :id")
+    fun deleteincomeexpenseId(id: Int)
+
+    @Query("UPDATE incexpTbl SET amount = :newAmount,category = :newCategory,sMonth = :newMonth,date = :newDate,time = :newTime,paymentMode = :newPay,paymentModeIndex = :newPyInd,note = :newNote WHERE Id = :newId")
+    fun updateIncExpByID(newAmount: String,newCategory: String,newMonth: String,newDate: String,newTime: String,newPay: String,newPyInd: String,newNote: String,newId:Int)
+
 
 
 

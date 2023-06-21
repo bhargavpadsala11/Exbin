@@ -134,6 +134,8 @@ class TransectionFragment : Fragment() {
             sDate = ""
             lDate = ""
             tMode = ""
+            binding.tvAddStartdate.setText("00/00/0000")
+            binding.tvAddEnddate.setText("00/00/0000")
             filter.visibility = View.GONE
             getTransecton(currencyClass)
             ViewCompat.setBackgroundTintList(
@@ -152,6 +154,7 @@ class TransectionFragment : Fragment() {
                 dao.incexpTblDao().getAllIncomeDataByDate(sDate, lDate).observe(requireActivity()) {
                     binding.transectionItem.adapter =
                         adapterOfTransection(it, categoryMap, currencyClass)
+
                 }
             } else if (sDate != null && lDate != null && tMode == "EXPENSE") {
 
@@ -159,11 +162,13 @@ class TransectionFragment : Fragment() {
                     .observe(requireActivity()) {
                         binding.transectionItem.adapter =
                             adapterOfTransection(it, categoryMap, currencyClass)
+
                     }
             } else if (sDate != null && lDate != null) {
                 dao.incexpTblDao().getAllDataByTwoDate(sDate, lDate).observe(requireActivity()) {
                     binding.transectionItem.adapter =
                         adapterOfTransection(it, categoryMap, currencyClass)
+
                 }
             }
         }
@@ -432,38 +437,48 @@ class TransectionFragment : Fragment() {
             val id = value.Id
             val amaount = value.amount
             val category = value.category
+            val month = value.sMonth
             val date = value.date
             val pMode = value.paymentMode
             val note = value.note
             val time = value.time
-            val catIndex = value.categoryIndex
             val pmtIndex = value.paymentModeIndex
             if (mode == "INCOME") {
-                val intent = Intent(requireContext(), IncomeActivity::class.java)
-                intent.putExtra("value", "true")
-                intent.putExtra("id", id)
-                intent.putExtra("amt", amaount)
-                intent.putExtra("cty", category)
-                intent.putExtra("dt", date)
-                intent.putExtra("pmd", pMode)
-                intent.putExtra("nt", note)
-                intent.putExtra("ctyInd", catIndex)
-                intent.putExtra("pmInd", pmtIndex)
-                intent.putExtra("time", time)
-                startActivity(intent)
+                val ldf = IncomeActivity()
+                val args = Bundle()
+                args.putString("INC_", "INCOME")
+                args.putString("id", "$id")
+                args.putString("amt", amaount)
+                args.putString("cty", category)
+                args.putString("dt", date)
+                args.putString("pmd", pMode)
+                args.putString("nt", note)
+                args.putString("time", time)
+                args.putString("month",month)
+                args.putString("PMIND",pmtIndex)
+                ldf.setArguments(args)
+                //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
+                activity?.supportFragmentManager?.beginTransaction()
+                    ?.replace(R.id.fragment_container, ldf)
+                    ?.commit()
             } else if (mode == "EXPENSE") {
-                val intent = Intent(requireContext(), ExpenseActivity::class.java)
-                intent.putExtra("value", "true")
-                intent.putExtra("id", id)
-                intent.putExtra("amt", amaount)
-                intent.putExtra("cty", category)
-                intent.putExtra("dt", date)
-                intent.putExtra("pmd", pMode)
-                intent.putExtra("nt", note)
-                intent.putExtra("ctyInd", catIndex)
-                intent.putExtra("pmInd", pmtIndex)
-                intent.putExtra("time", time)
-                startActivity(intent)
+                val ldf = ExpenseActivity()
+                val args = Bundle()
+                args.putString("EXP_", "EXPENSE")
+                args.putString("id", "$id")
+                args.putString("amt", amaount)
+                args.putString("cty", category)
+                args.putString("dt", date)
+                args.putString("pmd", pMode)
+                args.putString("nt", note)
+                args.putString("time", time)
+                args.putString("month",month)
+                args.putString("PMIND",pmtIndex)
+                ldf.setArguments(args)
+                //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
+                activity?.supportFragmentManager?.beginTransaction()
+                    ?.replace(R.id.fragment_container, ldf)
+                    ?.commit()
             }
         }
         return adapter
