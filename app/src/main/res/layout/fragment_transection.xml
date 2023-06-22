@@ -282,6 +282,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="File Path: /storage/"
+            android:id="@+id/act_filePath"
             app:layout_constraintStart_toStartOf="@id/siv_card_view1"
             app:layout_constraintEnd_toEndOf="@id/siv_card_view1"
             app:layout_constraintBottom_toTopOf="@+id/radioGroup"

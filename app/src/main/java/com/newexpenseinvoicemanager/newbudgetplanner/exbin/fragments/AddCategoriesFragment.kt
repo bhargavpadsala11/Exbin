@@ -372,7 +372,7 @@ class AddCategoriesFragment : Fragment() {
                             val ldf = CategoryListFragment()
                             val transaction = activity?.supportFragmentManager?.beginTransaction()
                             transaction?.replace(R.id.fragment_container, ldf)
-                            transaction?.disallowAddToBackStack()
+                            transaction?.addToBackStack(null)
                             transaction?.commit()
                         }
                         cancelBtn?.setOnClickListener {

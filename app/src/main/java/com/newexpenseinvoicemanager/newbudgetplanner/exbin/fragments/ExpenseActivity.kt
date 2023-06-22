@@ -482,6 +482,7 @@ class ExpenseActivity : Fragment() {
         binding.exptime.setText("$time")
         binding.expcategory.setText("")
         Toast.makeText(requireContext(), "Expense Added Successfully", Toast.LENGTH_SHORT).show()
+        loadFragment(HomeFragment())
     }
 
     override fun onResume() {

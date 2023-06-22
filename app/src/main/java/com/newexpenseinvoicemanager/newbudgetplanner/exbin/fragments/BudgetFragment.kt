@@ -1,11 +1,13 @@
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -15,12 +17,14 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.imageview.ShapeableImageView
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.BudgetAndExpenseAdapter
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.getCurrencyClass
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.FragmentBudgetBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.BudgetDb
 import kotlinx.coroutines.Dispatchers
@@ -45,8 +49,40 @@ class BudgetFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentBudgetBinding.inflate(layoutInflater)
+        if (editBudgetView != null) {
+            binding.createBudget.isEnabled = false
+            binding.amountText.isEnabled = false
+            binding.saveBudget.isEnabled = false
+            binding.budgetRecy.isEnabled = false
+            binding.materialButton1.isEnabled = false
+            binding.materialButton.isEnabled = false
+            binding.categorySpin.setOnTouchListener { v, event ->
+                true
+            }
+            binding.saveBudget.isEnabled = false
+            binding.budgetRecy.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
+                override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                    // Return true to consume the touch event and prevent further handling
+                    return true
+                }
 
-        setBudgetView(inflater, container, sMonth)
+                override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
+                    // No-op, as touch events are intercepted and not propagated
+                }
+
+                override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+                    // No-op
+                }
+            })
+
+        }
+        val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
+        currencyClass.getCurrencies { crnSymb ->
+            binding.teSimbol.setText(crnSymb)
+        }
+
+
+        // setBudgetView(inflater, container, sMonth)
 //        binding.ydtextView.visibility = View.GONE
 //        binding.budgetRecy.visibility = View.VISIBLE
         getCategory()
@@ -54,11 +90,11 @@ class BudgetFragment : Fragment() {
             binding.createBudget.visibility = View.GONE
             binding.saveBudget.visibility = View.VISIBLE
         }
-        val adapter = BudgetAndExpenseAdapter(emptyList()) { it, progress, limitShow, remain ->}
+        val adapter = BudgetAndExpenseAdapter(emptyList()) { it, progress, limitShow, remain -> }
 
         val monthName = DateFormatSymbols().months[currentMonth]
         sMonth = monthName
-        if (sMonth!=null){
+        if (sMonth != null) {
             setBudgetView(inflater, container, sMonth)
         }
         binding.monthTxt.text = monthName
@@ -74,7 +110,7 @@ class BudgetFragment : Fragment() {
             binding.monthTxt.text = monthName
             sMonth = binding.monthTxt.text.toString()
             setBudgetView(inflater, container, sMonth)
-           // adapter.notifyDataSetChanged()
+            // adapter.notifyDataSetChanged()
 //            Toast.makeText(requireContext(), "$sMonth", Toast.LENGTH_SHORT).show()
 //            Log.d("bck Mont","$sMonth")
 
@@ -92,7 +128,7 @@ class BudgetFragment : Fragment() {
             binding.monthTxt.text = monthName
             sMonth = binding.monthTxt.text.toString()
             setBudgetView(inflater, container, sMonth)
-           // getBudgetByMonth(monthName,adapter)
+            // getBudgetByMonth(monthName,adapter)
             adapter.notifyDataSetChanged()
 //            Toast.makeText(requireContext(), "$sMonth", Toast.LENGTH_SHORT).show()
 //            Log.d("nxt Mont","$sMonth")
@@ -109,29 +145,40 @@ class BudgetFragment : Fragment() {
             } else {
 
 
-                if (sMonth == null){
+                if (sMonth == null) {
                     val db = AppDataBase.getInstance(requireContext()).budgetDao()
-                    val existingBudget = db.getBudgetByName(binding.categorySpin.selectedItem as String,monthName)
-                    if (existingBudget != null){
-                        Toast.makeText(requireContext(), "Budget Already exists", Toast.LENGTH_SHORT).show()
-                    }else{
-                    insertBudget(
-                        amount,
-                        binding.categorySpin.selectedItem as String,
-                        selectedCatColor,
-                        currentDate,
-                        monthName
-                    )
-                    clearText()
-                    binding.createBudget.visibility = View.VISIBLE
-                    binding.saveBudget.visibility = View.GONE
-                    loadFragment(BudgetFragment())}
-                }else {
+                    val existingBudget =
+                        db.getBudgetByName(binding.categorySpin.selectedItem as String, monthName)
+                    if (existingBudget != null) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Budget Already exists",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        insertBudget(
+                            amount,
+                            binding.categorySpin.selectedItem as String,
+                            selectedCatColor,
+                            currentDate,
+                            monthName
+                        )
+                        clearText()
+                        binding.createBudget.visibility = View.VISIBLE
+                        binding.saveBudget.visibility = View.GONE
+                        loadFragment(BudgetFragment())
+                    }
+                } else {
                     val db = AppDataBase.getInstance(requireContext()).budgetDao()
-                    val existingBudget = db.getBudgetByName(binding.categorySpin.selectedItem as String,sMonth)
-                    if (existingBudget != null){
-                        Toast.makeText(requireContext(), "Budget Already exists", Toast.LENGTH_SHORT).show()
-                    }else {
+                    val existingBudget =
+                        db.getBudgetByName(binding.categorySpin.selectedItem as String, sMonth)
+                    if (existingBudget != null) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Budget Already exists",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
                         insertBudget(
                             amount,
                             binding.categorySpin.selectedItem as String,
@@ -229,15 +276,45 @@ class BudgetFragment : Fragment() {
     }
 
     fun setBudgetView(inflater: LayoutInflater, container: ViewGroup?, sdMonth: String) {
+
         val adapter = BudgetAndExpenseAdapter(emptyList()) { it, progress, limitShow, remain ->
+            binding.createBudget.isEnabled = false
+            binding.amountText.isEnabled = false
+            binding.saveBudget.isEnabled = false
+            binding.budgetRecy.isEnabled = false
+            binding.materialButton1.isEnabled = false
+            binding.materialButton.isEnabled = false
+            binding.categorySpin.setOnTouchListener { v, event ->
+                true
+            }
+            binding.saveBudget.isEnabled = false
+            binding.budgetRecy.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
+                override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                    // Return true to consume the touch event and prevent further handling
+                    return true
+                }
+
+                override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
+                    // No-op, as touch events are intercepted and not propagated
+                }
+
+                override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+                    // No-op
+                }
+            })
+            val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
 
             // Log.d("It/prog/limit", "$it $progress $limitShow")
             val bId = it.budgetId
             val bData = it
+            val mainlayoutView = inflater.inflate(R.layout.fragment_budget, container, false)
             editBudgetView = inflater.inflate(R.layout.all_budget_layout, container, false)
+            container?.removeView(mainlayoutView)
             container?.addView(editBudgetView)
 
+
             val budgetdetail = editBudgetView?.findViewById<ConstraintLayout>(R.id.cl_pre_screen)
+            budgetdetail!!.isEnabled = false
             val budgetProgress = editBudgetView?.findViewById<ProgressBar>(R.id.pre_determinate_bar)
             val budgetLimitImage =
                 editBudgetView?.findViewById<AppCompatImageView>(R.id.pre_ic_arror)
@@ -254,9 +331,9 @@ class BudgetFragment : Fragment() {
 
             (activity as MainActivity?)!!.hideBottomNavigationView()
             backButtonBudget?.setOnClickListener {
+                loadFragment(BudgetFragment())
                 container?.removeView(editBudgetView)
                 (activity as MainActivity?)!!.showBottomNavigationView()
-
             }
             if (limitShow == true) {
                 budgetLimitImage?.visibility = View.VISIBLE
@@ -288,13 +365,27 @@ class BudgetFragment : Fragment() {
 
                 }
             }
+            val budgetTextView = editBudgetView?.findViewById<EditText>(R.id.edit_amount)
+            budgetTextView!!.isEnabled = true
+
+            if (editButton!!.isPressed) {
+                budgetTextView!!.isEnabled = true
+            } else if (editBudgetView != null && !editButton!!.isPressed) {
+                budgetTextView!!.isEnabled = false
+            }
 
             editButton?.setOnClickListener {
+                budgetTextView!!.isEnabled = true
+
                 val editudgetLayout =
                     editBudgetView?.findViewById<ConstraintLayout>(R.id.cl_edit_budget)
                 budgetdetail?.visibility = View.GONE
                 editudgetLayout?.visibility = View.VISIBLE
-                val budgetTextView = editBudgetView?.findViewById<EditText>(R.id.edit_amount)
+
+                val bSymbol = editBudgetView?.findViewById<TextView>(R.id.edit_currency_symbol)
+                currencyClass.getCurrencies { crnSymb ->
+                    bSymbol?.setText(crnSymb)
+                }
                 budgetTextView?.setText(bData.budget)
                 val budgetCatTextView =
                     editBudgetView?.findViewById<AppCompatTextView>(R.id.edit_category_spin)
@@ -340,10 +431,14 @@ class BudgetFragment : Fragment() {
 
 
             if (it.budgetCat != null && it.amount == null) {
-                remainingAmount?.setText("${it.amount}")
+                currencyClass.getCurrencies { crnSymb ->
+                    remainingAmount?.setText("$crnSymb" + " " + "${it.amount}")
+                }
             } else {
+                currencyClass.getCurrencies { crnSymb ->
 
-                remainingAmount?.setText("$remain")
+                    remainingAmount?.setText(crnSymb + " " + "$remain")
+                }
 
                 if (it.budget != null && it.amount1 != null) {
 
@@ -377,7 +472,7 @@ class BudgetFragment : Fragment() {
 //                Toast.makeText(requireContext(), "Button pressed And data avilable", Toast.LENGTH_SHORT).show()
             }
         }
-       
+
     }
 
 
@@ -421,3 +516,4 @@ class BudgetFragment : Fragment() {
 
 
 }
+

@@ -6,7 +6,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.google.android.ads.nativetemplates.rvadapter.AdmobNativeAdAdapter
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.TransectionListAdapter
@@ -25,6 +27,8 @@ class TransectionListFragment : Fragment() {
     private var exp: Double = 0.0
     private var sDate: String = ""
     private var lDate: String = ""
+    private var FireBaseGooggleAdsId: String = ""
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,6 +36,9 @@ class TransectionListFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentTransectionListBinding.inflate(layoutInflater)
+        val preference =
+            requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
+        FireBaseGooggleAdsId = preference.getString("Na_tive_id", "")!!
 
         val custom = binding.appBar
         custom.ivBack.setOnClickListener {
@@ -190,15 +197,49 @@ class TransectionListFragment : Fragment() {
         currencyClass: getCurrencyClass
     ) {
         dao.incexpTblDao().getAllExpenseData().observe(requireActivity()) {
-            binding.transectionRecy.adapter =
-                TransectionListAdapter(
-                    requireContext(),
-                    it,
-                    categoryMap,
-                    currencyClass
-                ) { value, mode ->
-
+            val adapter = TransectionListAdapter(
+                requireContext(),
+                it,
+                categoryMap,
+                currencyClass
+            ) { value, mode ->
+                val id = value.Id
+                val amaount = value.amount
+                val category = value.category
+                val month = value.sMonth
+                val date = value.date
+                val pMode = value.paymentMode
+                val note = value.note
+                val time = value.time
+                val pmtIndex = value.paymentModeIndex
+                if (mode == "EXPENSE") {
+                    val ldf = ExpenseActivity()
+                    val args = Bundle()
+                    args.putString("EXP_", "EXPENSE")
+                    args.putString("id", "$id")
+                    args.putString("amt", amaount)
+                    args.putString("cty", category)
+                    args.putString("dt", date)
+                    args.putString("pmd", pMode)
+                    args.putString("nt", note)
+                    args.putString("time", time)
+                    args.putString("month", month)
+                    args.putString("PMIND", pmtIndex)
+                    ldf.setArguments(args)
+                    //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
+                    activity?.supportFragmentManager?.beginTransaction()
+                        ?.replace(R.id.fragment_container, ldf)
+                        ?.commit()
                 }
+            }
+            val admobNativeAdAdapter = AdmobNativeAdAdapter.Builder.with(
+                FireBaseGooggleAdsId,
+                adapter,
+                "small"   // "medium" it can also used
+            ).adItemInterval(4).build()
+            binding.transectionRecy.adapter = admobNativeAdAdapter
+
+
         }
 
     }
@@ -211,15 +252,50 @@ class TransectionListFragment : Fragment() {
 
 
         dao.incexpTblDao().getAllIncomeData().observe(requireActivity()) {
-            binding.transectionRecy.adapter =
-                TransectionListAdapter(
-                    requireContext(),
-                    it,
-                    categoryMap,
-                    currencyClass
-                ) { value, mode ->
 
+            val adapter = TransectionListAdapter(
+                requireContext(),
+                it,
+                categoryMap,
+                currencyClass
+            ) { value, mode ->
+                val id = value.Id
+                val amaount = value.amount
+                val category = value.category
+                val month = value.sMonth
+                val date = value.date
+                val pMode = value.paymentMode
+                val note = value.note
+                val time = value.time
+                val pmtIndex = value.paymentModeIndex
+                if (mode == "INCOME") {
+                    val ldf = IncomeActivity()
+                    val args = Bundle()
+                    args.putString("INC_", "INCOME")
+                    args.putString("id", "$id")
+                    args.putString("amt", amaount)
+                    args.putString("cty", category)
+                    args.putString("dt", date)
+                    args.putString("pmd", pMode)
+                    args.putString("nt", note)
+                    args.putString("time", time)
+                    args.putString("month", month)
+                    args.putString("PMIND", pmtIndex)
+                    ldf.setArguments(args)
+                    //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
+                    activity?.supportFragmentManager?.beginTransaction()
+                        ?.replace(R.id.fragment_container, ldf)
+                        ?.commit()
                 }
+            }
+            val admobNativeAdAdapter = AdmobNativeAdAdapter.Builder.with(
+                FireBaseGooggleAdsId,
+                adapter,
+                "small"   // "medium" it can also used
+            ).adItemInterval(4).build()
+
+            binding.transectionRecy.adapter = admobNativeAdAdapter
+
         }
 
     }

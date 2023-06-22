@@ -19,3 +19,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Exbin"
 include ':app'
+include ':nativetemplates'

@@ -1,29 +1,39 @@
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin
 
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.ActivityMainBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var bottomNavigationView: BottomNavigationView
-    private lateinit var bottomAppBar: BottomAppBar
-    private lateinit var fab: FloatingActionButton
+    private var bottomNavigationView: BottomNavigationView? = null
+    private var bottomAppBar: BottomAppBar? = null
+    private var fab: FloatingActionButton? = null
     private var backPressedTime: Long = 0
     private val backPressedTimeout: Long = 2000 // 2 seconds
     private var isButtonVisible = false
@@ -36,27 +46,24 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-       // MobileAds.initialize(this){}
-//        val adLoader = AdLoader.Builder(this, "ca-app-pub-3940256099942544/2247696110")
-//            .forNativeAd { ad : NativeAd ->
-//                // Show the ad.
-//            }
-//            .withAdListener(object : AdListener() {
-//                override fun onAdFailedToLoad(adError: LoadAdError) {
-//                    // Handle the failure by logging, altering the UI, and so on.
-//                }
-//            })
-//            .build()
-//        adLoader.loadAd(AdRequest.Builder().build())
-
         val fragment = HomeFragment()
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.fragment_container, fragment)
         transaction.commit()
+
+        val isConnected = isInternet()
+        if (isConnected) {
+
+
         sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
         if (!isPermissionGranted()) {
             requestPermission()
         }
+
+
+
+
+        getIdofNativeAds()
         val toolbar = getSupportActionBar();
         bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         bottomAppBar = findViewById<BottomAppBar>(R.id.bottomAppBar)
@@ -75,7 +82,7 @@ class MainActivity : AppCompatActivity() {
             fragmentTransaction.addToBackStack(null)
             fragmentTransaction.commit()
         } else {
-            bottomNavigationView.setOnItemSelectedListener { item ->
+            bottomNavigationView?.setOnItemSelectedListener { item ->
                 var fragment: Fragment
                 when (item.itemId) {
                     R.id.navigation_home -> {
@@ -112,11 +119,16 @@ class MainActivity : AppCompatActivity() {
                     else -> false
                 }
             }
-            fab.setOnClickListener {
-                bottomNavigationView.selectedItemId = R.id.navigation_home
-                val fragment = HomeFragment()
-                loadFragment(fragment)
-                floatButtonShow()
+            fab?.setOnClickListener {
+                currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+                if (!(currentFragment is HomeFragment)){
+                    bottomNavigationView?.selectedItemId = R.id.navigation_home
+                    val fragment = HomeFragment()
+                    loadFragment(fragment)
+                }else{
+                    floatButtonShow()
+                }
+
             }
             binding.inc.setOnClickListener {
                 floatButtonHide()
@@ -126,6 +138,9 @@ class MainActivity : AppCompatActivity() {
                 floatButtonHide()
                 loadFragment(ExpenseActivity())
             }
+        }
+        } else {
+            showNoInternetDialog()
         }
     }
 
@@ -159,14 +174,14 @@ class MainActivity : AppCompatActivity() {
 
     public fun showBottomNavigationView() {
         bottomNavigationView?.setVisibility(View.VISIBLE)
-        bottomAppBar.visibility = View.VISIBLE
-        fab.visibility = View.VISIBLE
+        bottomAppBar?.visibility = View.VISIBLE
+        fab?.visibility = View.VISIBLE
     }
 
     public fun hideBottomNavigationView() {
         bottomNavigationView?.setVisibility(View.GONE)
-        bottomAppBar.visibility = View.GONE
-        fab.visibility = View.GONE
+        bottomAppBar?.visibility = View.GONE
+        fab?.visibility = View.GONE
 
 
     }
@@ -181,7 +196,7 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
         if (currentFragment is HomeFragment || currentFragment == null) {
-            bottomNavigationView.selectedItemId = R.id.navigation_home
+            bottomNavigationView?.selectedItemId = R.id.navigation_home
             val currentTime = System.currentTimeMillis()
             if (currentTime - backPressedTime < backPressedTimeout) {
                 finish()
@@ -203,25 +218,25 @@ class MainActivity : AppCompatActivity() {
         } else if (currentFragment is AddCategoriesFragment) {
             loadFragmentForBack(CategoryListFragment())
         } else if (currentFragment is BudgetFragment) {
-            bottomNavigationView.selectedItemId = R.id.navigation_home
+            bottomNavigationView?.selectedItemId = R.id.navigation_home
             loadFragmentForBack(HomeFragment())
         } else if (currentFragment is TransectionFragment) {
-            bottomNavigationView.selectedItemId = R.id.navigation_home
+            bottomNavigationView?.selectedItemId = R.id.navigation_home
             loadFragmentForBack(HomeFragment())
         } else if (currentFragment is MoreFragment) {
-            bottomNavigationView.selectedItemId = R.id.navigation_home
+            bottomNavigationView?.selectedItemId = R.id.navigation_home
             loadFragmentForBack(HomeFragment())
         } else if (currentFragment is TransectionListFragment) {
-            bottomNavigationView.selectedItemId = R.id.navigation_home
+            bottomNavigationView?.selectedItemId = R.id.navigation_home
             loadFragmentForBack(HomeFragment())
         } else if (currentFragment is CurrencyFragment) {
-            bottomNavigationView.selectedItemId = R.id.navigation_more
+            bottomNavigationView?.selectedItemId = R.id.navigation_more
             loadFragmentForBack(MoreFragment())
         } else if (currentFragment is IncomeActivity) {
-            bottomNavigationView.selectedItemId = R.id.navigation_home
+            bottomNavigationView?.selectedItemId = R.id.navigation_home
             loadFragmentForBack(HomeFragment())
         } else if (currentFragment is ExpenseActivity) {
-            bottomNavigationView.selectedItemId = R.id.navigation_home
+            bottomNavigationView?.selectedItemId = R.id.navigation_home
             loadFragmentForBack(HomeFragment())
         } else {
             finish()
@@ -274,5 +289,71 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    fun getIdofNativeAds(){
+        val database = FirebaseDatabase.getInstance()
+        val ref = database.getReference("Keys")
+
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val data = snapshot.value as Map<*, *>?
+
+                val appOpenKey = data?.get("App_Open_key") as String
+                val bannerKey = data?.get("Banner_key") as String
+                val interstitialVideoKey = data?.get("Interstitial_Video_key") as String
+                val interstitialKey = data?.get("Interstitial_key") as String
+                val nativeAdKey = data?.get("Native_Advanced_Video_key") as String
+                val nativeAdvancedKey = data?.get("Native_Advanced_key") as String
+                val rewardedInterstitialKey = data?.get("Rewarded_Interstitial_key") as String
+                val rewardedKey = data?.get("Rewarded_key") as String
+                val isShow = data?.get("is_show") as Boolean
+
+                val preference = getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
+                val editor = preference.edit()
+                editor.putString("Na_tive_id",nativeAdvancedKey)
+                editor.apply()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle the error if retrieval is unsuccessful
+            }
+        })
+    }
+
+    fun isInternet(): Boolean {
+        var isConnected = false
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val activeNetwork = connectivityManager.activeNetwork ?: return false
+            val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+            isConnected = when {
+                networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                else -> false
+            }
+        } else {
+            isConnected = when (connectivityManager.activeNetworkInfo?.type) {
+                ConnectivityManager.TYPE_WIFI -> true
+                ConnectivityManager.TYPE_MOBILE -> true
+                ConnectivityManager.TYPE_ETHERNET -> true
+                else -> false
+            }
+        }
+        return isConnected
+    }
+
+    fun showNoInternetDialog() {
+        val dialogBuilder = AlertDialog.Builder(this)
+        dialogBuilder.setTitle("No Internet Connection")
+        dialogBuilder.setMessage("Please check your internet connection and try again.")
+        dialogBuilder.setPositiveButton("OK") { dialog, _ ->
+            dialog.dismiss()
+            finish()
+        }
+        val dialog = dialogBuilder.create()
+        dialog.show()
+    }
+
 
 }

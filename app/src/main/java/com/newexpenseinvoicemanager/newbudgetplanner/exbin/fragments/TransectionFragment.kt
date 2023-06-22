@@ -2,6 +2,7 @@ package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
 
 import android.app.DatePickerDialog
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.media.MediaScannerConnection
@@ -12,10 +13,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
+import com.google.android.ads.nativetemplates.rvadapter.AdmobNativeAdAdapter
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
+import com.google.firebase.ktx.Firebase
 import com.itextpdf.text.Document
 import com.itextpdf.text.Font
 import com.itextpdf.text.Phrase
@@ -25,8 +35,10 @@ import com.itextpdf.text.pdf.PdfWriter
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.TransectionListAdapter
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.FirebaseDataFetcher
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.getCurrencyClass
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.FragmentTransectionBinding
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.AdKeys
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.incexpTbl
 import com.opencsv.CSVWriter
@@ -35,8 +47,9 @@ import java.io.FileOutputStream
 import java.io.FileWriter
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
-class TransectionFragment : Fragment() {
+class TransectionFragment : Fragment(){
 
 
     private lateinit var binding: FragmentTransectionBinding
@@ -44,6 +57,7 @@ class TransectionFragment : Fragment() {
     private var lDate: String = ""
     private var tMode: String = ""
     private var PDF_OR_EXCEL: Boolean = true
+    private var FireBaseGooggleAdsId:String = ""
 
 
     override fun onCreateView(
@@ -52,6 +66,11 @@ class TransectionFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentTransectionBinding.inflate(layoutInflater)
+        val preference =
+            requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
+        FireBaseGooggleAdsId = preference.getString("Na_tive_id","")!!
+
+
 
         val custom = binding.appBar
         custom.ivPdf.visibility = View.VISIBLE
@@ -72,6 +91,7 @@ class TransectionFragment : Fragment() {
                 categoryMap[category.CategoryName!!] = category
             }
         }
+//        getIdofNativeAds()
         getTransecton(currencyClass)
         val inComeButton = binding.btnIncome
         val exPenseButton = binding.btnExpense
@@ -187,6 +207,8 @@ class TransectionFragment : Fragment() {
                 PDF_OR_EXCEL = false
             }
 
+
+
             binding.btnDelete.setOnClickListener {
                 if (PDF_OR_EXCEL == true) {
                     dao.incexpTblDao().getAllData().observe(requireActivity()) {
@@ -199,6 +221,8 @@ class TransectionFragment : Fragment() {
                     }
                 }
             }
+            val filePath = File(requireContext().filesDir, "YOUR_FILE")
+            binding.actFilePath.setText("$filePath")
 
             binding.btncancel.setOnClickListener {
                 createFilter.visibility = View.GONE
@@ -226,7 +250,13 @@ class TransectionFragment : Fragment() {
         }
 
         dao.incexpTblDao().getAllData().observe(requireActivity()) {
-            binding.transectionItem.adapter = adapterOfTransection(it, categoryMap, currencyClass)
+            val adapter = adapterOfTransection(it, categoryMap, currencyClass)
+            val admobNativeAdAdapter = AdmobNativeAdAdapter.Builder.with(
+                FireBaseGooggleAdsId,
+                adapter,
+                "small"   // "medium" it can also used
+            ).adItemInterval(4).build()
+            binding.transectionItem.adapter = admobNativeAdAdapter
         }
     }
 
@@ -483,6 +513,8 @@ class TransectionFragment : Fragment() {
         }
         return adapter
     }
+
+
 
 
 }

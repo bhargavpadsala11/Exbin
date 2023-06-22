@@ -530,6 +530,7 @@ class IncomeActivity : Fragment() {
         binding.inctime.setText("$time")
         binding.category.setText("")
         Toast.makeText(requireContext(), "Income Added Successfully", Toast.LENGTH_SHORT).show()
+        loadFragment(HomeFragment())
     }
 
     override fun onResume() {
