@@ -55,90 +55,101 @@ class MainActivity : AppCompatActivity() {
         if (isConnected) {
 
 
-        sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
-        if (!isPermissionGranted()) {
-            requestPermission()
-        }
+            sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+            if (!isPermissionGranted()) {
+                requestPermission()
+            }
 
 
 
 
-        getIdofNativeAds()
-        val toolbar = getSupportActionBar();
-        bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-        bottomAppBar = findViewById<BottomAppBar>(R.id.bottomAppBar)
+            getIdofNativeAds()
+            val toolbar = getSupportActionBar();
+            bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+            bottomAppBar = findViewById<BottomAppBar>(R.id.bottomAppBar)
 
-        fab = binding.fab
-        val CHECK_VALUE = intent.getStringExtra("SELECT_CATEGORY_01")
+            fab = binding.fab
+            val CHECK_VALUE = intent.getStringExtra("SELECT_CATEGORY_01")
 
-        if (CHECK_VALUE != null) {
-            val args = Bundle()
-            args.putString("SELECT_CAT", "001")
-            val fragmentManager = supportFragmentManager
-            val fragmentTransaction = fragmentManager.beginTransaction()
-            val fragment = CategoryListFragment()
-            fragment.setArguments(args)
-            fragmentTransaction.replace(R.id.fragment_container, fragment)
-            fragmentTransaction.addToBackStack(null)
-            fragmentTransaction.commit()
-        } else {
-            bottomNavigationView?.setOnItemSelectedListener { item ->
-                var fragment: Fragment
-                when (item.itemId) {
-                    R.id.navigation_home -> {
-                        toolbar?.setTitle("Home")
-                        fragment = HomeFragment()
-                        loadFragment(fragment)
-                        true
+            if (CHECK_VALUE != null) {
+                val args = Bundle()
+                args.putString("SELECT_CAT", "001")
+                val fragmentManager = supportFragmentManager
+                val fragmentTransaction = fragmentManager.beginTransaction()
+                val fragment = CategoryListFragment()
+                fragment.setArguments(args)
+                fragmentTransaction.replace(R.id.fragment_container, fragment)
+                fragmentTransaction.addToBackStack(null)
+                fragmentTransaction.commit()
+            } else {
+                val isConnected = isInternet()
+                if (isConnected) {
+                    bottomNavigationView?.setOnItemSelectedListener { item ->
+                        var fragment: Fragment
+                        when (item.itemId) {
+                            R.id.navigation_home -> {
+                                toolbar?.setTitle("Home")
+                                fragment = HomeFragment()
+                                loadFragment(fragment)
+                                true
+                            }
+                            R.id.navigation_transection -> {
+                                floatButtonHide()
+                                toolbar?.setTitle("Transection")
+                                fragment = TransectionFragment()
+                                loadFragment(fragment)
+                                true
+                            }
+                            R.id.navigation_add -> {
+                                floatButtonShow()
+                                true
+                            }
+                            R.id.navigation_budget -> {
+                                floatButtonHide()
+                                toolbar?.setTitle("Budget")
+                                fragment = BudgetFragment()
+                                loadFragment(fragment)
+                                true
+                            }
+                            R.id.navigation_more -> {
+                                floatButtonHide()
+                                toolbar?.setTitle("More")
+                                fragment = MoreFragment()
+                                loadFragment(fragment)
+                                true
+                            }
+                            else -> false
+                        }
                     }
-                    R.id.navigation_transection -> {
-                        floatButtonHide()
-                        toolbar?.setTitle("Transection")
-                        fragment = TransectionFragment()
-                        loadFragment(fragment)
-                        true
+                } else {
+                    showNoInternetDialog()
+                }
+                if (isConnected) {
+                    fab?.setOnClickListener {
+                        currentFragment =
+                            supportFragmentManager.findFragmentById(R.id.fragment_container)
+                        if (!(currentFragment is HomeFragment)) {
+                            bottomNavigationView?.selectedItemId = R.id.navigation_home
+                            val fragment = HomeFragment()
+                            loadFragment(fragment)
+                        } else {
+                            floatButtonShow()
+                        }
+
                     }
-                    R.id.navigation_add -> {
-                        floatButtonShow()
-                        true
-                    }
-                    R.id.navigation_budget -> {
-                        floatButtonHide()
-                        toolbar?.setTitle("Budget")
-                        fragment = BudgetFragment()
-                        loadFragment(fragment)
-                        true
-                    }
-                    R.id.navigation_more -> {
-                        floatButtonHide()
-                        toolbar?.setTitle("More")
-                        fragment = MoreFragment()
-                        loadFragment(fragment)
-                        true
-                    }
-                    else -> false
+                } else {
+                    showNoInternetDialog()
+                }
+
+                binding.inc.setOnClickListener {
+                    floatButtonHide()
+                    loadFragment(IncomeActivity())
+                }
+                binding.exp.setOnClickListener {
+                    floatButtonHide()
+                    loadFragment(ExpenseActivity())
                 }
             }
-            fab?.setOnClickListener {
-                currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
-                if (!(currentFragment is HomeFragment)){
-                    bottomNavigationView?.selectedItemId = R.id.navigation_home
-                    val fragment = HomeFragment()
-                    loadFragment(fragment)
-                }else{
-                    floatButtonShow()
-                }
-
-            }
-            binding.inc.setOnClickListener {
-                floatButtonHide()
-                loadFragment(IncomeActivity())
-            }
-            binding.exp.setOnClickListener {
-                floatButtonHide()
-                loadFragment(ExpenseActivity())
-            }
-        }
         } else {
             showNoInternetDialog()
         }
@@ -146,11 +157,16 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun loadFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            //add animation code here   .setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out)
-            .replace(R.id.fragment_container, fragment)
-            .addToBackStack(null)
-            .commit()
+        var isConnected = isInternet()
+        if (isConnected) {
+            supportFragmentManager.beginTransaction()
+                //add animation code here   .setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out)
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit()
+        } else {
+            showNoInternetDialog()
+        }
     }
 
     private fun floatButtonShow() {
@@ -250,7 +266,7 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
-//    private fun arePermissionsGranted(): Boolean {
+    //    private fun arePermissionsGranted(): Boolean {
 //        val permissions = arrayOf(
 //            Manifest.permission.WRITE_EXTERNAL_STORAGE,
 //            Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -267,17 +283,26 @@ class MainActivity : AppCompatActivity() {
 //
 //        return true
 //    }
- fun isPermissionGranted(): Boolean {
-    return sharedPreferences.getBoolean("permission_granted", false)
-}
+    fun isPermissionGranted(): Boolean {
+        return sharedPreferences.getBoolean("permission_granted", false)
+    }
 
     private fun requestPermission() {
         val permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                permission
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             ActivityCompat.requestPermissions(this, arrayOf(permission), PERMISSION_REQUEST_CODE)
         }
     }
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -290,7 +315,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun getIdofNativeAds(){
+    fun getIdofNativeAds() {
         val database = FirebaseDatabase.getInstance()
         val ref = database.getReference("Keys")
 
@@ -310,7 +335,7 @@ class MainActivity : AppCompatActivity() {
 
                 val preference = getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
                 val editor = preference.edit()
-                editor.putString("Na_tive_id",nativeAdvancedKey)
+                editor.putString("Na_tive_id", nativeAdvancedKey)
                 editor.apply()
             }
 
@@ -322,10 +347,12 @@ class MainActivity : AppCompatActivity() {
 
     fun isInternet(): Boolean {
         var isConnected = false
-        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val activeNetwork = connectivityManager.activeNetwork ?: return false
-            val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+            val networkCapabilities =
+                connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
             isConnected = when {
                 networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
                 networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
