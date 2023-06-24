@@ -101,6 +101,7 @@ class HomeFragment : Fragment() {
                         //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
                         activity?.supportFragmentManager?.beginTransaction()
                             ?.replace(R.id.fragment_container, ldf)
+                            ?.addToBackStack(null)
                             ?.commit()
                     } else if (mode == "EXPENSE") {
                         val ldf = ExpenseActivity()
@@ -119,6 +120,7 @@ class HomeFragment : Fragment() {
                         //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
                         activity?.supportFragmentManager?.beginTransaction()
                             ?.replace(R.id.fragment_container, ldf)
+                            ?.addToBackStack(null)
                             ?.commit()
                     }
                 }

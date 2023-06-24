@@ -2,7 +2,9 @@ package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,9 +21,10 @@ import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.ActivityI
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.incexpTbl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.FieldPosition
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
+
 
 class IncomeActivity : Fragment() {
     private lateinit var binding: ActivityIncomeBinding
@@ -31,17 +34,17 @@ class IncomeActivity : Fragment() {
     private var time: String? = ""
     private var c: String = ""
     private var value: String? = ""
-    private var sMonth : String? = ""
+    private var sMonth: String? = ""
     private var deleteCategoryView: View? = null
-    private var CAT_ : String? = ""
-    private var AMNT_ :String? =""
-    private var DATE_ :String? =""
-    private var TIME_ :String? =""
-    private var PAY_ :String? =""
-    private var PAY_MD_ :String? =""
-    private var NOTE_ :String? =""
-    private var SMONTH_ :String? =""
-    private var _ID : String? = ""
+    private var CAT_: String? = ""
+    private var AMNT_: String? = ""
+    private var DATE_: String? = ""
+    private var TIME_: String? = ""
+    private var PAY_: String? = ""
+    private var PAY_MD_: String? = ""
+    private var NOTE_: String? = ""
+    private var SMONTH_: String? = ""
+    private var _ID: String? = ""
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -55,7 +58,7 @@ class IncomeActivity : Fragment() {
         }
 //        supportActionBar?.title = "Income"
 //
-       // value = arguments?.getString("value")
+        // value = arguments?.getString("value")
         val SELECTED_CATEGORY = arguments?.getString("CATEGORY")
         val INC_ = arguments?.getString("INC_")
 //        Toast.makeText(requireContext(), "$value", Toast.LENGTH_SHORT).show()
@@ -66,11 +69,11 @@ class IncomeActivity : Fragment() {
             val sdf = SimpleDateFormat("dd/M/yyyy")
             custom.ivTitle.setText("Update Income")
             custom.ivDelete.visibility = View.VISIBLE
-            getPaymentMode()
+            // getPaymentMode()
             val UPDATE_CAT = arguments?.getString("CATEGORY_Update")
-            if (UPDATE_CAT != null){
+            if (UPDATE_CAT != null) {
                 CAT_ = UPDATE_CAT
-            }else{
+            } else {
                 CAT_ = arguments?.getString("cty")
             }
             val ID_ = arguments?.getString("id")
@@ -84,7 +87,8 @@ class IncomeActivity : Fragment() {
             _ID = ID_
 
 
-            binding.category.setOnClickListener {  getCategoryForUpdate()}
+            binding.category.setOnClickListener { getCategoryForUpdate() }
+            spinnerSet(PAY_!!)
             //PaymentModeList.set(PAY_MD_!!.toInt(),PAY_!!)
             binding.incAmount.setText(AMNT_)
             binding.incdate.setText(DATE_)
@@ -163,18 +167,28 @@ class IncomeActivity : Fragment() {
             binding.addIncomeBtn.setText("Update")
 
             binding.addIncomeBtn.setOnClickListener {
-                validationOfDataForUpdate(ID_,CAT_,AMNT_,DATE_,TIME_,PAY_,PAY_MD_,NOTE_,SMONTH_)
+                validationOfDataForUpdate(
+                    ID_,
+                    CAT_,
+                    AMNT_,
+                    DATE_,
+                    TIME_,
+                    PAY_,
+                    PAY_MD_,
+                    NOTE_,
+                    SMONTH_
+                )
             }
 
         } else if (SELECTED_CATEGORY != null) {
             val amnt = arguments?.getString("amnt_vle")
-                val nte = arguments?.getString("nte_vle")
-            if (amnt != null && nte != null){
+            val nte = arguments?.getString("nte_vle")
+            if (amnt != null && nte != null) {
                 binding.incAmount.setText(amnt)
                 binding.incNote.setText(nte)
-            }else if(amnt == null && nte != null){
+            } else if (amnt == null && nte != null) {
                 binding.incNote.setText(nte)
-            }else if(nte == null && amnt != null){
+            } else if (nte == null && amnt != null) {
                 binding.incAmount.setText(amnt)
             }
             val sdf = SimpleDateFormat("dd/M/yyyy")
@@ -182,8 +196,8 @@ class IncomeActivity : Fragment() {
             val defaulttDate = sdf.format(Date())
             val defaultTime = sdf_1.format(Date())
             // Get the dynamically selected date as a string
-            
-            
+
+
             date = defaulttDate
             time = defaultTime
             binding.incdate.setText(defaulttDate)
@@ -335,9 +349,9 @@ class IncomeActivity : Fragment() {
         args.putString("pmd", PAY_)
         args.putString("nt", NOTE_)
         args.putString("time", TIME_)
-        args.putString("month",SMONTH_)
-        args.putString("PMIND",PAY_MD_)
-        args.putString("id",_ID)
+        args.putString("month", SMONTH_)
+        args.putString("PMIND", PAY_MD_)
+        args.putString("id", _ID)
         ldf.setArguments(args)
         //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
         activity?.supportFragmentManager?.beginTransaction()
@@ -351,19 +365,22 @@ class IncomeActivity : Fragment() {
         ) {
             binding.category.requestFocus()
             binding.category.error = "Select Category"
-        } else if(binding.incAmount.text.toString() == "Amount" || binding.incAmount.text.toString().isEmpty()) {
+        } else if (binding.incAmount.text.toString() == "Amount" || binding.incAmount.text.toString()
+                .isEmpty()
+        ) {
             binding.incAmount.requestFocus()
             binding.incAmount.error = "Empty"
-        } else if(binding.incdate.text.toString()
+        } else if (binding.incdate.text.toString()
                 .isEmpty() || binding.incdate.text.toString() == "Date"
         ) {
             binding.incdate.requestFocus()
             binding.incdate.error = "Empty"
-        } else if(binding.paymentMode.selectedItem.toString() == "Select Payment Mode"
+        } else if (binding.paymentMode.selectedItem.toString() == "Select Payment Mode"
         ) {
             binding.paymentMode.requestFocus()
-            Toast.makeText(requireContext(), "Please Select Payment mode", Toast.LENGTH_SHORT).show()
-        } else if(binding.incNote.text.toString().isEmpty()) {
+            Toast.makeText(requireContext(), "Please Select Payment mode", Toast.LENGTH_SHORT)
+                .show()
+        } else if (binding.incNote.text.toString().isEmpty()) {
             binding.incNote.requestFocus()
             binding.incNote.error = "Empty"
         } else {
@@ -406,29 +423,32 @@ class IncomeActivity : Fragment() {
         ) {
             binding.category.requestFocus()
             binding.category.error = "Select Category"
-        } else if(binding.incAmount.text.toString() == "Amount" || binding.incAmount.text.toString().isEmpty()) {
+        } else if (binding.incAmount.text.toString() == "Amount" || binding.incAmount.text.toString()
+                .isEmpty()
+        ) {
             binding.incAmount.requestFocus()
             binding.incAmount.error = "Empty"
-        } else if(binding.incdate.text.toString()
+        } else if (binding.incdate.text.toString()
                 .isEmpty() || binding.incdate.text.toString() == "Date"
         ) {
             binding.incdate.requestFocus()
             binding.incdate.error = "Empty"
-        } else if(binding.paymentMode.selectedItem.toString() == "Select Payment Mode"
+        } else if (binding.paymentMode.selectedItem.toString() == "Select Payment Mode"
         ) {
             binding.paymentMode.requestFocus()
-            Toast.makeText(requireContext(), "Please Select Payment mode", Toast.LENGTH_SHORT).show()
-        } else if(binding.incNote.text.toString().isEmpty()) {
+            Toast.makeText(requireContext(), "Please Select Payment mode", Toast.LENGTH_SHORT)
+                .show()
+        } else if (binding.incNote.text.toString().isEmpty()) {
             binding.incNote.requestFocus()
             binding.incNote.error = "Empty"
         } else {
             val AMNT_ = binding.incAmount.text.toString()
             val NOTE_ = binding.incNote.text.toString()
-            val  PAY_ = binding.paymentMode.selectedItem as String
+            val PAY_ = binding.paymentMode.selectedItem as String
             val PAY_MD_ = binding.paymentMode.selectedItemPosition.toString()
-            updateIncome(ID_,CAT_,AMNT_,DATE_,TIME_,PAY_,PAY_MD_,NOTE_,SMONTH_)
+            updateIncome(ID_, CAT_, AMNT_, DATE_, TIME_, PAY_, PAY_MD_, NOTE_, SMONTH_)
             Toast.makeText(requireContext(), "Income Updated", Toast.LENGTH_SHORT).show()
-            loadFragment(TransectionFragment())
+            loadFragment(HomeFragment())
         }
     }
 
@@ -445,7 +465,17 @@ class IncomeActivity : Fragment() {
     ) {
         val db = AppDataBase.getInstance(requireContext()).incexpTblDao()
         lifecycleScope.launch(Dispatchers.IO) {
-            db.updateIncExpByID(amnT_!!,caT_!!,smontH_!!,datE_!!,timE_!!,paY_!!,payMd!!,notE_!!,iD_!!.toInt())
+            db.updateIncExpByID(
+                amnT_!!,
+                caT_!!,
+                smontH_!!,
+                datE_!!,
+                timE_!!,
+                paY_!!,
+                payMd!!,
+                notE_!!,
+                iD_!!.toInt()
+            )
         }
     }
 
@@ -458,7 +488,7 @@ class IncomeActivity : Fragment() {
         paymentModeIndex: String,
         note: String,
         currentDateTime: String,
-        SmOnth : String
+        SmOnth: String
     ) {
         val db = AppDataBase.getInstance(requireContext()).incexpTblDao()
         val data = incexpTbl(
@@ -502,6 +532,7 @@ class IncomeActivity : Fragment() {
                             R.layout.dropdown_item_layout,
                             PaymentModeList
                         )
+
                     binding.paymentMode.adapter = arrayAdapter
 
                 }
@@ -513,8 +544,8 @@ class IncomeActivity : Fragment() {
         val ldf = CategoryListFragment()
         val args = Bundle()
         args.putString("SELECT_CAT_INC", "001")
-        args.putString("AMNT_VL","${binding.incAmount.text.toString()}")
-        args.putString("NOTE_VL","${binding.incNote.text.toString()}")
+        args.putString("AMNT_VL", "${binding.incAmount.text.toString()}")
+        args.putString("NOTE_VL", "${binding.incNote.text.toString()}")
         ldf.setArguments(args)
         //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
         activity?.supportFragmentManager?.beginTransaction()
@@ -543,6 +574,7 @@ class IncomeActivity : Fragment() {
         super.onStop()
         deleteCategoryView?.visibility = View.GONE
     }
+
     private fun loadFragment(fragment: Fragment) {
         activity?.supportFragmentManager?.beginTransaction()
             ?.replace(R.id.fragment_container, fragment)
@@ -550,6 +582,38 @@ class IncomeActivity : Fragment() {
             ?.commit()
     }
 
+    fun spinnerSet(position: String) {
+        PaymentModeList = ArrayList()
+        val dao = AppDataBase.getInstance(requireContext()).paymentModesDao()
 
+        dao.getAllPaymentMode().observe(requireActivity()) { paymentModes ->
+            if (paymentModes != null) {
+                if (paymentModes.isEmpty()) {
+                    PaymentModeList.clear()
+                    PaymentModeList.add(0, "Select Payment Mode")
+                } else {
+                    PaymentModeList.clear()
+                    PaymentModeList.add(0, "Select Payment Mode")
+                    for (paymentMode in paymentModes) {
+                        val mode = paymentMode.paymentMode
+                        if (mode != null) {
+                            PaymentModeList.add(mode)
+                        }
+                    }
+                    val arrayAdapter =
+                        ArrayAdapter(
+                            requireContext(),
+                            R.layout.dropdown_item_layout,
+                            PaymentModeList
+                        )
+                    binding.paymentMode.adapter = arrayAdapter
+
+                    val spinnerPosition: Int = arrayAdapter.getPosition(position)
+                    binding.paymentMode.setSelection(spinnerPosition)
+                    Log.d("position", "$spinnerPosition")
+                }
+            }
+        }
+    }
 
 }

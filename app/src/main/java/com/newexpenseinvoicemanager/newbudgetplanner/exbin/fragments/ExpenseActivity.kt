@@ -5,6 +5,7 @@ import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -69,7 +70,7 @@ class ExpenseActivity : Fragment() {
             val sdf = SimpleDateFormat("dd/M/yyyy")
             custom.ivTitle.setText("Update Expense")
             custom.ivDelete.visibility = View.VISIBLE
-            getPaymentMode()
+           // getPaymentMode()
             val UPDATE_CAT = arguments?.getString("CATEGORY_Update")
             if (UPDATE_CAT != null) {
                 CAT_ = UPDATE_CAT
@@ -86,7 +87,7 @@ class ExpenseActivity : Fragment() {
             SMONTH_ = arguments?.getString("month")
             _ID = ID_
 
-
+            spinnerSet(PAY_!!)
             binding.expcategory.setOnClickListener { getCategoryForUpdate() }
             //PaymentModeList.set(PAY_MD_!!.toInt(),PAY_!!)
             binding.expAmount.setText(AMNT_)
@@ -397,7 +398,7 @@ class ExpenseActivity : Fragment() {
             val PAY_MD_ = binding.exppaymentMode.selectedItemPosition.toString()
             updateExpense(_ID, CAT_, AMNT_, DATE_, TIME_, PAY_, PAY_MD_, NOTE_, SMONTH_)
             Toast.makeText(requireContext(), "Expense Updated", Toast.LENGTH_SHORT).show()
-            loadFragment(TransectionFragment())
+            loadFragment(HomeFragment())
 
         }
     }
@@ -584,5 +585,37 @@ class ExpenseActivity : Fragment() {
 //    fun setSpinnerError(spinner: Spinner, error: String?) {
 //        spinner.error = error
 //    }
+fun spinnerSet(position: String) {
+    PaymentModeList = java.util.ArrayList()
+    val dao = AppDataBase.getInstance(requireContext()).paymentModesDao()
 
+    dao.getAllPaymentMode().observe(requireActivity()) { paymentModes ->
+        if (paymentModes != null) {
+            if (paymentModes.isEmpty()) {
+                PaymentModeList.clear()
+                PaymentModeList.add(0, "Select Payment Mode")
+            } else {
+                PaymentModeList.clear()
+                PaymentModeList.add(0, "Select Payment Mode")
+                for (paymentMode in paymentModes) {
+                    val mode = paymentMode.paymentMode
+                    if (mode != null) {
+                        PaymentModeList.add(mode)
+                    }
+                }
+                val arrayAdapter =
+                    ArrayAdapter(
+                        requireContext(),
+                        R.layout.dropdown_item_layout,
+                        PaymentModeList
+                    )
+                binding.exppaymentMode.adapter = arrayAdapter
+
+                val spinnerPosition: Int = arrayAdapter.getPosition(position)
+                binding.exppaymentMode.setSelection(spinnerPosition)
+                Log.d("position", "$spinnerPosition")
+            }
+        }
+    }
+}
 }

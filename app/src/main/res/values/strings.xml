@@ -12,5 +12,16 @@
     <string name="budget_amount">Remaining</string>
     <string name="def_web_client_id">228833443645-4ohv61pv3dgs3gg7fv1pgdr81tbvci1g.apps.googleusercontent.com</string>
     <string name="native_id">ca-app-pub-3940256099942544/2247696110</string>
+    <string name="default_web_cli_id">839142938189-aakvv64brrnahdeq2hj23fmi3c9lk5sn.apps.googleusercontent.com</string>
+
+    <string name="source_google_drive">Google Drive</string>
+    <string name="start_drive">Start Google Drive</string>
+    <string name="login">Log In</string>
+    <string name="logout">Log Out</string>
+    <string name="status_logged_out">Logged Out</string>
+    <string name="status_logged_in">Logged In</string>
+    <string name="status_user_cancelled">User Cancelled</string>
+    <string name="status_error">We found a problem: %1$s</string>
+    <string name="not_open_file">Could not open file</string>
 
 </resources>

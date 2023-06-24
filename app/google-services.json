@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "839142938189",
+    "firebase_url": "https://exbin-6e053-default-rtdb.firebaseio.com",
     "project_id": "exbin-6e053",
     "storage_bucket": "exbin-6e053.appspot.com"
   },
@@ -14,15 +15,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "839142938189-q9qro4va6bbmh7csnlprtr0otmrp047a.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.newexpenseinvoicemanager.newbudgetplanner.exbin",
-            "certificate_hash": "47aaf9bd757d176d76ee88baeacebfd07fdce3de"
-          }
-        },
-        {
-          "client_id": "839142938189-ek4gdvr2i8so347bc14425nkq78alpkg.apps.googleusercontent.com",
+          "client_id": "839142938189-aakvv64brrnahdeq2hj23fmi3c9lk5sn.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -35,7 +28,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "839142938189-ek4gdvr2i8so347bc14425nkq78alpkg.apps.googleusercontent.com",
+              "client_id": "839142938189-aakvv64brrnahdeq2hj23fmi3c9lk5sn.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
