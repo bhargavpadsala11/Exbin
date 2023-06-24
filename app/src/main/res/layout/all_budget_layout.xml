@@ -43,9 +43,10 @@
         <View
             android:id="@+id/edit_view"
             android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:layout_marginTop="1dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="-20dp"
             android:background="@drawable/shape"
+            app:layout_constraintTop_toTopOf="@+id/edit_category_spin"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -117,19 +118,6 @@
             app:layout_constraintBottom_toTopOf="@id/edit_btn_save"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:foregroundGravity="center"
-            android:paddingHorizontal="10dp"
-            android:src="@drawable/ic_down_arrows"
-            android:tint="@color/gray"
-            app:layout_constraintBottom_toBottomOf="@id/edit_category_spin"
-            app:layout_constraintEnd_toEndOf="@id/edit_category_spin"
-            app:layout_constraintTop_toTopOf="@id/edit_category_spin"
-
-            />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/edit_btn_save"

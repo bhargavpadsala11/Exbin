@@ -59,25 +59,60 @@ class MoreFragment : Fragment() {
         }
         var fragment: Fragment
 
+        binding.titleTextView.setOnClickListener {
+            this.binding.addCatBtn.performClick()
+        }
         binding.addCatBtn.setOnClickListener {
             fragment = CategoryListFragment()
             loadFragment(fragment)
         }
 
+        binding.tvPayment.setOnClickListener {
+            this.binding.paymentModeBtn.performClick()
+        }
         binding.paymentModeBtn.setOnClickListener {
             fragment = PaymentModeFragment()
             loadFragment(fragment)
+        }
+        binding.tvCurrency.setOnClickListener {
+            this.binding.btnCurrency.performClick()
         }
         binding.btnCurrency.setOnClickListener {
             loadFragment(CurrencyFragment())
         }
 
+        binding.tvTakeDrive.setOnClickListener {
+            this.binding.clTakeDrive.performClick()
+        }
         binding.clTakeDrive.setOnClickListener {
 
+        }
+        binding.tvRestore.setOnClickListener {
+            this.binding.clRestore.performClick()
         }
         binding.clRestore.setOnClickListener {
             importDatabase(requireContext())
         }
+
+        binding.tvShareWf.setOnClickListener {
+            this.binding.clShareWf.performClick()
+        }
+        binding.clShareWf.setOnClickListener {
+
+        }
+        binding.tvAddPrivacy.setOnClickListener {
+            this.binding.clPrivacy.performClick()
+        }
+        binding.clPrivacy.setOnClickListener {
+
+        }
+        binding.tvAddAbout.setOnClickListener {
+            this.binding.clAbout.performClick()
+        }
+        binding.clAbout.setOnClickListener {
+
+        }
+
         return binding.root
     }
 

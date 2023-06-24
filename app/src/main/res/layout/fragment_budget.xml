@@ -18,10 +18,12 @@ tools:context=".fragments.BudgetFragment">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/backBtn"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginStart="26dp"
         android:tint="@color/white"
+        android:scaleType="center"
+        android:padding="20dp"
         android:src="@drawable/icback"
         app:layout_constraintBottom_toBottomOf="@id/monthTxt"
         app:layout_constraintStart_toStartOf="parent"
@@ -45,8 +47,10 @@ tools:context=".fragments.BudgetFragment">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/nxtBtn"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="20dp"
+        android:scaleType="center"
         android:layout_marginEnd="26dp"
         android:tint="@color/white"
         android:src="@drawable/ic_next_mnt"
@@ -126,9 +130,10 @@ tools:context=".fragments.BudgetFragment">
     <View
         android:id="@+id/view1"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:layout_marginTop="1dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="-20dp"
         android:background="@drawable/shape"
+        app:layout_constraintTop_toTopOf="@+id/categorySpin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
