@@ -67,51 +67,58 @@
                     android:orientation="vertical">
 
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
+                    <com.google.android.material.card.MaterialCardView
                         android:id="@+id/addCatBtn"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="10dp">
+                        android:layout_height="wrap_content">
 
-                        <com.google.android.material.imageview.ShapeableImageView
-                            android:id="@+id/imageView"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:background="@color/dark_main_color"
-                            android:scaleType="center"
-                            android:src="@drawable/ic_folder"
-                            android:tint="@color/main_color"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:shapeAppearanceOverlay="@style/CatagoryIconShape" />
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="10dp">
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/titleTextView"
-                            android:layout_width="0dp"
-                            android:layout_height="0dp"
-                            android:gravity="center_vertical"
-                            android:inputType="textCapWords"
-                            android:paddingHorizontal="20dp"
-                            android:text="Add Catagory"
-                            android:textColor="@color/black"
-                            android:textSize="18sp"
-                            app:layout_constraintBottom_toBottomOf="@+id/imageView"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/imageView"
-                            app:layout_constraintTop_toTopOf="@+id/imageView" />
+                            <com.google.android.material.imageview.ShapeableImageView
+                                android:id="@+id/imageView"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:background="@color/dark_main_color"
+                                android:scaleType="center"
+                                android:src="@drawable/ic_folder"
+                                android:tint="@color/main_color"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:shapeAppearanceOverlay="@style/CatagoryIconShape" />
 
-                        <com.google.android.material.imageview.ShapeableImageView
-                            android:id="@+id/iv_add_catag"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:scaleType="center"
-                            android:src="@drawable/ic_next_mnt"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:shapeAppearanceOverlay="@style/CatagoryIconShape" />
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/titleTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:gravity="center_vertical"
+                                android:inputType="textCapWords"
+                                android:paddingHorizontal="20dp"
+                                android:text="Add Catagory"
+                                android:textColor="@color/black"
+                                android:textSize="18sp"
+                                app:layout_constraintBottom_toBottomOf="@+id/imageView"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toEndOf="@+id/imageView"
+                                app:layout_constraintTop_toTopOf="@+id/imageView" />
+
+                            <com.google.android.material.imageview.ShapeableImageView
+                                android:id="@+id/iv_add_catag"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:scaleType="center"
+                                android:src="@drawable/ic_next_mnt"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:shapeAppearanceOverlay="@style/CatagoryIconShape" />
 
 
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                    </com.google.android.material.card.MaterialCardView>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/paymentModeBtn"

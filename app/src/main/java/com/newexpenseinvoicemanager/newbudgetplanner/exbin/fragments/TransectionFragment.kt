@@ -11,6 +11,7 @@ import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -32,6 +33,7 @@ import com.itextpdf.text.Phrase
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
 import com.itextpdf.text.pdf.PdfWriter
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.TransectionListAdapter
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
@@ -49,7 +51,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class TransectionFragment : Fragment(){
+class TransectionFragment : Fragment() {
 
 
     private lateinit var binding: FragmentTransectionBinding
@@ -57,7 +59,7 @@ class TransectionFragment : Fragment(){
     private var lDate: String = ""
     private var tMode: String = ""
     private var PDF_OR_EXCEL: Boolean = true
-    private var FireBaseGooggleAdsId:String = ""
+    private var FireBaseGooggleAdsId: String = ""
 
 
     override fun onCreateView(
@@ -68,12 +70,11 @@ class TransectionFragment : Fragment(){
         binding = FragmentTransectionBinding.inflate(layoutInflater)
         val preference =
             requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
-        FireBaseGooggleAdsId = preference.getString("Na_tive_id","")!!
-
+        FireBaseGooggleAdsId = preference.getString("Na_tive_id", "")!!
 
 
         val custom = binding.appBar
-        custom.ivPdf.visibility = View.VISIBLE
+        custom.ivPdf.visibility = VISIBLE
         val filter = binding.clFliter
         val createFilter = binding.clConverter
 
@@ -194,11 +195,12 @@ class TransectionFragment : Fragment(){
         }
 
         custom.ivDelete.setOnClickListener {
-            filter.visibility = View.VISIBLE
+                (activity as MainActivity?)!!.hideBottomNavigationView()
+
         }
 
         custom.ivPdf.setOnClickListener {
-            createFilter.visibility = View.VISIBLE
+            createFilter.visibility = VISIBLE
             binding.rdbPdf.setOnClickListener {
                 PDF_OR_EXCEL = true
             }
@@ -222,7 +224,7 @@ class TransectionFragment : Fragment(){
                 }
             }
             val filePath = File(requireContext().filesDir, "YOUR_FILE")
-            binding.actFilePath.setText("$filePath")
+            binding.actFilePath.setText("File Path: " + "$filePath")
 
             binding.btncancel.setOnClickListener {
                 createFilter.visibility = View.GONE
@@ -484,8 +486,8 @@ class TransectionFragment : Fragment(){
                 args.putString("pmd", pMode)
                 args.putString("nt", note)
                 args.putString("time", time)
-                args.putString("month",month)
-                args.putString("PMIND",pmtIndex)
+                args.putString("month", month)
+                args.putString("PMIND", pmtIndex)
                 ldf.setArguments(args)
                 //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
                 activity?.supportFragmentManager?.beginTransaction()
@@ -502,8 +504,8 @@ class TransectionFragment : Fragment(){
                 args.putString("pmd", pMode)
                 args.putString("nt", note)
                 args.putString("time", time)
-                args.putString("month",month)
-                args.putString("PMIND",pmtIndex)
+                args.putString("month", month)
+                args.putString("PMIND", pmtIndex)
                 ldf.setArguments(args)
                 //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
                 activity?.supportFragmentManager?.beginTransaction()
@@ -513,8 +515,6 @@ class TransectionFragment : Fragment(){
         }
         return adapter
     }
-
-
 
 
 }
