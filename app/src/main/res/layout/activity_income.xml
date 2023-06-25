@@ -156,7 +156,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Mode"
+                    android:text="Payment Mode"
                     android:textColor="@color/AddIncomeText"
                     android:textSize="22sp" />
 
