@@ -30,6 +30,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.activities.BackUpActivity
 
 
 private const val REQUEST_CODE_SIGN_IN = 1001
@@ -85,7 +86,9 @@ class MoreFragment : Fragment() {
             this.binding.clTakeDrive.performClick()
         }
         binding.clTakeDrive.setOnClickListener {
-
+            exportDataBase(requireContext())
+            val intent = Intent(requireContext(),BackUpActivity::class.java)
+            startActivity(intent)
         }
         binding.tvRestore.setOnClickListener {
             this.binding.clRestore.performClick()

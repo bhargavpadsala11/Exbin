@@ -1,41 +1,33 @@
 {
   "project_info": {
-    "project_number": "927787567720",
-    "project_id": "exbin-390809",
-    "storage_bucket": "exbin-390809.appspot.com"
+    "project_number": "228715183352",
+    "project_id": "financemanagement-391008",
+    "storage_bucket": "financemanagement-391008.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:927787567720:android:3c7e71ba3d9819982889dd",
+        "mobilesdk_app_id": "1:228715183352:android:6bbab033febb59a0310f0d",
         "android_client_info": {
           "package_name": "com.newexpenseinvoicemanager.newbudgetplanner.exbin"
         }
       },
       "oauth_client": [
         {
-          "client_id": "927787567720-s4m82bbu64bm7k5authtkbg4ok43pr91.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.newexpenseinvoicemanager.newbudgetplanner.exbin",
-            "certificate_hash": "47aaf9bd757d176d76ee88baeacebfd07fdce3de"
-          }
-        },
-        {
-          "client_id": "927787567720-kgd7k8fpo0l2fv7c4brdc51n3me1gjbc.apps.googleusercontent.com",
+          "client_id": "228715183352-7a4bt7llipofo7l59vn9347aa2rulnj2.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA9ss20LRoN8ED6sy8nf07n9pn7etTxeVQ"
+          "current_key": "AIzaSyDCvPJ43Djk5NjJfGAuc8mJc3j568UgBWU"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "927787567720-kgd7k8fpo0l2fv7c4brdc51n3me1gjbc.apps.googleusercontent.com",
+              "client_id": "228715183352-7a4bt7llipofo7l59vn9347aa2rulnj2.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
