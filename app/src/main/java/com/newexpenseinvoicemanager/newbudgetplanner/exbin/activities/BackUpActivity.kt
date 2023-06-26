@@ -55,13 +55,14 @@ class BackUpActivity : AppCompatActivity() {
         gsc = GoogleSignIn.getClient(this, gso)
 
 
-            binding.mbBackupBtn.setOnClickListener {
-                uploadFileToGDrive(this) }
+        binding.mbBackupBtn.setOnClickListener {
+            uploadFileToGDrive(this)
+        }
 
 
-            binding.mbBackup.setOnClickListener {
-                SingIn()
-            }
+        binding.mbBackup.setOnClickListener {
+            SingIn()
+        }
 
 
         binding.mbSingOut.setOnClickListener {
@@ -203,9 +204,10 @@ class BackUpActivity : AppCompatActivity() {
                     val mediaContent = FileContent("application/octet-stream", localFile)
 
                     withContext(Dispatchers.IO) {
-                        val uploadedFile = googleDriveService.files().create(fileMetadata, mediaContent)
-                            .setFields("id")
-                            .execute()
+                        val uploadedFile =
+                            googleDriveService.files().create(fileMetadata, mediaContent)
+                                .setFields("id")
+                                .execute()
 
                         val fileId = uploadedFile.id
 
@@ -233,7 +235,6 @@ class BackUpActivity : AppCompatActivity() {
             }
         }
     }
-
 
 
     private fun restoreFromBackup() {
@@ -277,6 +278,36 @@ class BackUpActivity : AppCompatActivity() {
     }
 
 
+//    private fun importDatabaseFromDrive(context: Context, fileId: String) {
+//        val destinationFile = context.getDatabasePath("EXBIN")
+//
+//        try {
+//            // Check if database file exists
+//            if (destinationFile.exists()) {
+//                // Close any open connections to the database
+//                AppDataBase.getInstance(context).close()
+//
+//                // Delete the existing database file
+//                context.deleteDatabase("EXBIN")
+//            }
+//
+//            val outputStream = FileOutputStream(destinationFile)
+//            mDrive.files().get(fileId).executeMediaAndDownloadTo(outputStream)
+//
+//            // Reopen the database after importing
+//            AppDataBase.getInstance(context)
+//
+//            Toast.makeText(
+//                context,
+//                "Database imported from Google Drive",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            Toast.makeText(context, "Failed to import database", Toast.LENGTH_SHORT).show()
+//        }
+//    }
+
     private fun importDatabaseFromDrive(context: Context, fileId: String) {
         val destinationFile = context.getDatabasePath("EXBIN")
 
@@ -296,14 +327,18 @@ class BackUpActivity : AppCompatActivity() {
             // Reopen the database after importing
             AppDataBase.getInstance(context)
 
-            Toast.makeText(
-                context,
-                "Database imported from Google Drive",
-                Toast.LENGTH_SHORT
-            ).show()
+            runOnUiThread {
+                Toast.makeText(
+                    context,
+                    "Database imported from Google Drive",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(context, "Failed to import database", Toast.LENGTH_SHORT).show()
+            runOnUiThread {
+                Toast.makeText(context, "Failed to import database", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
