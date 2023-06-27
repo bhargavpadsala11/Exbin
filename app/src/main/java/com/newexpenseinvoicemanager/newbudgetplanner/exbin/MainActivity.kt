@@ -9,6 +9,7 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.text.Layout
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -28,6 +29,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.ActivityMainBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -126,6 +129,8 @@ class MainActivity : AppCompatActivity() {
                 }
                 if (isConnected) {
                     fab?.setOnClickListener {
+
+//                        Toast.makeText(this, "$currentDate", Toast.LENGTH_SHORT).show()
                         currentFragment =
                             supportFragmentManager.findFragmentById(R.id.fragment_container)
                         if (!(currentFragment is HomeFragment)) {
@@ -215,7 +220,17 @@ class MainActivity : AppCompatActivity() {
             bottomNavigationView?.selectedItemId = R.id.navigation_home
             val currentTime = System.currentTimeMillis()
             if (currentTime - backPressedTime < backPressedTimeout) {
-                finish()
+                val myButton: View = findViewById(R.id.exit_dialog)
+                myButton.visibility = View.VISIBLE
+                val deleteDiloug = binding.exitDialog
+                deleteDiloug.btnDelete.setOnClickListener {
+                    finish()
+                }
+
+                deleteDiloug.btncancel.setOnClickListener {
+                    val myButton: View = findViewById(R.id.exit_dialog)
+                    myButton.visibility = View.GONE
+                }
             } else {
                 backPressedTime = currentTime
                 Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show()
@@ -254,7 +269,10 @@ class MainActivity : AppCompatActivity() {
         } else if (currentFragment is ExpenseActivity) {
             bottomNavigationView?.selectedItemId = R.id.navigation_home
             loadFragmentForBack(HomeFragment())
-        } else {
+        } else if(currentFragment is WebViewFragment){
+            bottomNavigationView?.selectedItemId = R.id.navigation_more
+            loadFragmentForBack(MoreFragment())
+        }else{
             finish()
         }
 
@@ -336,6 +354,7 @@ class MainActivity : AppCompatActivity() {
                 val preference = getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
                 val editor = preference.edit()
                 editor.putString("Na_tive_id", nativeAdvancedKey)
+                editor.putString("inter_id", interstitialKey)
                 editor.apply()
             }
 

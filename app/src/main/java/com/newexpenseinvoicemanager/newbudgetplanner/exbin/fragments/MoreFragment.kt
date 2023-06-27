@@ -90,30 +90,34 @@ class MoreFragment : Fragment() {
             val intent = Intent(requireContext(),BackUpActivity::class.java)
             startActivity(intent)
         }
-        binding.tvRestore.setOnClickListener {
-            this.binding.clRestore.performClick()
-        }
-        binding.clRestore.setOnClickListener {
-            importDatabase(requireContext())
-        }
+
 
         binding.tvShareWf.setOnClickListener {
             this.binding.clShareWf.performClick()
         }
         binding.clShareWf.setOnClickListener {
-
+            shareApplication()
         }
+
         binding.tvAddPrivacy.setOnClickListener {
             this.binding.clPrivacy.performClick()
         }
         binding.clPrivacy.setOnClickListener {
-
+            val ldf = WebViewFragment()
+            val args = Bundle()
+            args.putString("PRIVACY_KEY", "PRIVACY")
+            ldf.setArguments(args)
+            loadFragment(ldf)
         }
         binding.tvAddAbout.setOnClickListener {
             this.binding.clAbout.performClick()
         }
         binding.clAbout.setOnClickListener {
-
+            val ldf = WebViewFragment()
+            val args = Bundle()
+            args.putString("PRIVACY_KEY", "TERMS")
+            ldf.setArguments(args)
+            loadFragment(ldf)
         }
 
         return binding.root
@@ -196,7 +200,14 @@ class MoreFragment : Fragment() {
     }
 
 
+    private fun shareApplication() {
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.type = "text/plain"
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Share Application")
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out this awesome app!")
 
+        startActivity(Intent.createChooser(shareIntent, "Share via"))
+    }
 
 
 

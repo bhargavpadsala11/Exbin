@@ -18,6 +18,7 @@ import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.ads.nativetemplates.rvadapter.AdmobNativeAdAdapter
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.imageview.ShapeableImageView
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
@@ -38,6 +39,7 @@ class BudgetFragment : Fragment() {
     private lateinit var binding: FragmentBudgetBinding
     private lateinit var categoryList: ArrayList<String>
     private lateinit var selectedCatColor: String
+    private var FireBaseGooggleAdsId: String = ""
     private var currentMonth: Int = Calendar.getInstance().get(Calendar.MONTH)
     var sMonth: String = ""
 
@@ -455,7 +457,14 @@ class BudgetFragment : Fragment() {
             }
 
         }
-        binding.budgetRecy.adapter = adapter
+        val admobNativeAdAdapter = AdmobNativeAdAdapter.Builder.with(
+            FireBaseGooggleAdsId,
+            adapter,
+            "small"   // "medium" it can also used
+        ).adItemInterval(3).build()
+
+
+        binding.budgetRecy.adapter = admobNativeAdAdapter
         val dao = AppDataBase.getInstance(requireContext()).budgetDao()
         lifecycleScope.launch {
             val budgetAndExpenseList = dao.getBudgetAndExpense(sdMonth)

@@ -5,9 +5,8 @@ import android.app.DatePickerDialog
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
-import android.media.MediaScannerConnection
 import android.os.Bundle
-import android.os.Environment
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,27 +19,22 @@ import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import com.google.android.ads.nativetemplates.rvadapter.AdmobNativeAdAdapter
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
-import com.google.firebase.ktx.Firebase
+import com.google.android.gms.ads.*
+import com.google.android.gms.ads.AdRequest.Builder
+import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.itextpdf.text.Document
 import com.itextpdf.text.Font
 import com.itextpdf.text.Phrase
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
 import com.itextpdf.text.pdf.PdfWriter
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.TransectionListAdapter
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
-import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.FirebaseDataFetcher
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.getCurrencyClass
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.FragmentTransectionBinding
-import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.AdKeys
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.incexpTbl
 import com.opencsv.CSVWriter
@@ -49,7 +43,6 @@ import java.io.FileOutputStream
 import java.io.FileWriter
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class TransectionFragment : Fragment() {
 
@@ -60,6 +53,9 @@ class TransectionFragment : Fragment() {
     private var tMode: String = ""
     private var PDF_OR_EXCEL: Boolean = true
     private var FireBaseGooggleAdsId: String = ""
+    private var FireBaseGooggleAdsInterId: String = ""
+    private var cDate: String? = ""
+    private var mInterstitialAd: InterstitialAd? = null
 
 
     override fun onCreateView(
@@ -68,9 +64,12 @@ class TransectionFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentTransectionBinding.inflate(layoutInflater)
+        val sdf = SimpleDateFormat("ddMyyyyhhmmss")
+        cDate = sdf.format(Date())
         val preference =
             requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
         FireBaseGooggleAdsId = preference.getString("Na_tive_id", "")!!
+        FireBaseGooggleAdsInterId = preference.getString("inter_id", "")!!
 
 
         val custom = binding.appBar
@@ -93,9 +92,65 @@ class TransectionFragment : Fragment() {
             }
         }
 //        getIdofNativeAds()
+        MobileAds.initialize(requireContext()) {}
+        val adReqest: AdRequest = AdRequest.Builder().build()
+        InterstitialAd.load(
+            requireContext(),
+            FireBaseGooggleAdsInterId,
+            adReqest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.d(TAG, adError?.toString()!!)
+                    mInterstitialAd = null
+
+
+                }
+
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    Log.d(TAG, "Ad was loaded.")
+                    mInterstitialAd = interstitialAd
+                    mInterstitialAd?.fullScreenContentCallback =
+                        object : FullScreenContentCallback() {
+                            override fun onAdClicked() {
+                                // Called when a click is recorded for an ad.
+                                Log.d(TAG, "Ad was clicked.")
+                            }
+
+                            override fun onAdDismissedFullScreenContent() {
+                                // Called when ad is dismissed.
+                                Log.d(TAG, "Ad dismissed fullscreen content.")
+                                mInterstitialAd = null
+                                if (PDF_OR_EXCEL == true) {
+                                    dao.incexpTblDao().getAllData().observe(requireActivity()) {
+                                        val adapter = adapterOfTransection(it, categoryMap, currencyClass)
+                                        generatePdf(it, categoryMap, currencyClass, adapter)
+                                    }
+                                } else {
+                                    dao.incexpTblDao().getAllData().observe(requireActivity()) {
+                                        val adapter = adapterOfTransection(it, categoryMap, currencyClass)
+                                        exportToExcel(adapter, requireContext())
+                                    }
+                                }
+                            }
+
+
+                            override fun onAdImpression() {
+                                // Called when an impression is recorded for an ad.
+                                Log.d(TAG, "Ad recorded an impression.")
+                            }
+
+                            override fun onAdShowedFullScreenContent() {
+                                // Called when ad is shown.
+                                Log.d(TAG, "Ad showed fullscreen content.")
+                            }
+                        }
+                }
+            })
         getTransecton(currencyClass)
         val inComeButton = binding.btnIncome
         val exPenseButton = binding.btnExpense
+
+
 
 
         dao.incexpTblDao().getAllData().observe(requireActivity()) {
@@ -195,7 +250,7 @@ class TransectionFragment : Fragment() {
         }
 
         custom.ivDelete.setOnClickListener {
-                (activity as MainActivity?)!!.hideBottomNavigationView()
+            (activity as MainActivity?)!!.hideBottomNavigationView()
 
         }
 
@@ -213,14 +268,32 @@ class TransectionFragment : Fragment() {
 
             binding.btnDelete.setOnClickListener {
                 if (PDF_OR_EXCEL == true) {
-                    dao.incexpTblDao().getAllData().observe(requireActivity()) {
-                        generatePdf(it, categoryMap, currencyClass)
-                    }
+                    Handler().postDelayed(kotlinx.coroutines.Runnable {
+                        if (mInterstitialAd != null) {
+                            mInterstitialAd!!.show(requireActivity())
+                        } else {
+                            Log.e(tag, "adPending")
+                            dao.incexpTblDao().getAllData().observe(requireActivity()) {
+                                val adapter = adapterOfTransection(it, categoryMap, currencyClass)
+                                generatePdf(it, categoryMap, currencyClass, adapter)
+                            }
+                        }
+                    }, 10000)
+                    //add ads here
+
                 } else {
-                    dao.incexpTblDao().getAllData().observe(requireActivity()) {
-                        val adapter = adapterOfTransection(it, categoryMap, currencyClass)
-                        exportToExcel(adapter, requireContext())
-                    }
+                    Handler().postDelayed(kotlinx.coroutines.Runnable {
+                        if (mInterstitialAd != null) {
+                            mInterstitialAd!!.show(requireActivity())
+                        } else {
+                            Log.e(tag, "adPending")
+                            dao.incexpTblDao().getAllData().observe(requireActivity()) {
+                                val adapter = adapterOfTransection(it, categoryMap, currencyClass)
+                                exportToExcel(adapter, requireContext())
+                            }
+                        }
+                    }, 10000)
+
                 }
             }
             val filePath = File(requireContext().filesDir, "YOUR_FILE")
@@ -230,6 +303,11 @@ class TransectionFragment : Fragment() {
                 createFilter.visibility = View.GONE
             }
         }
+
+
+
+
+
 
         return binding.root
     }
@@ -314,10 +392,11 @@ class TransectionFragment : Fragment() {
     private fun generatePdf(
         incexpTbls: List<incexpTbl>,
         categoryMap: MutableMap<String, Categories>,
-        currencyClass: getCurrencyClass
+        currencyClass: getCurrencyClass,
+        adapter: TransectionListAdapter
     ) {
         val document = Document()
-        val fileName = "transaction_list.pdf"
+        val fileName = "EXBIN" + "$cDate" + "Transaction.pdf"
         val filePath = File(requireContext().filesDir, fileName)
         val outputStream = FileOutputStream(filePath)
         PdfWriter.getInstance(document, outputStream)
@@ -325,12 +404,7 @@ class TransectionFragment : Fragment() {
         document.open()
 
         // Add adapter data to PDF
-        val adapter = TransectionListAdapter(
-            requireContext(),
-            incexpTbls,
-            categoryMap,
-            currencyClass
-        ) { a, b -> }
+
         val font = Font(Font.FontFamily.TIMES_ROMAN, 22f)
         val table = PdfPTable(4)
         table.addCell(Phrase("Category", font))
@@ -408,8 +482,9 @@ class TransectionFragment : Fragment() {
         // Get the data from your adapter
         val data = adapter.list
 
+
         // Create a new CSV writer
-        val fileName = "Transaction.csv"
+        val fileName = "EXBIN" + "$cDate" + "Transaction.csv"
         val file = File(context.filesDir, fileName)
         val writer = CSVWriter(FileWriter(file))
 

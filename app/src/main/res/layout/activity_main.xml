@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
@@ -49,12 +50,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
         android:layout_marginBottom="4dp"
-        app:elevation="50dp"
         android:src="@drawable/ic_add_24"
+        app:backgroundTint="@color/main_color"
+        app:elevation="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:backgroundTint="@color/main_color"
         app:tint="@color/white" />
 
     <LinearLayout
@@ -74,22 +75,31 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            app:backgroundTint="@color/navcolorgreen"
-            app:tint="@color/navcolorgreen1"
             android:clickable="true"
             android:src="@drawable/ic_income"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:backgroundTint="@color/navcolorgreen"
+            app:tint="@color/navcolorgreen1" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/exp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            app:backgroundTint="@color/navcolorred"
-            app:tint="@color/navcolorred1"
             android:clickable="true"
             android:src="@drawable/ic_expense"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:backgroundTint="@color/navcolorred"
+            app:tint="@color/navcolorred1" />
 
     </LinearLayout>
+
+    <include
+        android:id="@+id/exit_dialog"
+        layout="@layout/custom_exit_dialog"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
