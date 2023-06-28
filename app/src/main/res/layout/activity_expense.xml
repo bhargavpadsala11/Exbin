@@ -45,14 +45,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Category"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:textColor="@color/AddIncomeText"/>
             <TextView
                 android:id="@+id/expcategory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Select Category"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:inputType="none"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -75,7 +75,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Amount"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:textColor="@color/AddIncomeText"/>
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -83,7 +83,7 @@
                 android:hint="Amount"
                 android:inputType="number"
                 android:id="@+id/expAmount"
-                android:textSize="18sp"/>
+                android:textSize="16sp"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
@@ -105,7 +105,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Date/Time"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:textColor="@color/AddIncomeText"/>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -117,14 +117,14 @@
                     android:hint="Date"
                     android:id="@+id/expdate"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="16sp"/>
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:hint="Time"
                     android:id="@+id/exptime"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="16sp"/>
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -147,14 +147,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Payment Mode"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:textColor="@color/AddIncomeText"/>
             <Spinner
                 android:id="@+id/exppaymentMode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint=""
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:inputType="none"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -177,14 +177,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Note"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:textColor="@color/AddIncomeText"/>
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Note"
                 android:id="@+id/expNote"
-                android:textSize="18sp"/>
+                android:textSize="16sp"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
