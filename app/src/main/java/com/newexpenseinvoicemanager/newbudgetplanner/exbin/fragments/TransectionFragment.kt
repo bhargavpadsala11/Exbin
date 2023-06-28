@@ -6,7 +6,6 @@ import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,13 +13,13 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import com.google.android.ads.nativetemplates.rvadapter.AdmobNativeAdAdapter
 import com.google.android.gms.ads.*
-import com.google.android.gms.ads.AdRequest.Builder
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.itextpdf.text.Document
 import com.itextpdf.text.Font
@@ -64,6 +63,7 @@ class TransectionFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentTransectionBinding.inflate(layoutInflater)
+        (activity as MainActivity?)!!.showBottomNavigationView()
         val sdf = SimpleDateFormat("ddMyyyyhhmmss")
         cDate = sdf.format(Date())
         val preference =
@@ -77,7 +77,9 @@ class TransectionFragment : Fragment() {
         val filter = binding.clFliter
         val createFilter = binding.clConverter
 
-        custom.ivBack.setOnClickListener { loadFragment(HomeFragment()) }
+        custom.ivBack.setOnClickListener { loadFragment(HomeFragment())
+            (activity as MainActivity?)!!.setBottomNavigationAsHome()
+        }
         custom.ivTitle.setText("Transaction List")
 
         custom.ivDelete.setImageResource(R.drawable.ic_filter)
@@ -92,60 +94,9 @@ class TransectionFragment : Fragment() {
             }
         }
 //        getIdofNativeAds()
-        MobileAds.initialize(requireContext()) {}
-        val adReqest: AdRequest = AdRequest.Builder().build()
-        InterstitialAd.load(
-            requireContext(),
-            FireBaseGooggleAdsInterId,
-            adReqest,
-            object : InterstitialAdLoadCallback() {
-                override fun onAdFailedToLoad(adError: LoadAdError) {
-                    Log.d(TAG, adError?.toString()!!)
-                    mInterstitialAd = null
 
+        loadAd(dao,currencyClass,createFilter,categoryMap)
 
-                }
-
-                override fun onAdLoaded(interstitialAd: InterstitialAd) {
-                    Log.d(TAG, "Ad was loaded.")
-                    mInterstitialAd = interstitialAd
-                    mInterstitialAd?.fullScreenContentCallback =
-                        object : FullScreenContentCallback() {
-                            override fun onAdClicked() {
-                                // Called when a click is recorded for an ad.
-                                Log.d(TAG, "Ad was clicked.")
-                            }
-
-                            override fun onAdDismissedFullScreenContent() {
-                                // Called when ad is dismissed.
-                                Log.d(TAG, "Ad dismissed fullscreen content.")
-                                mInterstitialAd = null
-                                if (PDF_OR_EXCEL == true) {
-                                    dao.incexpTblDao().getAllData().observe(requireActivity()) {
-                                        val adapter = adapterOfTransection(it, categoryMap, currencyClass)
-                                        generatePdf(it, categoryMap, currencyClass, adapter)
-                                    }
-                                } else {
-                                    dao.incexpTblDao().getAllData().observe(requireActivity()) {
-                                        val adapter = adapterOfTransection(it, categoryMap, currencyClass)
-                                        exportToExcel(adapter, requireContext())
-                                    }
-                                }
-                            }
-
-
-                            override fun onAdImpression() {
-                                // Called when an impression is recorded for an ad.
-                                Log.d(TAG, "Ad recorded an impression.")
-                            }
-
-                            override fun onAdShowedFullScreenContent() {
-                                // Called when ad is shown.
-                                Log.d(TAG, "Ad showed fullscreen content.")
-                            }
-                        }
-                }
-            })
         getTransecton(currencyClass)
         val inComeButton = binding.btnIncome
         val exPenseButton = binding.btnExpense
@@ -222,6 +173,8 @@ class TransectionFragment : Fragment() {
                 exPenseButton,
                 ContextCompat.getColorStateList(requireContext(), R.color.white)
             )
+            (activity as MainActivity?)!!.showBottomNavigationView()
+
         }
 
         binding.btnApply.setOnClickListener {
@@ -247,9 +200,12 @@ class TransectionFragment : Fragment() {
 
                 }
             }
+            (activity as MainActivity?)!!.showBottomNavigationView()
+
         }
 
         custom.ivDelete.setOnClickListener {
+            filter.visibility = View.VISIBLE
             (activity as MainActivity?)!!.hideBottomNavigationView()
 
         }
@@ -268,31 +224,31 @@ class TransectionFragment : Fragment() {
 
             binding.btnDelete.setOnClickListener {
                 if (PDF_OR_EXCEL == true) {
-                    Handler().postDelayed(kotlinx.coroutines.Runnable {
-                        if (mInterstitialAd != null) {
-                            mInterstitialAd!!.show(requireActivity())
-                        } else {
-                            Log.e(tag, "adPending")
-                            dao.incexpTblDao().getAllData().observe(requireActivity()) {
-                                val adapter = adapterOfTransection(it, categoryMap, currencyClass)
-                                generatePdf(it, categoryMap, currencyClass, adapter)
-                            }
-                        }
-                    }, 10000)
                     //add ads here
+                    if (mInterstitialAd != null) {
+                        mInterstitialAd?.show(requireActivity())
+                    } else {
+                        Log.d("TAG", "The interstitial ad wasn't ready yet.")
+                        dao.incexpTblDao().getAllData().observe(requireActivity()) {
+                            val adapter = adapterOfTransection(it, categoryMap, currencyClass)
+                            generatePdf(it, categoryMap, currencyClass, adapter)
+                        }
+                        (activity as MainActivity?)!!.showBottomNavigationView()
+
+                    }
 
                 } else {
-                    Handler().postDelayed(kotlinx.coroutines.Runnable {
-                        if (mInterstitialAd != null) {
-                            mInterstitialAd!!.show(requireActivity())
-                        } else {
-                            Log.e(tag, "adPending")
-                            dao.incexpTblDao().getAllData().observe(requireActivity()) {
-                                val adapter = adapterOfTransection(it, categoryMap, currencyClass)
-                                exportToExcel(adapter, requireContext())
-                            }
+                    if (mInterstitialAd != null) {
+                        mInterstitialAd?.show(requireActivity())
+                    } else {
+                        Log.d("TAG", "The interstitial ad wasn't ready yet.")
+                        dao.incexpTblDao().getAllData().observe(requireActivity()) {
+                            val adapter = adapterOfTransection(it, categoryMap, currencyClass)
+                            exportToExcel(adapter, requireContext())
                         }
-                    }, 10000)
+                        (activity as MainActivity?)!!.showBottomNavigationView()
+
+                    }
 
                 }
             }
@@ -301,13 +257,12 @@ class TransectionFragment : Fragment() {
 
             binding.btncancel.setOnClickListener {
                 createFilter.visibility = View.GONE
+                (activity as MainActivity?)!!.showBottomNavigationView()
+
             }
+            (activity as MainActivity?)!!.hideBottomNavigationView()
+
         }
-
-
-
-
-
 
         return binding.root
     }
@@ -592,4 +547,79 @@ class TransectionFragment : Fragment() {
     }
 
 
+    fun loadAd(
+        dao: AppDataBase,
+        currencyClass: getCurrencyClass,
+        createFilter: ConstraintLayout,
+        categoryMap: MutableMap<String, Categories>
+    ) {
+        var adRequest = AdRequest.Builder().build()
+
+        InterstitialAd.load(
+            requireContext(),
+            FireBaseGooggleAdsInterId,
+            adRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.d(TAG, adError?.toString()!!)
+                    mInterstitialAd = null
+                }
+
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    Log.d(TAG, "Ad was loaded.")
+                    mInterstitialAd = interstitialAd
+                    mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+                        override fun onAdClicked() {
+                            // Called when a click is recorded for an ad.
+                            Log.d(TAG, "Ad was clicked.")
+                        }
+
+                        override fun onAdDismissedFullScreenContent() {
+                            // Called when ad is dismissed.
+                            Log.d(TAG, "Ad dismissed fullscreen content.")
+                            createFilter.visibility = View.GONE
+                            if (PDF_OR_EXCEL) {
+                                Log.d(TAG, "PDF_OR_EXCEL == true")
+
+                                dao.incexpTblDao().getAllData().observe(requireActivity()) {
+                                    val adapter = adapterOfTransection(it, categoryMap, currencyClass)
+                                    generatePdf(it, categoryMap, currencyClass, adapter)
+
+                                }
+                                mInterstitialAd = null
+                            } else {
+                                Log.d(TAG, "PDF_OR_EXCEL == false")
+
+                                dao.incexpTblDao().getAllData().observe(requireActivity()) {
+                                    val adapter = adapterOfTransection(it, categoryMap, currencyClass)
+                                    exportToExcel(adapter, requireContext())
+                                }
+                                mInterstitialAd = null
+
+                            }
+                            PDF_OR_EXCEL = true
+                            binding.rdbPdf.isChecked = false
+                            binding.rdbExcel.isChecked = false
+
+                        }
+
+                        override fun onAdImpression() {
+                            // Called when an impression is recorded for an ad.
+                            Log.d(TAG, "Ad recorded an impression.")
+                        }
+
+                        override fun onAdShowedFullScreenContent() {
+                            // Called when ad is shown.
+                            Log.d(TAG, "Ad showed fullscreen content.")
+                        }
+                    }
+
+                }
+            })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (activity as MainActivity?)!!.showBottomNavigationView()
+    }
 }

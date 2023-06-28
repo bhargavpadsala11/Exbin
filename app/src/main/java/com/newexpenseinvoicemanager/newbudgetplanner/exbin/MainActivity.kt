@@ -124,6 +124,9 @@ class MainActivity : AppCompatActivity() {
                             else -> false
                         }
                     }
+                    if (!(currentFragment is HomeFragment)) {
+                        bottomNavigationView?.selectedItemId = R.id.navigation_home
+                    }
                 } else {
                     showNoInternetDialog()
                 }
@@ -141,6 +144,9 @@ class MainActivity : AppCompatActivity() {
                             floatButtonShow()
                         }
 
+                    }
+                    if (!(currentFragment is HomeFragment)) {
+                        bottomNavigationView?.selectedItemId = R.id.navigation_home
                     }
                 } else {
                     showNoInternetDialog()
@@ -197,6 +203,10 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView?.setVisibility(View.VISIBLE)
         bottomAppBar?.visibility = View.VISIBLE
         fab?.visibility = View.VISIBLE
+    }
+
+    public fun setBottomNavigationAsHome(){
+        bottomNavigationView?.selectedItemId = R.id.navigation_home
     }
 
     public fun hideBottomNavigationView() {
@@ -269,10 +279,10 @@ class MainActivity : AppCompatActivity() {
         } else if (currentFragment is ExpenseActivity) {
             bottomNavigationView?.selectedItemId = R.id.navigation_home
             loadFragmentForBack(HomeFragment())
-        } else if(currentFragment is WebViewFragment){
+        } else if (currentFragment is WebViewFragment) {
             bottomNavigationView?.selectedItemId = R.id.navigation_more
             loadFragmentForBack(MoreFragment())
-        }else{
+        } else {
             finish()
         }
 
@@ -355,6 +365,7 @@ class MainActivity : AppCompatActivity() {
                 val editor = preference.edit()
                 editor.putString("Na_tive_id", nativeAdvancedKey)
                 editor.putString("inter_id", interstitialKey)
+                editor.putString("banner_Key",bannerKey)
                 editor.apply()
             }
 
@@ -400,6 +411,7 @@ class MainActivity : AppCompatActivity() {
         val dialog = dialogBuilder.create()
         dialog.show()
     }
+
 
 
 }

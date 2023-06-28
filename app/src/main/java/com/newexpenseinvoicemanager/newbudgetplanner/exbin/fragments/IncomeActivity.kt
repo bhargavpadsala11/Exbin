@@ -10,14 +10,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.ads.*
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.button.MaterialButton
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.getCurrencyClass
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.ActivityIncomeBinding
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.incexpTbl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,6 +52,10 @@ class IncomeActivity : Fragment() {
     private var NOTE_: String? = ""
     private var SMONTH_: String? = ""
     private var _ID: String? = ""
+    private var mInterstitialAd: InterstitialAd? = null
+    private var FireBaseGooggleAdsInterId: String = ""
+    private var FireBaseGooggleAdsBanner: String = ""
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -56,15 +67,53 @@ class IncomeActivity : Fragment() {
         custom.ivBack.setOnClickListener {
             loadFragment(HomeFragment())
         }
+        val preference =
+            requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
+        FireBaseGooggleAdsInterId = preference.getString("inter_id", "")!!
+        FireBaseGooggleAdsBanner = preference.getString("banner_Key", "")!!
 //        supportActionBar?.title = "Income"
 //
+//        var mAdView = AdView(requireContext())
+////        mAdView.adUnitId = FireBaseGooggleAdsBanner
+//        binding.adView.addView(mAdView)
+//        val adRequest = AdRequest.Builder().build()
+//        mAdView.loadAd(adRequest)
+//        mAdView.adListener = object: AdListener() {
+//            override fun onAdClicked() {
+//                // Code to be executed when the user clicks on an ad.
+//            }
+//
+//            override fun onAdClosed() {
+//                // Code to be executed when the user is about to return
+//                // to the app after tapping on an ad.
+//            }
+//
+//            override fun onAdFailedToLoad(adError : LoadAdError) {
+//                // Code to be executed when an ad request fails.
+//            }
+//
+//            override fun onAdImpression() {
+//                // Code to be executed when an impression is recorded
+//                // for an ad.
+//            }
+//
+//            override fun onAdLoaded() {
+//                // Code to be executed when an ad finishes loading.
+//            }
+//
+//            override fun onAdOpened() {
+//                // Code to be executed when an ad opens an overlay that
+//                // covers the screen.
+//            }
+//        }
+
         // value = arguments?.getString("value")
         val SELECTED_CATEGORY = arguments?.getString("CATEGORY")
         val INC_ = arguments?.getString("INC_")
 //        Toast.makeText(requireContext(), "$value", Toast.LENGTH_SHORT).show()
 
-
         if (INC_ != null) {
+
             val calendar = Calendar.getInstance()
             val sdf = SimpleDateFormat("dd/M/yyyy")
             custom.ivTitle.setText("Update Income")
@@ -86,7 +135,7 @@ class IncomeActivity : Fragment() {
             SMONTH_ = arguments?.getString("month")
             _ID = ID_
 
-
+            loadAd()
             binding.category.setOnClickListener { getCategoryForUpdate() }
             spinnerSet(PAY_!!)
             //PaymentModeList.set(PAY_MD_!!.toInt(),PAY_!!)
@@ -384,6 +433,7 @@ class IncomeActivity : Fragment() {
             binding.incNote.requestFocus()
             binding.incNote.error = "Empty"
         } else {
+
             val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
             val currentDate = sdf.format(Date())
             val amount = binding.incAmount.text.toString()
@@ -442,13 +492,20 @@ class IncomeActivity : Fragment() {
             binding.incNote.requestFocus()
             binding.incNote.error = "Empty"
         } else {
-            val AMNT_ = binding.incAmount.text.toString()
-            val NOTE_ = binding.incNote.text.toString()
-            val PAY_ = binding.paymentMode.selectedItem as String
-            val PAY_MD_ = binding.paymentMode.selectedItemPosition.toString()
-            updateIncome(ID_, CAT_, AMNT_, DATE_, TIME_, PAY_, PAY_MD_, NOTE_, SMONTH_)
-            Toast.makeText(requireContext(), "Income Updated", Toast.LENGTH_SHORT).show()
-            loadFragment(HomeFragment())
+            if (mInterstitialAd != null) {
+                mInterstitialAd?.show(requireActivity())
+            } else {
+                Log.d("TAG", "The interstitial ad wasn't ready yet.")
+
+                val AMNT_ = binding.incAmount.text.toString()
+                val NOTE_ = binding.incNote.text.toString()
+                val PAY_ = binding.paymentMode.selectedItem as String
+                val PAY_MD_ = binding.paymentMode.selectedItemPosition.toString()
+                updateIncome(ID_, CAT_, AMNT_, DATE_, TIME_, PAY_, PAY_MD_, NOTE_, SMONTH_)
+                Toast.makeText(requireContext(), "Income Updated", Toast.LENGTH_SHORT).show()
+                loadFragment(HomeFragment())
+            }
+
         }
     }
 
@@ -615,5 +672,56 @@ class IncomeActivity : Fragment() {
             }
         }
     }
+    fun loadAd(
+    ) {
+        var adRequest = AdRequest.Builder().build()
 
+        InterstitialAd.load(
+            requireContext(),
+            FireBaseGooggleAdsInterId,
+            adRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.d(TAG, adError?.toString()!!)
+                    mInterstitialAd = null
+                }
+
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    Log.d(TAG, "Ad was loaded.")
+                    mInterstitialAd = interstitialAd
+                    mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+                        override fun onAdClicked() {
+                            // Called when a click is recorded for an ad.
+                            Log.d(TAG, "Ad was clicked.")
+                        }
+
+                        override fun onAdDismissedFullScreenContent() {
+                            // Called when ad is dismissed.
+                            Log.d(TAG, "Ad dismissed fullscreen content.")
+
+                                mInterstitialAd = null
+                            val AMNT_ = binding.incAmount.text.toString()
+                            val NOTE_ = binding.incNote.text.toString()
+                            val PAY_ = binding.paymentMode.selectedItem as String
+                            val PAY_MD_ = binding.paymentMode.selectedItemPosition.toString()
+                            updateIncome(_ID, CAT_, AMNT_, DATE_, TIME_, PAY_, PAY_MD_, NOTE_, SMONTH_)
+                            Toast.makeText(requireContext(), "Income Updated", Toast.LENGTH_SHORT).show()
+                            loadFragment(HomeFragment())
+
+                        }
+
+                        override fun onAdImpression() {
+                            // Called when an impression is recorded for an ad.
+                            Log.d(TAG, "Ad recorded an impression.")
+                        }
+
+                        override fun onAdShowedFullScreenContent() {
+                            // Called when ad is shown.
+                            Log.d(TAG, "Ad showed fullscreen content.")
+                        }
+                    }
+
+                }
+            })
+    }
 }

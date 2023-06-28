@@ -1,9 +1,11 @@
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.*
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.VISIBLE
@@ -12,7 +14,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
@@ -20,7 +24,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.ColorAdapter
@@ -39,6 +49,8 @@ class AddCategoriesFragment : Fragment() {
     private var selectedIcon: Int? = null
     private var selectedColor: String? = null
     private var deleteCategoryView: View? = null
+    private var mInterstitialAd: InterstitialAd? = null
+    private var FireBaseGooggleAdsInterId: String = ""
 
 
     override fun onCreateView(
@@ -46,7 +58,9 @@ class AddCategoriesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentAddCategoriesBinding.inflate(layoutInflater)
-
+        val preference =
+            requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
+        FireBaseGooggleAdsInterId = preference.getString("inter_id", "")!!
         val icons = listOf(
             R.drawable.ic_cat_cancel,
             R.drawable.ic_add_24,
@@ -349,7 +363,7 @@ class AddCategoriesFragment : Fragment() {
                     updateMergedIcon()
 
 
-
+                    loadAd(value, category, custom.ivDelete, binding.btnSave,container)
                     custom.ivDelete.setOnClickListener {
                         deleteCategoryView =
                             inflater.inflate(R.layout.custom_delete_dialog, container, false)
@@ -362,18 +376,21 @@ class AddCategoriesFragment : Fragment() {
                             deleteCategoryView?.findViewById<AppCompatTextView>(R.id.tv_delete_title)
                         hintText?.setText("Are you sure you want to delete this Category? If you delete this category it also delete all data regarding to this category")
                         deleteBtn?.setOnClickListener {
-                            val db = AppDataBase.getInstance(requireContext()).categoriesDao()
-                            lifecycleScope.launch(Dispatchers.IO) {
-                                db.deleteCategory(value.toInt())
-                                deleteBudget(category?.CategoryName)
-                                deleteincomeexpense(category?.CategoryName)
-                            }
-                            container?.removeView(deleteCategoryView)
-                            val ldf = CategoryListFragment()
-                            val transaction = activity?.supportFragmentManager?.beginTransaction()
-                            transaction?.replace(R.id.fragment_container, ldf)
-                            transaction?.addToBackStack(null)
-                            transaction?.commit()
+
+                                val db = AppDataBase.getInstance(requireContext()).categoriesDao()
+                                lifecycleScope.launch(Dispatchers.IO) {
+                                    db.deleteCategory(value.toInt())
+                                    deleteBudget(category?.CategoryName)
+                                    deleteincomeexpense(category?.CategoryName)
+                                }
+                                container?.removeView(deleteCategoryView)
+                                val ldf = CategoryListFragment()
+                                val transaction =
+                                    activity?.supportFragmentManager?.beginTransaction()
+                                transaction?.replace(R.id.fragment_container, ldf)
+                                transaction?.addToBackStack(null)
+                                transaction?.commit()
+
                         }
                         cancelBtn?.setOnClickListener {
                             container?.removeView(deleteCategoryView)
@@ -446,23 +463,31 @@ class AddCategoriesFragment : Fragment() {
                                 Toast.LENGTH_SHORT
                             ).show()
                         } else {
-                            updateCategory(
-                                value.toInt(),
-                                binding.addCategorytxt.text.toString(),
-                                selectedIcon.toString(),
-                                selectedColor
-                            )
-                            updateBudget(
-                                category?.CategoryName,
-                                binding.addCategorytxt.text.toString(), selectedColor
-                            )
-                            updateincCat(
-                                category?.CategoryName,
-                                binding.addCategorytxt.text.toString()
-                            )
-                            Toast.makeText(requireContext(), "Category Updated", Toast.LENGTH_SHORT)
-                                .show()
-                            loadFragment(CategoryListFragment())
+                            if (mInterstitialAd != null) {
+                                mInterstitialAd?.show(requireActivity())
+                            } else {
+                                updateCategory(
+                                    value.toInt(),
+                                    binding.addCategorytxt.text.toString(),
+                                    selectedIcon.toString(),
+                                    selectedColor
+                                )
+                                updateBudget(
+                                    category?.CategoryName,
+                                    binding.addCategorytxt.text.toString(), selectedColor
+                                )
+                                updateincCat(
+                                    category?.CategoryName,
+                                    binding.addCategorytxt.text.toString()
+                                )
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Category Updated",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                                loadFragment(CategoryListFragment())
+                            }
                         }
                     }
 
@@ -765,5 +790,82 @@ class AddCategoriesFragment : Fragment() {
 //            Toast.LENGTH_SHORT
 //        ).show()
 //    }
+
+    fun loadAd(
+        value: String,
+        category: Categories?,
+        ivDelete: AppCompatImageView,
+        btnSave: FloatingActionButton,
+        container: ViewGroup?
+    ) {
+        var adRequest = AdRequest.Builder().build()
+
+        InterstitialAd.load(
+            requireContext(),
+            FireBaseGooggleAdsInterId,
+            adRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.d(ContentValues.TAG, adError?.toString()!!)
+                    mInterstitialAd = null
+                }
+
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    Log.d(ContentValues.TAG, "Ad was loaded.")
+                    mInterstitialAd = interstitialAd
+                    mInterstitialAd?.fullScreenContentCallback =
+                        object : FullScreenContentCallback() {
+                            override fun onAdClicked() {
+                                // Called when a click is recorded for an ad.
+                                Log.d(ContentValues.TAG, "Ad was clicked.")
+                            }
+
+                            override fun onAdDismissedFullScreenContent() {
+                                // Called when ad is dismissed.
+                                Log.d(ContentValues.TAG, "Ad dismissed fullscreen content.")
+
+                                mInterstitialAd = null
+
+                                    updateCategory(
+                                        value.toInt(),
+                                        binding.addCategorytxt.text.toString(),
+                                        selectedIcon.toString(),
+                                        selectedColor
+                                    )
+                                    updateBudget(
+                                        category?.CategoryName,
+                                        binding.addCategorytxt.text.toString(), selectedColor
+                                    )
+                                    updateincCat(
+                                        category?.CategoryName,
+                                        binding.addCategorytxt.text.toString()
+                                    )
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Category Updated",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                    loadFragment(CategoryListFragment())
+
+
+
+                            }
+
+                            override fun onAdImpression() {
+                                // Called when an impression is recorded for an ad.
+                                Log.d(ContentValues.TAG, "Ad recorded an impression.")
+                            }
+
+                            override fun onAdShowedFullScreenContent() {
+                                // Called when ad is shown.
+                                Log.d(ContentValues.TAG, "Ad showed fullscreen content.")
+                            }
+                        }
+
+                }
+            })
+    }
+
 
 }

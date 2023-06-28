@@ -1,6 +1,6 @@
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
-import android.content.Context
+import android.content.ContentValues
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -11,6 +11,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -19,6 +20,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.ads.nativetemplates.rvadapter.AdmobNativeAdAdapter
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.imageview.ShapeableImageView
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
@@ -42,6 +48,9 @@ class BudgetFragment : Fragment() {
     private var FireBaseGooggleAdsId: String = ""
     private var currentMonth: Int = Calendar.getInstance().get(Calendar.MONTH)
     var sMonth: String = ""
+    private var mInterstitialAd: InterstitialAd? = null
+    private var FireBaseGooggleAdsInterId: String = ""
+    private var _ID: Int? = null
 
     //    var monthName: String = DateFormatSymbols().months[currentMonth]
     private var editBudgetView: View? = null
@@ -51,6 +60,11 @@ class BudgetFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentBudgetBinding.inflate(layoutInflater)
+
+        val preference =
+            requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
+        FireBaseGooggleAdsId = preference.getString("Na_tive_id", "")!!
+        FireBaseGooggleAdsInterId = preference.getString("inter_id", "")!!
         if (editBudgetView != null) {
             binding.createBudget.isEnabled = false
             binding.amountText.isEnabled = false
@@ -308,7 +322,9 @@ class BudgetFragment : Fragment() {
 
             // Log.d("It/prog/limit", "$it $progress $limitShow")
             val bId = it.budgetId
+            _ID = bId
             val bData = it
+
             val mainlayoutView = inflater.inflate(R.layout.fragment_budget, container, false)
             editBudgetView = inflater.inflate(R.layout.all_budget_layout, container, false)
             container?.removeView(mainlayoutView)
@@ -354,11 +370,15 @@ class BudgetFragment : Fragment() {
                 val deleteBtn = editBudgetView?.findViewById<MaterialButton>(R.id.btn_delete)
 
                 deleteBtn?.setOnClickListener {
-                    deleteBudget(bId)
-                    deleteDialog?.visibility = View.GONE
-                    Toast.makeText(requireContext(), "Budget Deleted", Toast.LENGTH_SHORT).show()
-                    container?.removeView(editBudgetView)
-                    loadFragment(BudgetFragment())
+                    // add ads here
+
+                        deleteBudget(bId)
+                        deleteDialog?.visibility = View.GONE
+                        Toast.makeText(requireContext(), "Budget Deleted", Toast.LENGTH_SHORT)
+                            .show()
+                        container?.removeView(editBudgetView)
+                        loadFragment(BudgetFragment())
+
                 }
 
                 cancelBtn?.setOnClickListener {
@@ -398,19 +418,27 @@ class BudgetFragment : Fragment() {
                     budgetdetail?.visibility = View.VISIBLE
                     editudgetLayout?.visibility = View.GONE
                 }
+                loadAd(budgetTextView,budgetdetail,editudgetLayout,container)
                 val budgetSaveButton =
                     editBudgetView?.findViewById<MaterialButton>(R.id.edit_btn_save)
                 budgetSaveButton?.setOnClickListener {
-                    updateBudget(bId, budgetTextView?.text.toString())
-                    Toast.makeText(
-                        requireContext(),
-                        "Budget Updated Successfully",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    budgetdetail?.visibility = View.VISIBLE
-                    editudgetLayout?.visibility = View.GONE
-                    container?.removeView(editBudgetView)
-                    loadFragment(BudgetFragment())
+                    // add ads here
+                    if (mInterstitialAd != null) {
+                        mInterstitialAd?.show(requireActivity())
+                    } else {
+                        Log.d("TAG", "The interstitial ad wasn't ready yet.")
+
+                        updateBudget(bId, budgetTextView?.text.toString())
+                        Toast.makeText(
+                            requireContext(),
+                            "Budget Updated Successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        budgetdetail?.visibility = View.VISIBLE
+                        editudgetLayout?.visibility = View.GONE
+                        container?.removeView(editBudgetView)
+                        loadFragment(BudgetFragment())
+                    }
                     //container?.addView(editBudgetView)
                 }
             }
@@ -521,6 +549,67 @@ class BudgetFragment : Fragment() {
             ?.addToBackStack(null)
             ?.commit()
         (activity as MainActivity?)!!.showBottomNavigationView()
+    }
+
+    fun loadAd(
+        budgetTextView: EditText,
+        budgetdetail: ConstraintLayout,
+        editudgetLayout: ConstraintLayout?,
+        container: ViewGroup?
+    ) {
+        var adRequest = AdRequest.Builder().build()
+
+        InterstitialAd.load(
+            requireContext(),
+            FireBaseGooggleAdsInterId,
+            adRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.d(ContentValues.TAG, adError?.toString()!!)
+                    mInterstitialAd = null
+                }
+
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    Log.d(ContentValues.TAG, "Ad was loaded.")
+                    mInterstitialAd = interstitialAd
+                    mInterstitialAd?.fullScreenContentCallback =
+                        object : FullScreenContentCallback() {
+                            override fun onAdClicked() {
+                                // Called when a click is recorded for an ad.
+                                Log.d(ContentValues.TAG, "Ad was clicked.")
+                            }
+
+                            override fun onAdDismissedFullScreenContent() {
+                                // Called when ad is dismissed.
+                                Log.d(ContentValues.TAG, "Ad dismissed fullscreen content.")
+
+                                mInterstitialAd = null
+                                updateBudget(_ID!!, budgetTextView?.text.toString())
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Budget Updated Successfully",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                budgetdetail?.visibility = View.VISIBLE
+                                editudgetLayout?.visibility = View.GONE
+                                container?.removeView(editBudgetView)
+                                loadFragment(BudgetFragment())
+
+                            }
+
+                            override fun onAdImpression() {
+                                // Called when an impression is recorded for an ad.
+                                Log.d(ContentValues.TAG, "Ad recorded an impression.")
+                            }
+
+                            override fun onAdShowedFullScreenContent() {
+                                // Called when ad is shown.
+                                Log.d(ContentValues.TAG, "Ad showed fullscreen content.")
+                            }
+                        }
+
+                }
+            })
     }
 
 

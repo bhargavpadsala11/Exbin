@@ -2,6 +2,7 @@ package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.ContentValues
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -15,6 +16,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.button.MaterialButton
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
@@ -46,6 +52,9 @@ class ExpenseActivity : Fragment() {
     private var NOTE_: String? = ""
     private var SMONTH_: String? = ""
     private var _ID: String? = ""
+    private var mInterstitialAd: InterstitialAd? = null
+    private var FireBaseGooggleAdsInterId: String = ""
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,11 +75,15 @@ class ExpenseActivity : Fragment() {
         val INC_ = arguments?.getString("EXP_")
 
         if (INC_ != null) {
+            val preference =
+                requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
+            FireBaseGooggleAdsInterId = preference.getString("inter_id", "")!!
+
             val calendar = Calendar.getInstance()
             val sdf = SimpleDateFormat("dd/M/yyyy")
             custom.ivTitle.setText("Update Expense")
             custom.ivDelete.visibility = View.VISIBLE
-           // getPaymentMode()
+            // getPaymentMode()
             val UPDATE_CAT = arguments?.getString("CATEGORY_Update")
             if (UPDATE_CAT != null) {
                 CAT_ = UPDATE_CAT
@@ -86,7 +99,7 @@ class ExpenseActivity : Fragment() {
             NOTE_ = arguments?.getString("nt")
             SMONTH_ = arguments?.getString("month")
             _ID = ID_
-
+            loadAd()
             spinnerSet(PAY_!!)
             binding.expcategory.setOnClickListener { getCategoryForUpdate() }
             //PaymentModeList.set(PAY_MD_!!.toInt(),PAY_!!)
@@ -390,15 +403,21 @@ class ExpenseActivity : Fragment() {
             binding.expNote.requestFocus()
             binding.expNote.error = "Empty"
         } else {
-            val AMNT_ = binding.expAmount.text.toString()
-            val NOTE_ = binding.expNote.text.toString()
-            val CAT_ = binding.expcategory.text.toString()
-            val PAY_ = binding.exppaymentMode.selectedItem as String
+            if (mInterstitialAd != null) {
+                mInterstitialAd?.show(requireActivity())
+            } else {
+                Log.d("TAG", "The interstitial ad wasn't ready yet.")
+
+                val AMNT_ = binding.expAmount.text.toString()
+                val NOTE_ = binding.expNote.text.toString()
+                val CAT_ = binding.expcategory.text.toString()
+                val PAY_ = binding.exppaymentMode.selectedItem as String
 //            val categoryindex = binding.expcategory.selectedItemPosition.toString()
-            val PAY_MD_ = binding.exppaymentMode.selectedItemPosition.toString()
-            updateExpense(_ID, CAT_, AMNT_, DATE_, TIME_, PAY_, PAY_MD_, NOTE_, SMONTH_)
-            Toast.makeText(requireContext(), "Expense Updated", Toast.LENGTH_SHORT).show()
-            loadFragment(HomeFragment())
+                val PAY_MD_ = binding.exppaymentMode.selectedItemPosition.toString()
+                updateExpense(_ID, CAT_, AMNT_, DATE_, TIME_, PAY_, PAY_MD_, NOTE_, SMONTH_)
+                Toast.makeText(requireContext(), "Expense Updated", Toast.LENGTH_SHORT).show()
+                loadFragment(HomeFragment())
+            }
 
         }
     }
@@ -581,41 +600,111 @@ class ExpenseActivity : Fragment() {
         }
     }
 
-//    @BindingAdapter("spinnerError")
+    //    @BindingAdapter("spinnerError")
 //    fun setSpinnerError(spinner: Spinner, error: String?) {
 //        spinner.error = error
 //    }
-fun spinnerSet(position: String) {
-    PaymentModeList = java.util.ArrayList()
-    val dao = AppDataBase.getInstance(requireContext()).paymentModesDao()
+    fun spinnerSet(position: String) {
+        PaymentModeList = java.util.ArrayList()
+        val dao = AppDataBase.getInstance(requireContext()).paymentModesDao()
 
-    dao.getAllPaymentMode().observe(requireActivity()) { paymentModes ->
-        if (paymentModes != null) {
-            if (paymentModes.isEmpty()) {
-                PaymentModeList.clear()
-                PaymentModeList.add(0, "Select Payment Mode")
-            } else {
-                PaymentModeList.clear()
-                PaymentModeList.add(0, "Select Payment Mode")
-                for (paymentMode in paymentModes) {
-                    val mode = paymentMode.paymentMode
-                    if (mode != null) {
-                        PaymentModeList.add(mode)
+        dao.getAllPaymentMode().observe(requireActivity()) { paymentModes ->
+            if (paymentModes != null) {
+                if (paymentModes.isEmpty()) {
+                    PaymentModeList.clear()
+                    PaymentModeList.add(0, "Select Payment Mode")
+                } else {
+                    PaymentModeList.clear()
+                    PaymentModeList.add(0, "Select Payment Mode")
+                    for (paymentMode in paymentModes) {
+                        val mode = paymentMode.paymentMode
+                        if (mode != null) {
+                            PaymentModeList.add(mode)
+                        }
                     }
-                }
-                val arrayAdapter =
-                    ArrayAdapter(
-                        requireContext(),
-                        R.layout.dropdown_item_layout,
-                        PaymentModeList
-                    )
-                binding.exppaymentMode.adapter = arrayAdapter
+                    val arrayAdapter =
+                        ArrayAdapter(
+                            requireContext(),
+                            R.layout.dropdown_item_layout,
+                            PaymentModeList
+                        )
+                    binding.exppaymentMode.adapter = arrayAdapter
 
-                val spinnerPosition: Int = arrayAdapter.getPosition(position)
-                binding.exppaymentMode.setSelection(spinnerPosition)
-                Log.d("position", "$spinnerPosition")
+                    val spinnerPosition: Int = arrayAdapter.getPosition(position)
+                    binding.exppaymentMode.setSelection(spinnerPosition)
+                    Log.d("position", "$spinnerPosition")
+                }
             }
         }
     }
-}
+
+    fun loadAd(
+    ) {
+        var adRequest = AdRequest.Builder().build()
+
+        InterstitialAd.load(
+            requireContext(),
+            FireBaseGooggleAdsInterId,
+            adRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.d(ContentValues.TAG, adError?.toString()!!)
+                    mInterstitialAd = null
+                }
+
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    Log.d(ContentValues.TAG, "Ad was loaded.")
+                    mInterstitialAd = interstitialAd
+                    mInterstitialAd?.fullScreenContentCallback =
+                        object : FullScreenContentCallback() {
+                            override fun onAdClicked() {
+                                // Called when a click is recorded for an ad.
+                                Log.d(ContentValues.TAG, "Ad was clicked.")
+                            }
+
+                            override fun onAdDismissedFullScreenContent() {
+                                // Called when ad is dismissed.
+                                Log.d(ContentValues.TAG, "Ad dismissed fullscreen content.")
+
+                                mInterstitialAd = null
+
+                                val AMNT_ = binding.expAmount.text.toString()
+                                val NOTE_ = binding.expNote.text.toString()
+                                val CAT_ = binding.expcategory.text.toString()
+                                val PAY_ = binding.exppaymentMode.selectedItem as String
+//            val categoryindex = binding.expcategory.selectedItemPosition.toString()
+                                val PAY_MD_ = binding.exppaymentMode.selectedItemPosition.toString()
+                                updateExpense(
+                                    _ID,
+                                    CAT_,
+                                    AMNT_,
+                                    DATE_,
+                                    TIME_,
+                                    PAY_,
+                                    PAY_MD_,
+                                    NOTE_,
+                                    SMONTH_
+                                )
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Expense Updated",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                loadFragment(HomeFragment())
+                            }
+
+                            override fun onAdImpression() {
+                                // Called when an impression is recorded for an ad.
+                                Log.d(ContentValues.TAG, "Ad recorded an impression.")
+                            }
+
+                            override fun onAdShowedFullScreenContent() {
+                                // Called when ad is shown.
+                                Log.d(ContentValues.TAG, "Ad showed fullscreen content.")
+                            }
+                        }
+
+                }
+            })
+    }
 }

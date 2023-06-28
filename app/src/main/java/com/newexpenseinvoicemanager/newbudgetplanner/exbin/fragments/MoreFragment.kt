@@ -30,6 +30,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.activities.BackUpActivity
 
 
@@ -57,6 +58,7 @@ class MoreFragment : Fragment() {
 
         custom.setOnClickListener {
             loadFragment(HomeFragment())
+            (activity as MainActivity?)!!.setBottomNavigationAsHome()
         }
         var fragment: Fragment
 

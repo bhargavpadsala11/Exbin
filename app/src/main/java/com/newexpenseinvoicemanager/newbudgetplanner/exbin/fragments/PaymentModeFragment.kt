@@ -1,21 +1,22 @@
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
-import android.app.Dialog
-import android.os.Build
+import android.content.ContentValues
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
@@ -35,6 +36,8 @@ class PaymentModeFragment : Fragment() {
     private var addPaymentView: View? = null
     private var addupdatetView: View? = null
     private var deletePaymentView: View? = null
+    private var mInterstitialAd: InterstitialAd? = null
+    private var FireBaseGooggleAdsInterId: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,6 +48,10 @@ class PaymentModeFragment : Fragment() {
         val custom = binding.appBar
         custom.ivDelete.visibility = View.GONE
         custom.ivBack.setOnClickListener { loadFragment(MoreFragment()) }
+        val preference =
+            requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
+        FireBaseGooggleAdsInterId = preference.getString("inter_id", "")!!
+
         val mainView = inflater.inflate(R.layout.fragment_payment_mode, container, false)
         addPaymentView = inflater.inflate(R.layout.add_payent_maode_layout, container, false)
 
@@ -123,10 +130,16 @@ class PaymentModeFragment : Fragment() {
                     getaymentModeTextView?.setText("${paymentMode.paymentMode}")
                     val paymentId = paymentMode.paymentModeId.toInt()
                     val updateBtn = addupdatetView?.findViewById<MaterialButton>(R.id.btnapply)
-
+                    loadAd(paymentId, container, getaymentModeTextView)
                     updateBtn?.setOnClickListener {
-                        updatePaymentMode(paymentId, getaymentModeTextView?.text.toString())
-                        container?.removeView(addupdatetView)
+                        if (mInterstitialAd != null) {
+                            mInterstitialAd?.show(requireActivity())
+                        } else {
+                            Log.d("TAG", "The interstitial ad wasn't ready yet.")
+
+                            updatePaymentMode(paymentId, getaymentModeTextView?.text.toString())
+                            container?.removeView(addupdatetView)
+                        }
                     }
 
                     val cancelButton = addupdatetView?.findViewById<MaterialButton>(R.id.btncancel)
@@ -151,11 +164,15 @@ class PaymentModeFragment : Fragment() {
                     deleteTitleTextView?.setText("Are you sure you want to delete this PaymentMode ?")
                     val deletePaymentModeCnlBtn =
                         deletePaymentView?.findViewById<MaterialButton>(R.id.btncancel)
-
+                    loadAdDelete(paymentMode, container)
                     deletePaymentModeBtn?.setOnClickListener {
-                        val paymentId = paymentMode.paymentModeId
-                        deltePaymentMode(paymentId)
-                        container?.removeView(deletePaymentView)
+                        if (mInterstitialAd != null) {
+                            mInterstitialAd?.show(requireActivity())
+                        } else {
+                            val paymentId = paymentMode.paymentModeId
+                            deltePaymentMode(paymentId)
+                            container?.removeView(deletePaymentView)
+                        }
                     }
 
                     deletePaymentModeCnlBtn?.setOnClickListener {
@@ -219,5 +236,102 @@ class PaymentModeFragment : Fragment() {
             ?.replace(R.id.fragment_container, fragment)
             ?.addToBackStack(null)
             ?.commit()
+    }
+
+    fun loadAd(paymentId: Int, container: ViewGroup?, getaymentModeTextView: TextInputEditText?) {
+        var adRequest = AdRequest.Builder().build()
+
+        InterstitialAd.load(
+            requireContext(),
+            FireBaseGooggleAdsInterId,
+            adRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.d(ContentValues.TAG, adError?.toString()!!)
+                    mInterstitialAd = null
+                }
+
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    Log.d(ContentValues.TAG, "Ad was loaded.")
+                    mInterstitialAd = interstitialAd
+                    mInterstitialAd?.fullScreenContentCallback =
+                        object : FullScreenContentCallback() {
+                            override fun onAdClicked() {
+                                // Called when a click is recorded for an ad.
+                                Log.d(ContentValues.TAG, "Ad was clicked.")
+                            }
+
+                            override fun onAdDismissedFullScreenContent() {
+                                // Called when ad is dismissed.
+                                Log.d(ContentValues.TAG, "Ad dismissed fullscreen content.")
+
+                                mInterstitialAd = null
+                                updatePaymentMode(paymentId, getaymentModeTextView?.text.toString())
+                                container?.removeView(addupdatetView)
+
+                            }
+
+                            override fun onAdImpression() {
+                                // Called when an impression is recorded for an ad.
+                                Log.d(ContentValues.TAG, "Ad recorded an impression.")
+                            }
+
+                            override fun onAdShowedFullScreenContent() {
+                                // Called when ad is shown.
+                                Log.d(ContentValues.TAG, "Ad showed fullscreen content.")
+                            }
+                        }
+
+                }
+            })
+    }
+
+    fun loadAdDelete(paymentMode: PaymentModes, container: ViewGroup?) {
+        var adRequest = AdRequest.Builder().build()
+
+        InterstitialAd.load(
+            requireContext(),
+            FireBaseGooggleAdsInterId,
+            adRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.d(ContentValues.TAG, adError?.toString()!!)
+                    mInterstitialAd = null
+                }
+
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    Log.d(ContentValues.TAG, "Ad was loaded.")
+                    mInterstitialAd = interstitialAd
+                    mInterstitialAd?.fullScreenContentCallback =
+                        object : FullScreenContentCallback() {
+                            override fun onAdClicked() {
+                                // Called when a click is recorded for an ad.
+                                Log.d(ContentValues.TAG, "Ad was clicked.")
+                            }
+
+                            override fun onAdDismissedFullScreenContent() {
+                                // Called when ad is dismissed.
+                                Log.d(ContentValues.TAG, "Ad dismissed fullscreen content.")
+
+                                mInterstitialAd = null
+                                val paymentId = paymentMode.paymentModeId
+                                deltePaymentMode(paymentId)
+                                container?.removeView(deletePaymentView)
+
+                            }
+
+                            override fun onAdImpression() {
+                                // Called when an impression is recorded for an ad.
+                                Log.d(ContentValues.TAG, "Ad recorded an impression.")
+                            }
+
+                            override fun onAdShowedFullScreenContent() {
+                                // Called when ad is shown.
+                                Log.d(ContentValues.TAG, "Ad showed fullscreen content.")
+                            }
+                        }
+
+                }
+            })
     }
 }
