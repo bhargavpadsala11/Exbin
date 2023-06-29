@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
@@ -61,56 +62,60 @@ class IncomeActivity : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = ActivityIncomeBinding.inflate(layoutInflater)
+        (activity as MainActivity?)!!.floatButtonHide()
         val custom = binding.appBar
         custom.ivDelete.visibility = View.GONE
         custom.ivTitle.setText("Add Income")
         custom.ivBack.setOnClickListener {
+            (activity as MainActivity?)!!.setBottomNavigationAsHome()
             loadFragment(HomeFragment())
         }
         val preference =
             requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
         FireBaseGooggleAdsInterId = preference.getString("inter_id", "")!!
         FireBaseGooggleAdsBanner = preference.getString("banner_Key", "")!!
-//        supportActionBar?.title = "Income"
-//
-//        var mAdView = AdView(requireContext())
-////        mAdView.adUnitId = FireBaseGooggleAdsBanner
-//        binding.adView.addView(mAdView)
-//        val adRequest = AdRequest.Builder().build()
-//        mAdView.loadAd(adRequest)
-//        mAdView.adListener = object: AdListener() {
-//            override fun onAdClicked() {
-//                // Code to be executed when the user clicks on an ad.
-//            }
-//
-//            override fun onAdClosed() {
-//                // Code to be executed when the user is about to return
-//                // to the app after tapping on an ad.
-//            }
-//
-//            override fun onAdFailedToLoad(adError : LoadAdError) {
-//                // Code to be executed when an ad request fails.
-//            }
-//
-//            override fun onAdImpression() {
-//                // Code to be executed when an impression is recorded
-//                // for an ad.
-//            }
-//
-//            override fun onAdLoaded() {
-//                // Code to be executed when an ad finishes loading.
-//            }
-//
-//            override fun onAdOpened() {
-//                // Code to be executed when an ad opens an overlay that
-//                // covers the screen.
-//            }
-//        }
 
-        // value = arguments?.getString("value")
+        val adContainer = binding.adView
+        val mAdView = AdView(requireContext())
+        mAdView.setAdSize(AdSize.BANNER)
+        mAdView.adUnitId = FireBaseGooggleAdsBanner
+        adContainer.addView(mAdView)
+        val adRequest = AdRequest.Builder().build()
+        mAdView.loadAd(adRequest)
+
+        mAdView.adListener = object: AdListener() {
+            override fun onAdClicked() {
+                // Code to be executed when the user clicks on an ad.
+            }
+
+            override fun onAdClosed() {
+                // Code to be executed when the user is about to return
+                // to the app after tapping on an ad.
+            }
+
+            override fun onAdFailedToLoad(adError : LoadAdError) {
+                // Code to be executed when an ad request fails.
+            }
+
+            override fun onAdImpression() {
+                // Code to be executed when an impression is recorded
+                // for an ad.
+            }
+
+            override fun onAdLoaded() {
+                // Code to be executed when an ad finishes loading.
+            }
+
+            override fun onAdOpened() {
+                // Code to be executed when an ad opens an overlay that
+                // covers the screen.
+            }
+        }
+
+
+
         val SELECTED_CATEGORY = arguments?.getString("CATEGORY")
         val INC_ = arguments?.getString("INC_")
-//        Toast.makeText(requireContext(), "$value", Toast.LENGTH_SHORT).show()
 
         if (INC_ != null) {
 
@@ -161,11 +166,13 @@ class IncomeActivity : Fragment() {
                         db.deleteincomeexpenseId(ID_!!.toInt())
                     }
                     container?.removeView(deleteCategoryView)
-                    val ldf = TransectionFragment()
-                    val transaction = activity?.supportFragmentManager?.beginTransaction()
-                    transaction?.replace(R.id.fragment_container, ldf)
-                    transaction?.disallowAddToBackStack()
-                    transaction?.commit()
+                    val ldf = HomeFragment()
+                    (activity as MainActivity?)!!.setBottomNavigationAsHome()
+                    loadFragment(ldf)
+//                    val transaction = activity?.supportFragmentManager?.beginTransaction()
+//                    transaction?.replace(R.id.fragment_container, ldf)
+//                    transaction?.disallowAddToBackStack()
+//                    transaction?.commit()
                 }
                 cancelBtn?.setOnClickListener {
                     container?.removeView(deleteCategoryView)

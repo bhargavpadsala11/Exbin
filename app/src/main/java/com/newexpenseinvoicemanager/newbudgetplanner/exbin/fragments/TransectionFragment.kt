@@ -77,8 +77,9 @@ class TransectionFragment : Fragment() {
         val filter = binding.clFliter
         val createFilter = binding.clConverter
 
-        custom.ivBack.setOnClickListener { loadFragment(HomeFragment())
+        custom.ivBack.setOnClickListener {
             (activity as MainActivity?)!!.setBottomNavigationAsHome()
+            loadFragment(HomeFragment())
         }
         custom.ivTitle.setText("Transaction List")
 
@@ -95,7 +96,7 @@ class TransectionFragment : Fragment() {
         }
 //        getIdofNativeAds()
 
-        loadAd(dao,currencyClass,createFilter,categoryMap)
+        loadAd(dao, currencyClass, createFilter, categoryMap)
 
         getTransecton(currencyClass)
         val inComeButton = binding.btnIncome
@@ -568,51 +569,54 @@ class TransectionFragment : Fragment() {
                 override fun onAdLoaded(interstitialAd: InterstitialAd) {
                     Log.d(TAG, "Ad was loaded.")
                     mInterstitialAd = interstitialAd
-                    mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
-                        override fun onAdClicked() {
-                            // Called when a click is recorded for an ad.
-                            Log.d(TAG, "Ad was clicked.")
-                        }
+                    mInterstitialAd?.fullScreenContentCallback =
+                        object : FullScreenContentCallback() {
+                            override fun onAdClicked() {
+                                // Called when a click is recorded for an ad.
+                                Log.d(TAG, "Ad was clicked.")
+                            }
 
-                        override fun onAdDismissedFullScreenContent() {
-                            // Called when ad is dismissed.
-                            Log.d(TAG, "Ad dismissed fullscreen content.")
-                            createFilter.visibility = View.GONE
-                            if (PDF_OR_EXCEL) {
-                                Log.d(TAG, "PDF_OR_EXCEL == true")
+                            override fun onAdDismissedFullScreenContent() {
+                                // Called when ad is dismissed.
+                                Log.d(TAG, "Ad dismissed fullscreen content.")
+                                createFilter.visibility = View.GONE
+                                if (PDF_OR_EXCEL) {
+                                    Log.d(TAG, "PDF_OR_EXCEL == true")
 
-                                dao.incexpTblDao().getAllData().observe(requireActivity()) {
-                                    val adapter = adapterOfTransection(it, categoryMap, currencyClass)
-                                    generatePdf(it, categoryMap, currencyClass, adapter)
+                                    dao.incexpTblDao().getAllData().observe(requireActivity()) {
+                                        val adapter =
+                                            adapterOfTransection(it, categoryMap, currencyClass)
+                                        generatePdf(it, categoryMap, currencyClass, adapter)
+
+                                    }
+                                    mInterstitialAd = null
+                                } else {
+                                    Log.d(TAG, "PDF_OR_EXCEL == false")
+
+                                    dao.incexpTblDao().getAllData().observe(requireActivity()) {
+                                        val adapter =
+                                            adapterOfTransection(it, categoryMap, currencyClass)
+                                        exportToExcel(adapter, requireContext())
+                                    }
+                                    mInterstitialAd = null
 
                                 }
-                                mInterstitialAd = null
-                            } else {
-                                Log.d(TAG, "PDF_OR_EXCEL == false")
-
-                                dao.incexpTblDao().getAllData().observe(requireActivity()) {
-                                    val adapter = adapterOfTransection(it, categoryMap, currencyClass)
-                                    exportToExcel(adapter, requireContext())
-                                }
-                                mInterstitialAd = null
+                                PDF_OR_EXCEL = true
+                                binding.rdbPdf.isChecked = false
+                                binding.rdbExcel.isChecked = false
 
                             }
-                            PDF_OR_EXCEL = true
-                            binding.rdbPdf.isChecked = false
-                            binding.rdbExcel.isChecked = false
 
-                        }
+                            override fun onAdImpression() {
+                                // Called when an impression is recorded for an ad.
+                                Log.d(TAG, "Ad recorded an impression.")
+                            }
 
-                        override fun onAdImpression() {
-                            // Called when an impression is recorded for an ad.
-                            Log.d(TAG, "Ad recorded an impression.")
+                            override fun onAdShowedFullScreenContent() {
+                                // Called when ad is shown.
+                                Log.d(TAG, "Ad showed fullscreen content.")
+                            }
                         }
-
-                        override fun onAdShowedFullScreenContent() {
-                            // Called when ad is shown.
-                            Log.d(TAG, "Ad showed fullscreen content.")
-                        }
-                    }
 
                 }
             })

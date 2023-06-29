@@ -16,9 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.FullScreenContentCallback
-import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.button.MaterialButton
@@ -54,6 +52,8 @@ class ExpenseActivity : Fragment() {
     private var _ID: String? = ""
     private var mInterstitialAd: InterstitialAd? = null
     private var FireBaseGooggleAdsInterId: String = ""
+    private var FireBaseGooggleAdsBanner: String = ""
+
 
 
     override fun onCreateView(
@@ -61,12 +61,57 @@ class ExpenseActivity : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = ActivityExpenseBinding.inflate(layoutInflater)
+        (activity as MainActivity?)!!.floatButtonHide()
+        val preference =
+            requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
+        FireBaseGooggleAdsInterId = preference.getString("inter_id", "")!!
+        FireBaseGooggleAdsBanner = preference.getString("banner_Key", "")!!
+
         val custom = binding.appBar
         custom.ivDelete.visibility = View.GONE
         custom.ivTitle.setText("Add Expense")
         custom.ivBack.setOnClickListener {
             loadFragment(HomeFragment())
+            (activity as MainActivity?)!!.setBottomNavigationAsHome()
         }
+
+        val adContainer = binding.adView
+        val mAdView = AdView(requireContext())
+        mAdView.setAdSize(AdSize.BANNER)
+        mAdView.adUnitId = FireBaseGooggleAdsBanner
+        adContainer.addView(mAdView)
+        val adRequest = AdRequest.Builder().build()
+        mAdView.loadAd(adRequest)
+
+        mAdView.adListener = object: AdListener() {
+            override fun onAdClicked() {
+                // Code to be executed when the user clicks on an ad.
+            }
+
+            override fun onAdClosed() {
+                // Code to be executed when the user is about to return
+                // to the app after tapping on an ad.
+            }
+
+            override fun onAdFailedToLoad(adError : LoadAdError) {
+                // Code to be executed when an ad request fails.
+            }
+
+            override fun onAdImpression() {
+                // Code to be executed when an impression is recorded
+                // for an ad.
+            }
+
+            override fun onAdLoaded() {
+                // Code to be executed when an ad finishes loading.
+            }
+
+            override fun onAdOpened() {
+                // Code to be executed when an ad opens an overlay that
+                // covers the screen.
+            }
+        }
+
 //        supportActionBar?.title = "Expense"
 //        value = intent.getStringExtra("value")
         value = arguments?.getString("value")
@@ -75,9 +120,6 @@ class ExpenseActivity : Fragment() {
         val INC_ = arguments?.getString("EXP_")
 
         if (INC_ != null) {
-            val preference =
-                requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
-            FireBaseGooggleAdsInterId = preference.getString("inter_id", "")!!
 
             val calendar = Calendar.getInstance()
             val sdf = SimpleDateFormat("dd/M/yyyy")
@@ -125,11 +167,13 @@ class ExpenseActivity : Fragment() {
                         db.deleteincomeexpenseId(ID_!!.toInt())
                     }
                     container?.removeView(deleteCategoryView)
-                    val ldf = TransectionFragment()
-                    val transaction = activity?.supportFragmentManager?.beginTransaction()
-                    transaction?.replace(R.id.fragment_container, ldf)
-                    transaction?.disallowAddToBackStack()
-                    transaction?.commit()
+                    val ldf = HomeFragment()
+                    loadFragment(ldf)
+                    (activity as MainActivity?)!!.setBottomNavigationAsHome()
+//                    val transaction = activity?.supportFragmentManager?.beginTransaction()
+//                    transaction?.replace(R.id.fragment_container, ldf)
+//                    transaction?.disallowAddToBackStack()
+//                    transaction?.commit()
                 }
                 cancelBtn?.setOnClickListener {
                     container?.removeView(deleteCategoryView)

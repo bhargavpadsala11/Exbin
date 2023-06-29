@@ -87,39 +87,61 @@ class MainActivity : AppCompatActivity() {
             } else {
                 val isConnected = isInternet()
                 if (isConnected) {
+
                     bottomNavigationView?.setOnItemSelectedListener { item ->
+                        currentFragment =
+                            supportFragmentManager.findFragmentById(R.id.fragment_container)
                         var fragment: Fragment
                         when (item.itemId) {
                             R.id.navigation_home -> {
+                                if (!(currentFragment is HomeFragment)) {
+                                    toolbar?.setTitle("Home")
+                                    fragment = HomeFragment()
+                                    loadFragment(fragment)
+                                    true
+                                } else {
+                                    false
+                                }
+                            }
+                            R.id.navigation_transection -> {
+                                if (!(currentFragment is TransectionFragment)) {
+                                    floatButtonHide()
+                                    toolbar?.setTitle("Transection")
+                                    fragment = TransectionFragment()
+                                    loadFragment(fragment)
+                                    true
+                                } else {
+                                    false
+                                }
+                            }
+                            R.id.navigation_add -> {
+                                floatButtonShow()
                                 toolbar?.setTitle("Home")
                                 fragment = HomeFragment()
                                 loadFragment(fragment)
                                 true
                             }
-                            R.id.navigation_transection -> {
-                                floatButtonHide()
-                                toolbar?.setTitle("Transection")
-                                fragment = TransectionFragment()
-                                loadFragment(fragment)
-                                true
-                            }
-                            R.id.navigation_add -> {
-                                floatButtonShow()
-                                true
-                            }
                             R.id.navigation_budget -> {
-                                floatButtonHide()
-                                toolbar?.setTitle("Budget")
-                                fragment = BudgetFragment()
-                                loadFragment(fragment)
-                                true
+                                if (!(currentFragment is BudgetFragment)) {
+                                    floatButtonHide()
+                                    toolbar?.setTitle("Budget")
+                                    fragment = BudgetFragment()
+                                    loadFragment(fragment)
+                                    true
+                                } else {
+                                    false
+                                }
                             }
                             R.id.navigation_more -> {
-                                floatButtonHide()
-                                toolbar?.setTitle("More")
-                                fragment = MoreFragment()
-                                loadFragment(fragment)
-                                true
+                                if (currentFragment !is MoreFragment) {
+                                    floatButtonHide()
+                                    toolbar?.setTitle("More")
+                                    fragment = MoreFragment()
+                                    loadFragment(fragment)
+                                    true
+                                } else {
+                                    false
+                                }
                             }
                             else -> false
                         }
@@ -168,6 +190,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun loadFragment(fragment: Fragment) {
+
         var isConnected = isInternet()
         if (isConnected) {
             supportFragmentManager.beginTransaction()
@@ -193,7 +216,7 @@ class MainActivity : AppCompatActivity() {
         isButtonVisible = !isButtonVisible
     }
 
-    private fun floatButtonHide() {
+    public fun floatButtonHide() {
         binding.exp.visibility = View.GONE
         binding.inc.visibility = View.GONE
     }
@@ -205,7 +228,7 @@ class MainActivity : AppCompatActivity() {
         fab?.visibility = View.VISIBLE
     }
 
-    public fun setBottomNavigationAsHome(){
+    public fun setBottomNavigationAsHome() {
         bottomNavigationView?.selectedItemId = R.id.navigation_home
     }
 
@@ -225,6 +248,7 @@ class MainActivity : AppCompatActivity() {
 //    }
 
     override fun onBackPressed() {
+
         currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
         if (currentFragment is HomeFragment || currentFragment == null) {
             bottomNavigationView?.selectedItemId = R.id.navigation_home
@@ -365,7 +389,7 @@ class MainActivity : AppCompatActivity() {
                 val editor = preference.edit()
                 editor.putString("Na_tive_id", nativeAdvancedKey)
                 editor.putString("inter_id", interstitialKey)
-                editor.putString("banner_Key",bannerKey)
+                editor.putString("banner_Key", bannerKey)
                 editor.apply()
             }
 
@@ -411,7 +435,6 @@ class MainActivity : AppCompatActivity() {
         val dialog = dialogBuilder.create()
         dialog.show()
     }
-
 
 
 }

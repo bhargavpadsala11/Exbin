@@ -15,7 +15,12 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
+import com.google.android.ads.nativetemplates.NativeTemplateStyle
+import com.google.android.ads.nativetemplates.TemplateView
 import com.google.android.ads.nativetemplates.rvadapter.AdmobNativeAdAdapter
+import com.google.android.gms.ads.AdLoader
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.nativead.NativeAd
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.TransectionListAdapter
@@ -33,6 +38,8 @@ class HomeFragment : Fragment() {
     private var exp: Double = 0.0
     var crnSymb: String? = ""
     private var FireBaseGooggleAdsId:String = ""
+    private lateinit var nativeAd: NativeAd
+    private var isLoading: Boolean = false
 
 
     override fun onCreateView(
@@ -44,6 +51,7 @@ class HomeFragment : Fragment() {
         val preference =
             requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
         FireBaseGooggleAdsId = preference.getString("Na_tive_id","")!!
+
 
         (activity as MainActivity?)!!.showBottomNavigationView()
         val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
@@ -278,7 +286,7 @@ class HomeFragment : Fragment() {
                     binding.currentBalanceTxt.setTextColor(
                         ContextCompat.getColor(
                             requireContext(),
-                            R.color.transectionRed
+                            com.newexpenseinvoicemanager.newbudgetplanner.exbin.R.color.transectionRed
                         )
                     )
 
@@ -340,6 +348,15 @@ class HomeFragment : Fragment() {
         pieChart.setHoleRadius(50f) // set hole radius
         pieChart.invalidate()
     }
+
+
+
+
+
+
+
+
+
 
 
 }

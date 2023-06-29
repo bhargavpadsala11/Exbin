@@ -57,6 +57,9 @@ class CategoryListAdapter(
         imageView.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN)
         imageView.setBackgroundColor(lightColor)
         if (INCOMEACTIVITY != null || EXPENSEACTIVITY != null || INCOMEACTIVITYUP != null || EXPENSEACTIVITYUP != null) {
+            holder.binding.titleTextView.setOnClickListener {
+                holder.binding.catehoryItem.performClick()
+            }
             holder.binding.catehoryItem.setOnClickListener {
                 onImageClickListener(list[position], "EDIT")
                 holder.binding.btneditmode.visibility = View.GONE
