@@ -19,7 +19,7 @@
     </style>
 
     <style name="CatagoryIconShape" parent="">
-        <item name="cornerSize">30%</item>
+        <item name="cornerSize">26%</item>
 
     </style>
 

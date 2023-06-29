@@ -134,6 +134,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/selectColor"
             app:shapeAppearanceOverlay="@style/CatagoryIconShape"
+            android:scaleType="centerInside"
             app:layout_constraintStart_toEndOf="@+id/arrow2"/>
 
 
