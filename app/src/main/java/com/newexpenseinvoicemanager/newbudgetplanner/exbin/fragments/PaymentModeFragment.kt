@@ -38,6 +38,11 @@ class PaymentModeFragment : Fragment() {
     private var deletePaymentView: View? = null
     private var mInterstitialAd: InterstitialAd? = null
     private var FireBaseGooggleAdsInterId: String = ""
+    private lateinit var isTitleOrNot :AppCompatTextView
+    private lateinit var PaymentIds :String
+    private var isTitle :String = ""
+    private lateinit var mainview :View
+    private var globalgetaymentModeTextView : TextInputEditText? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,7 +58,16 @@ class PaymentModeFragment : Fragment() {
         FireBaseGooggleAdsInterId = preference.getString("inter_id", "")!!
 
         val mainView = inflater.inflate(R.layout.fragment_payment_mode, container, false)
+        mainview = mainView
         addPaymentView = inflater.inflate(R.layout.add_payent_maode_layout, container, false)
+        val titlePaymentModeTextView =
+            addupdatetView?.findViewById<AppCompatTextView>(R.id.titlePaymentMode)
+        val addButton = addPaymentView?.findViewById<MaterialButton>(R.id.btnapply)
+        val cancelButton = addPaymentView?.findViewById<MaterialButton>(R.id.btncancel)
+        val getaymentModeTextView =
+            addPaymentView?.findViewById<TextInputEditText>(R.id.addPaymet)
+
+        loadAd(container, getaymentModeTextView)
 
         binding.addPaymentFloating.setOnClickListener {
             // binding.addcardview.visibility = View.VISIBLE
@@ -63,12 +77,12 @@ class PaymentModeFragment : Fragment() {
 
 
         }
-        val addButton = addPaymentView?.findViewById<MaterialButton>(R.id.btnapply)
-        val cancelButton = addPaymentView?.findViewById<MaterialButton>(R.id.btncancel)
+
+
         addButton?.setOnClickListener {
 
-            val getaymentModeTextView =
-                addPaymentView?.findViewById<TextInputEditText>(R.id.addPaymet)
+            isTitle = "ADD"
+
             if (getaymentModeTextView?.text?.isEmpty() == true) {
                 //getaymentModeTextView.setBackgroundResource(R.drawable.red_under_line)
                 getaymentModeTextView.requestFocus()
@@ -82,11 +96,15 @@ class PaymentModeFragment : Fragment() {
                 val existingPaymentMode =
                     db.getPaymentModeByName(getaymentModeTextView?.text.toString())
                 if (existingPaymentMode == null) {
-                    addPaymentMode(getaymentModeTextView?.text.toString())
-                    mainView.visibility = View.VISIBLE
-                    addPaymentView?.visibility = View.GONE
-                    container?.removeView(addPaymentView)
-                    getaymentModeTextView?.setText("")
+                    if (mInterstitialAd != null) {
+                        mInterstitialAd?.show(requireActivity())
+                    } else {
+                        addPaymentMode(getaymentModeTextView?.text.toString())
+                        mainView.visibility = View.VISIBLE
+                        addPaymentView?.visibility = View.GONE
+                        container?.removeView(addPaymentView)
+                        getaymentModeTextView?.setText("")
+                    }
                 } else {
                     Toast.makeText(
                         requireContext(),
@@ -96,6 +114,7 @@ class PaymentModeFragment : Fragment() {
                 }
             }
         }
+
         cancelButton?.setOnClickListener {
             mainView.visibility = View.VISIBLE
             addPaymentView?.visibility = View.GONE
@@ -103,6 +122,8 @@ class PaymentModeFragment : Fragment() {
             val getaymentModeTextView =
                 addPaymentView?.findViewById<TextInputEditText>(R.id.addPaymet)
             getaymentModeTextView?.setText("")
+            isTitle = ""
+
         }
 
         val dao = AppDataBase.getInstance(requireContext()).paymentModesDao()
@@ -113,6 +134,8 @@ class PaymentModeFragment : Fragment() {
             recy.layoutManager = layoutManager
             val adapter = PaymentModesAdapter(requireContext(), it) { paymentMode, buttonClicked ->
                 if (buttonClicked == "EDIT") {
+                    isTitle = "EDIT"
+
                     addupdatetView =
                         inflater.inflate(R.layout.add_payent_maode_layout, container, false)
 
@@ -123,14 +146,16 @@ class PaymentModeFragment : Fragment() {
 
                     val getaymentModeTextView =
                         addupdatetView?.findViewById<TextInputEditText>(R.id.addPaymet)
+                    globalgetaymentModeTextView = getaymentModeTextView
 
                     val titlePaymentModeTextView =
                         addupdatetView?.findViewById<AppCompatTextView>(R.id.titlePaymentMode)
                     titlePaymentModeTextView?.setText("Update Payment Mode")
+                    isTitleOrNot = titlePaymentModeTextView!!
                     getaymentModeTextView?.setText("${paymentMode.paymentMode}")
                     val paymentId = paymentMode.paymentModeId.toInt()
+                    PaymentIds = paymentId.toString()
                     val updateBtn = addupdatetView?.findViewById<MaterialButton>(R.id.btnapply)
-                    loadAd(paymentId, container, getaymentModeTextView)
                     updateBtn?.setOnClickListener {
                         if (mInterstitialAd != null) {
                             mInterstitialAd?.show(requireActivity())
@@ -149,6 +174,7 @@ class PaymentModeFragment : Fragment() {
                     }
                 }
                 if (buttonClicked == "DELETE") {
+
                     deletePaymentView =
                         inflater.inflate(R.layout.custom_delete_dialog, container, false)
 
@@ -164,15 +190,12 @@ class PaymentModeFragment : Fragment() {
                     deleteTitleTextView?.setText("Are you sure you want to delete this PaymentMode ?")
                     val deletePaymentModeCnlBtn =
                         deletePaymentView?.findViewById<MaterialButton>(R.id.btncancel)
-                    loadAdDelete(paymentMode, container)
                     deletePaymentModeBtn?.setOnClickListener {
-                        if (mInterstitialAd != null) {
-                            mInterstitialAd?.show(requireActivity())
-                        } else {
+
                             val paymentId = paymentMode.paymentModeId
                             deltePaymentMode(paymentId)
                             container?.removeView(deletePaymentView)
-                        }
+
                     }
 
                     deletePaymentModeCnlBtn?.setOnClickListener {
@@ -212,6 +235,8 @@ class PaymentModeFragment : Fragment() {
         addPaymentView?.visibility = View.GONE
         addupdatetView?.visibility = View.GONE
         deletePaymentView?.visibility = View.GONE
+        mInterstitialAd = null
+
 
     }
 
@@ -232,13 +257,14 @@ class PaymentModeFragment : Fragment() {
     }
 
     private fun loadFragment(fragment: Fragment) {
+        mInterstitialAd = null
         activity?.supportFragmentManager?.beginTransaction()
             ?.replace(R.id.fragment_container, fragment)
             ?.addToBackStack(null)
             ?.commit()
     }
 
-    fun loadAd(paymentId: Int, container: ViewGroup?, getaymentModeTextView: TextInputEditText?) {
+    fun loadAd(container: ViewGroup?, getaymentModeTextView: TextInputEditText?) {
         var adRequest = AdRequest.Builder().build()
 
         InterstitialAd.load(
@@ -265,9 +291,26 @@ class PaymentModeFragment : Fragment() {
                                 // Called when ad is dismissed.
                                 Log.d(ContentValues.TAG, "Ad dismissed fullscreen content.")
 
+                                Log.d("Add Payment Mode", "$isTitle")
                                 mInterstitialAd = null
-                                updatePaymentMode(paymentId, getaymentModeTextView?.text.toString())
-                                container?.removeView(addupdatetView)
+
+                                if(isTitle == "ADD"){
+                                    Log.d("Add Payment Mode", "$isTitle")
+                                    addPaymentMode(getaymentModeTextView?.text.toString())
+                                    mainview.visibility = View.VISIBLE
+                                    addPaymentView?.visibility = View.GONE
+                                    container?.removeView(addPaymentView)
+                                    getaymentModeTextView?.setText("")
+                                    loadFragment(PaymentModeFragment())
+                                }else if(isTitle == "EDIT"){
+                                    Log.d("EDIT", "$globalgetaymentModeTextView")
+                                    updatePaymentMode(
+                                        PaymentIds.toInt(),
+                                        globalgetaymentModeTextView!!.text.toString()
+                                    )
+                                    container?.removeView(addupdatetView)
+                                    loadFragment(PaymentModeFragment())
+                                }
 
                             }
 
@@ -286,52 +329,4 @@ class PaymentModeFragment : Fragment() {
             })
     }
 
-    fun loadAdDelete(paymentMode: PaymentModes, container: ViewGroup?) {
-        var adRequest = AdRequest.Builder().build()
-
-        InterstitialAd.load(
-            requireContext(),
-            FireBaseGooggleAdsInterId,
-            adRequest,
-            object : InterstitialAdLoadCallback() {
-                override fun onAdFailedToLoad(adError: LoadAdError) {
-                    Log.d(ContentValues.TAG, adError?.toString()!!)
-                    mInterstitialAd = null
-                }
-
-                override fun onAdLoaded(interstitialAd: InterstitialAd) {
-                    Log.d(ContentValues.TAG, "Ad was loaded.")
-                    mInterstitialAd = interstitialAd
-                    mInterstitialAd?.fullScreenContentCallback =
-                        object : FullScreenContentCallback() {
-                            override fun onAdClicked() {
-                                // Called when a click is recorded for an ad.
-                                Log.d(ContentValues.TAG, "Ad was clicked.")
-                            }
-
-                            override fun onAdDismissedFullScreenContent() {
-                                // Called when ad is dismissed.
-                                Log.d(ContentValues.TAG, "Ad dismissed fullscreen content.")
-
-                                mInterstitialAd = null
-                                val paymentId = paymentMode.paymentModeId
-                                deltePaymentMode(paymentId)
-                                container?.removeView(deletePaymentView)
-
-                            }
-
-                            override fun onAdImpression() {
-                                // Called when an impression is recorded for an ad.
-                                Log.d(ContentValues.TAG, "Ad recorded an impression.")
-                            }
-
-                            override fun onAdShowedFullScreenContent() {
-                                // Called when ad is shown.
-                                Log.d(ContentValues.TAG, "Ad showed fullscreen content.")
-                            }
-                        }
-
-                }
-            })
-    }
 }

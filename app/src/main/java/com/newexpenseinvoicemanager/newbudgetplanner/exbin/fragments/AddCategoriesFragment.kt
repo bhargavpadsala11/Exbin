@@ -36,6 +36,7 @@ import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.ColorAdapter
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.IconAdapter
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.CustomAppBarBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.FragmentAddCategoriesBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
 import kotlinx.coroutines.Dispatchers
@@ -51,6 +52,9 @@ class AddCategoriesFragment : Fragment() {
     private var deleteCategoryView: View? = null
     private var mInterstitialAd: InterstitialAd? = null
     private var FireBaseGooggleAdsInterId: String = ""
+    private var isDataorNot: String = ""
+    private var isCategory: Categories? = null
+    private lateinit var customTitle: CustomAppBarBinding
 
 
     override fun onCreateView(
@@ -92,250 +96,31 @@ class AddCategoriesFragment : Fragment() {
         )
 
         val colors = listOf(
-            "#002F6C",
-            "#0039A6",
-            "#0047B2",
-            "#0052CC",
-            "#0066FF",
-            "#1A8FFF",
-            "#3399FF",
             "#73BFFF",
-            "#99CCFF",
-            "#C2E0FF",
-            "#D9E5FF",
-            "#E6F0FF",
-            "#F0F5FF",
-            "#F5FAFF",
-            "#FAFDFF",
-            "#FFFFFF",
-            "#E6F7FF",
-            "#B3E0FF",
-            "#80CCFF",
             "#4DA6FF",
             "#FFA07A",
             "#FF7F50",
-            "#FF6347",
-            "#FF4500",
-            "#FF8C00",
-            "#FFA500",
             "#FFB347",
-            "#FFC0CB",
-            "#FFDAB9",
-            "#FFDEAD",
-            "#FFE4B5",
-            "#FFE4C4",
-            "#FFE4E1",
-            "#FFDEAD",
-            "#FFDAB9",
-            "#FFC0CB",
-            "#FFB347",
-            "#FFA500",
-            "#FF8C00",
             "#FF6347",
-            "#FFCDD2",
             "#EF9A9A",
             "#E57373",
-            "#EF5350",
-            "#F44336",
-            "#E53935",
-            "#D32F2F",
-            "#C62828",
-            "#B71C1C",
-            "#FF8A80",
-            "#FF5252",
-            "#FF1744",
-            "#D50000",
-            "#FCE4EC",
-            "#F8BBD0",
             "#F48FB1",
             "#F06292",
-            "#EC407A",
-            "#E91E63",
-            "#D81B60",
-            "#006400",
-            "#008000",
-            "#228B22",
-            "#2E8B57",
-            "#3CB371",
-            "#32CD32",
-            "#00FF00",
-            "#7CFC00",
-            "#ADFF2F",
-            "#9ACD32",
-            "#556B2F",
-            "#6B8E23",
-            "#7FFF00",
-            "#8FBC8F",
-            "#98FB98",
-            "#00FA9A",
-            "#00FF7F",
-            "#7FFFD4",
-            "#66CDAA",
-            "#20B2AA",
-            "#FFD700",
-            "#FFBF00",
-            "#FFC300",
-            "#FFA500",
-            "#FF8C00",
-            "#FF7F50",
-            "#FFDAB9",
-            "#FFE4B5",
-            "#FFE4C4",
-            "#FFE4E1",
-            "#FFF8DC",
-            "#FFFF00",
-            "#FFFFE0",
-            "#FFFFF0",
-            "#FAFAD2",
-            "#EEE8AA",
-            "#BDB76B",
-            "#F0E68C",
-            "#DAA520",
-            "#FFDF00",
-            "#E6E6FA",
-            "#D8BFD8",
-            "#DDA0DD",
-            "#EE82EE",
-            "#DA70D6",
-            "#FF00FF",
-            "#FF00FF",
-            "#BA55D3",
-            "#9370DB",
-            "#8A2BE2",
-            "#9400D3",
-            "#9932CC",
-            "#8B008B",
-            "#800080",
-            "#4B0082",
-            "#6A5ACD",
-            "#483D8B",
-            "#7B68EE",
-            "#6B69D6",
-            "#A020F0",
-            "#FF7F50",
-            "#FF6347",
-            "#FF4500",
-            "#FF8C00",
-            "#FFA500",
-            "#FFB347",
-            "#FFC0CB",
-            "#FFDAB9",
-            "#FFDEAD",
-            "#FFE4B5",
-            "#FFE4C4",
-            "#FFE4E1",
-            "#FFDEAD",
-            "#FFDAB9",
-            "#FFC0CB",
-            "#FFB347",
-            "#FFA500",
-            "#FF8C00",
-            "#FF6347",
-            "#FF4500",
-            "#0077BE",
-            "#008CBA",
-            "#00A1C9",
-            "#00AEEF",
-            "#00BFFF",
-            "#1D62F0",
-            "#3D85C6",
             "#5B8ABE",
             "#6FA8DC",
             "#7FB2E5",
             "#8FBCE6",
-            "#A9CCE3",
-            "#BFD4E7",
-            "#C9D9E8",
-            "#D9E8F5",
-            "#E5EDF5",
-            "#F0F5FA",
-            "#F5FAFF",
-            "#F7FBFF",
-            "#FFFFFF",
-            "#DC143C",
-            "#FF0000",
-            "#FF2400",
-            "#FF4500",
-            "#FF6347",
-            "#FF7F50",
-            "#FF8C00",
-            "#FFA07A",
-            "#FFA500",
-            "#FFB6C1",
-            "#FFC0CB",
-            "#FFDAB9",
-            "#FFDEAD",
-            "#FFE4B5",
-            "#FFE4C4",
-            "#FFE4E1",
-            "#FFEBCD",
-            "#FFEFD5",
-            "#FFF0F5",
-            "#FFF5EE",
-            "#008080",
-            "#008B8B",
-            "#00CED1",
-            "#00FA9A",
-            "#00FF7F",
-            "#20B2AA",
-            "#40E0D0",
-            "#48D1CC",
             "#66CDAA",
-            "#7FFFD4",
-            "#AFEEEE",
-            "#BBFFFF",
-            "#E0FFFF",
-            "#E6FFFF",
-            "#F0FFFF",
-            "#00FFFF",
-            "#00FFFF",
-            "#7FFFD4",
-            "#40E0D0",
-            "#48D1CC",
-            "#0F52BA",
-            "#1E90FF",
-            "#4169E1",
-            "#6495ED",
-            "#00BFFF",
-            "#87CEEB",
-            "#87CEFA",
-            "#ADD8E6",
-            "#B0C4DE",
-            "#B0E0E6",
-            "#B2DFEE",
-            "#BFEFFF",
-            "#CAE1FF",
-            "#E6E6FA",
-            "#F0F8FF",
-            "#F8F8FF",
-            "#F0FFFF",
-            "#00CED1",
-            "#00FFFF",
-            "#00FFFF",
             "#B76E79",
             "#C8AD7F",
-            "#D8C3A5",
-            "#E8D9CB",
-            "#F8EFE1",
-            "#FCE4EC",
-            "#F8BBD0",
             "#F48FB1",
-            "#F06292",
-            "#EC407A",
-            "#E91E63",
-            "#D81B60",
-            "#C2185B",
-            "#AD1457",
-            "#880E4F",
-            "#FF80AB",
-            "#FF4081",
-            "#F50057",
-            "#C51162",
-            "#FCE4EC"
+            "#F06292"
             // Add more colors here
         )
 
         val custom = binding.appBar
+
+        customTitle = binding.appBar
 
 
         custom.ivBack.setOnClickListener {
@@ -344,13 +129,17 @@ class AddCategoriesFragment : Fragment() {
         custom.ivDelete.visibility = View.GONE
         custom.ivTitle.setText("Add Category")
         val value = arguments?.getString("EDIT")
+
         updateMergedIcon()
+        loadAd()
         if (value != null) {
+            isDataorNot = value
             custom.ivTitle.setText("Manage Category")
             custom.ivDelete.visibility = View.VISIBLE
             val db = AppDataBase.getInstance(requireContext()).categoriesDao()
             lifecycleScope.launch(Dispatchers.IO) {
                 val category = db.getCategoryById(value.toInt())
+                isCategory = category
                 withContext(Dispatchers.Main) {
                     if (category?.CategoryColor != null && category?.CategoryImage != null) {
                         val colorInt = Color.parseColor(category?.CategoryColor)
@@ -363,7 +152,7 @@ class AddCategoriesFragment : Fragment() {
                     updateMergedIcon()
 
 
-                    loadAd(value, category, custom.ivDelete, binding.btnSave,container)
+
                     custom.ivDelete.setOnClickListener {
                         deleteCategoryView =
                             inflater.inflate(R.layout.custom_delete_dialog, container, false)
@@ -377,19 +166,19 @@ class AddCategoriesFragment : Fragment() {
                         hintText?.setText("Are you sure you want to delete this Category? If you delete this category it also delete all data regarding to this category")
                         deleteBtn?.setOnClickListener {
 
-                                val db = AppDataBase.getInstance(requireContext()).categoriesDao()
-                                lifecycleScope.launch(Dispatchers.IO) {
-                                    db.deleteCategory(value.toInt())
-                                    deleteBudget(category?.CategoryName)
-                                    deleteincomeexpense(category?.CategoryName)
-                                }
-                                container?.removeView(deleteCategoryView)
-                                val ldf = CategoryListFragment()
-                                val transaction =
-                                    activity?.supportFragmentManager?.beginTransaction()
-                                transaction?.replace(R.id.fragment_container, ldf)
-                                transaction?.addToBackStack(null)
-                                transaction?.commit()
+                            val db = AppDataBase.getInstance(requireContext()).categoriesDao()
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                db.deleteCategory(value.toInt())
+                                deleteBudget(category?.CategoryName)
+                                deleteincomeexpense(category?.CategoryName)
+                            }
+                            container?.removeView(deleteCategoryView)
+                            val ldf = CategoryListFragment()
+                            val transaction =
+                                activity?.supportFragmentManager?.beginTransaction()
+                            transaction?.replace(R.id.fragment_container, ldf)
+                            transaction?.addToBackStack(null)
+                            transaction?.commit()
 
                         }
                         cancelBtn?.setOnClickListener {
@@ -575,11 +364,16 @@ class AddCategoriesFragment : Fragment() {
                 val existingCategory = db.getCategoryByName(binding.addCategorytxt.text.toString())
 
                 if (existingCategory == null) {
-                    addCategory(
-                        binding.addCategorytxt.text.toString(),
-                    )
-                    Toast.makeText(requireContext(), "Category Added", Toast.LENGTH_SHORT).show()
-                    clearText(binding.addCategorytxt)
+                    if (mInterstitialAd != null) {
+                        mInterstitialAd?.show(requireActivity())
+                    } else {
+                        addCategory(
+                            binding.addCategorytxt.text.toString()
+                        )
+                        Toast.makeText(requireContext(), "Category Added", Toast.LENGTH_SHORT)
+                            .show()
+                        clearText(binding.addCategorytxt)
+                    }
                 } else {
                     Toast.makeText(requireContext(), "Category Already Exists", Toast.LENGTH_SHORT)
                         .show()
@@ -791,13 +585,7 @@ class AddCategoriesFragment : Fragment() {
 //        ).show()
 //    }
 
-    fun loadAd(
-        value: String,
-        category: Categories?,
-        ivDelete: AppCompatImageView,
-        btnSave: FloatingActionButton,
-        container: ViewGroup?
-    ) {
+    fun loadAd() {
         var adRequest = AdRequest.Builder().build()
 
         InterstitialAd.load(
@@ -826,29 +614,19 @@ class AddCategoriesFragment : Fragment() {
 
                                 mInterstitialAd = null
 
-                                    updateCategory(
-                                        value.toInt(),
-                                        binding.addCategorytxt.text.toString(),
-                                        selectedIcon.toString(),
-                                        selectedColor
-                                    )
-                                    updateBudget(
-                                        category?.CategoryName,
-                                        binding.addCategorytxt.text.toString(), selectedColor
-                                    )
-                                    updateincCat(
-                                        category?.CategoryName,
-                                        binding.addCategorytxt.text.toString()
-                                    )
+                                if (customTitle.ivTitle.text.toString() == "Add Category") {
+                                    addCategory(binding.addCategorytxt.text.toString())
                                     Toast.makeText(
                                         requireContext(),
-                                        "Category Updated",
+                                        "Category Added",
                                         Toast.LENGTH_SHORT
                                     )
                                         .show()
+                                    clearText(binding.addCategorytxt)
                                     loadFragment(CategoryListFragment())
-
-
+                                } else {
+                                    updateCateFunction()
+                                }
 
                             }
 
@@ -867,5 +645,30 @@ class AddCategoriesFragment : Fragment() {
             })
     }
 
+    fun updateCateFunction() {
+        val value = isDataorNot
+        val category = isCategory
+        updateCategory(
+            value.toInt(),
+            binding.addCategorytxt.text.toString(),
+            selectedIcon.toString(),
+            selectedColor
+        )
+        updateBudget(
+            category?.CategoryName,
+            binding.addCategorytxt.text.toString(), selectedColor
+        )
+        updateincCat(
+            category?.CategoryName,
+            binding.addCategorytxt.text.toString()
+        )
+        Toast.makeText(
+            requireContext(),
+            "Category Updated",
+            Toast.LENGTH_SHORT
+        )
+            .show()
+        loadFragment(CategoryListFragment())
+    }
 
 }

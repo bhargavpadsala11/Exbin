@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.text.Layout
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -20,6 +21,10 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.google.android.ads.nativetemplates.NativeTemplateStyle
+import com.google.android.ads.nativetemplates.TemplateView
+import com.google.android.gms.ads.AdLoader
+import com.google.android.gms.ads.AdRequest
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -44,6 +49,7 @@ class MainActivity : AppCompatActivity() {
     private var currentFragment: Fragment? = null
     private lateinit var sharedPreferences: SharedPreferences
     private val PERMISSION_REQUEST_CODE = 123
+    private var FireBaseGooggleAdsId: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,6 +104,9 @@ class MainActivity : AppCompatActivity() {
                                     toolbar?.setTitle("Home")
                                     fragment = HomeFragment()
                                     loadFragment(fragment)
+                                    if (fab?.isPressed == true) {
+                                        floatButtonShow()
+                                    }
                                     true
                                 } else {
                                     false
@@ -119,6 +128,7 @@ class MainActivity : AppCompatActivity() {
                                 toolbar?.setTitle("Home")
                                 fragment = HomeFragment()
                                 loadFragment(fragment)
+                                floatButtonShow()
                                 true
                             }
                             R.id.navigation_budget -> {
@@ -188,6 +198,39 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun getIdofNativeAds() {
+        val database = FirebaseDatabase.getInstance()
+        val ref = database.getReference("Keys")
+
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val data = snapshot.value as Map<*, *>?
+
+                val appOpenKey = data?.get("App_Open_key") as String
+                val bannerKey = data?.get("Banner_key") as String
+                val interstitialVideoKey = data?.get("Interstitial_Video_key") as String
+                val interstitialKey = data?.get("Interstitial_key") as String
+                val nativeAdKey = data?.get("Native_Advanced_Video_key") as String
+                val nativeAdvancedKey = data?.get("Native_Advanced_key") as String
+                FireBaseGooggleAdsId = nativeAdvancedKey
+                val rewardedInterstitialKey = data?.get("Rewarded_Interstitial_key") as String
+                val rewardedKey = data?.get("Rewarded_key") as String
+                val isShow = data?.get("is_show") as Boolean
+
+                val preference = getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
+                val editor = preference.edit()
+                editor.putString("Na_tive_id", nativeAdvancedKey)
+                editor.putString("inter_id", interstitialKey)
+                editor.putString("banner_Key", bannerKey)
+                editor.apply()
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle the error if retrieval is unsuccessful
+            }
+        })
+    }
 
     private fun loadFragment(fragment: Fragment) {
 
@@ -221,7 +264,6 @@ class MainActivity : AppCompatActivity() {
         binding.inc.visibility = View.GONE
     }
 
-
     public fun showBottomNavigationView() {
         bottomNavigationView?.setVisibility(View.VISIBLE)
         bottomAppBar?.visibility = View.VISIBLE
@@ -240,13 +282,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-//    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-//        super.onCreate(savedInstanceState, persistentState)
-//        var fragment: Fragment
-//        fragment = HomeFragment()
-//        loadFragment(fragment)
-//    }
-
     override fun onBackPressed() {
 
         currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
@@ -256,7 +291,30 @@ class MainActivity : AppCompatActivity() {
             if (currentTime - backPressedTime < backPressedTimeout) {
                 val myButton: View = findViewById(R.id.exit_dialog)
                 myButton.visibility = View.VISIBLE
+                if (myButton.visibility == View.VISIBLE) {
+                    Log.d("myButton.visibility", "Called")
+                    binding.mainActiviry.isEnabled = false
+                    binding.bottomAppBar.isEnabled = false
+                    binding.bottomNavigationView.isEnabled = false
+                    binding.fragmentContainer.isEnabled = false
+                } else {
+                    binding.mainActiviry.isEnabled = true
+                    binding.bottomAppBar.isEnabled = true
+                    binding.bottomNavigationView.isEnabled = true
+                    binding.fragmentContainer.isEnabled = true
+                }
                 val deleteDiloug = binding.exitDialog
+                val adLoader = AdLoader.Builder(this, FireBaseGooggleAdsId)
+                    .forNativeAd { nativeAd ->
+                        val styles =
+                            NativeTemplateStyle.Builder().build()
+                        val template: TemplateView = deleteDiloug.myTemplate
+                        template.setStyles(styles)
+                        template.setNativeAd(nativeAd)
+                    }
+                    .build()
+
+                adLoader.loadAd(AdRequest.Builder().build())
                 deleteDiloug.btnDelete.setOnClickListener {
                     finish()
                 }
@@ -318,23 +376,6 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
-    //    private fun arePermissionsGranted(): Boolean {
-//        val permissions = arrayOf(
-//            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-//            Manifest.permission.READ_EXTERNAL_STORAGE,
-//            Manifest.permission.INTERNET,
-//            Manifest.permission.GET_ACCOUNTS,
-//            Manifest.permission.USE_CREDENTIALS
-//        )
-//
-//        for (permission in permissions) {
-//            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-//                return false
-//            }
-//        }
-//
-//        return true
-//    }
     fun isPermissionGranted(): Boolean {
         return sharedPreferences.getBoolean("permission_granted", false)
     }
@@ -367,37 +408,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun getIdofNativeAds() {
-        val database = FirebaseDatabase.getInstance()
-        val ref = database.getReference("Keys")
-
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val data = snapshot.value as Map<*, *>?
-
-                val appOpenKey = data?.get("App_Open_key") as String
-                val bannerKey = data?.get("Banner_key") as String
-                val interstitialVideoKey = data?.get("Interstitial_Video_key") as String
-                val interstitialKey = data?.get("Interstitial_key") as String
-                val nativeAdKey = data?.get("Native_Advanced_Video_key") as String
-                val nativeAdvancedKey = data?.get("Native_Advanced_key") as String
-                val rewardedInterstitialKey = data?.get("Rewarded_Interstitial_key") as String
-                val rewardedKey = data?.get("Rewarded_key") as String
-                val isShow = data?.get("is_show") as Boolean
-
-                val preference = getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
-                val editor = preference.edit()
-                editor.putString("Na_tive_id", nativeAdvancedKey)
-                editor.putString("inter_id", interstitialKey)
-                editor.putString("banner_Key", bannerKey)
-                editor.apply()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // Handle the error if retrieval is unsuccessful
-            }
-        })
-    }
 
     fun isInternet(): Boolean {
         var isConnected = false

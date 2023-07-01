@@ -97,8 +97,8 @@ class TransectionFragment : Fragment() {
 //        getIdofNativeAds()
 
         loadAd(dao, currencyClass, createFilter, categoryMap)
-
         getTransecton(currencyClass)
+
         val inComeButton = binding.btnIncome
         val exPenseButton = binding.btnExpense
 

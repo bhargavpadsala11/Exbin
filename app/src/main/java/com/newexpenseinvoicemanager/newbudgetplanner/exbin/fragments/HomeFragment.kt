@@ -1,5 +1,6 @@
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
+
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -20,6 +21,7 @@ import com.google.android.ads.nativetemplates.TemplateView
 import com.google.android.ads.nativetemplates.rvadapter.AdmobNativeAdAdapter
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.nativead.NativeAd
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
@@ -52,6 +54,19 @@ class HomeFragment : Fragment() {
             requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
         FireBaseGooggleAdsId = preference.getString("Na_tive_id","")!!
 
+
+
+        val adLoader = AdLoader.Builder(requireContext(),FireBaseGooggleAdsId )
+            .forNativeAd { nativeAd ->
+                val styles =
+                    NativeTemplateStyle.Builder().build()
+                val template: TemplateView = binding.myTemplate
+                template.setStyles(styles)
+                template.setNativeAd(nativeAd)
+            }
+            .build()
+
+        adLoader.loadAd(AdRequest.Builder().build())
 
         (activity as MainActivity?)!!.showBottomNavigationView()
         val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())

@@ -18,6 +18,12 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <com.google.android.ads.nativetemplates.TemplateView
+                android:id="@+id/my_template"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:gnt_template_type="@layout/gnt_medium_template_view" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="190dp"
@@ -32,8 +38,8 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
                         android:layout_marginStart="10dp"
+                        android:layout_weight="2"
                         android:text="INCOME"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -55,11 +61,11 @@
 
 
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/incCard"
                         android:layout_width="0dp"
                         android:layout_height="130dp"
                         android:layout_marginHorizontal="10dp"
                         android:layout_weight="1"
-                        android:id="@+id/incCard"
                         app:cardBackgroundColor="#0FC36F"
                         app:cardCornerRadius="10dp">
 
@@ -74,9 +80,9 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="2"
                                 android:text="Total"
-                                android:textStyle="bold"
                                 android:textColor="#FFFFFF"
-                                android:textSize="14sp" />
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
 
                             <TextView
                                 android:id="@+id/totalIncome"
@@ -101,8 +107,8 @@
                                 android:layout_weight="2"
                                 android:text="Daily Average"
                                 android:textColor="#FFFFFF"
-                                android:textStyle="bold"
-                                android:textSize="14sp" />
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
 
                             <TextView
                                 android:id="@+id/avgTtl"
@@ -119,11 +125,11 @@
                     </com.google.android.material.card.MaterialCardView>
 
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/expCard"
                         android:layout_width="0dp"
                         android:layout_height="130dp"
                         android:layout_marginHorizontal="10dp"
                         android:layout_weight="1"
-                        android:id="@+id/expCard"
                         app:cardBackgroundColor="#E64A61"
                         app:cardCornerRadius="10dp">
 
@@ -139,8 +145,8 @@
                                 android:layout_weight="2"
                                 android:text="Total"
                                 android:textColor="#FFFFFF"
-                                android:textStyle="bold"
-                                android:textSize="14sp" />
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
 
                             <TextView
                                 android:id="@+id/expTtl"
@@ -165,8 +171,8 @@
                                 android:layout_weight="2"
                                 android:text="Daily Average"
                                 android:textColor="#FFFFFF"
-                                android:textStyle="bold"
-                                android:textSize="14sp" />
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
 
                             <TextView
                                 android:id="@+id/expAvg"
@@ -228,8 +234,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:textColor="@color/black"
                     android:text="Recent Transection"
+                    android:textColor="@color/black"
                     android:textSize="20sp" />
 
                 <com.google.android.material.card.MaterialCardView
@@ -263,15 +269,15 @@
                 tools:listitem="@layout/transection_item_layout" />
 
             <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/textviewdata"
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
-                android:id="@+id/textviewdata"
-                android:text="No Transecation...!!\n Please add transection"
                 android:gravity="center"
+                android:src="@drawable/iv_warning_nodata"
+                android:text="No Transecation...!!\n Please add transection"
                 android:textSize="30sp"
-                android:visibility="gone"
                 android:textStyle="bold"
-                android:src="@drawable/iv_warning_nodata"/>
+                android:visibility="gone" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
