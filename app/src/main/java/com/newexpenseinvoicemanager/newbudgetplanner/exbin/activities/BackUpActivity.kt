@@ -102,20 +102,6 @@ class BackUpActivity : AppCompatActivity() {
             }
         }
     }
-//override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//    super.onActivityResult(requestCode, resultCode, data)
-//    if (requestCode == 100 && resultCode == Activity.RESULT_OK) { // Check for RESULT_OK
-//        val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
-//        try {
-//            val account = task.getResult(ApiException::class.java)
-//            val selectedFile = data!!.data // The uri with the location of the file
-//            makeCopy(selectedFile!!)
-//            BackupActivity()
-//        } catch (e: Exception) {
-//            Toast.makeText(this, "Error: $e", Toast.LENGTH_SHORT).show()
-//        }
-//    }
-//}
 
     private fun BackupActivity() {
         gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -182,6 +168,60 @@ class BackUpActivity : AppCompatActivity() {
         return tempDrive
     }
 
+//    fun uploadFileToGDrive(context: Context) {
+//        mDrive.let { googleDriveService ->
+//            lifecycleScope.launch {
+//                try {
+//                    val fileName = "EXBIN_DATABASE.db" // The name of the file to upload
+//                    val localFile = File(context.getExternalFilesDir(null), fileName)
+//
+//                    if (!localFile.exists()) {
+//                        Toast.makeText(
+//                            context,
+//                            "Local file does not exist",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                        return@launch
+//                    }
+//
+//                    val fileMetadata = com.google.api.services.drive.model.File()
+//                    fileMetadata.name = fileName
+//
+//                    val mediaContent = FileContent("application/octet-stream", localFile)
+//
+//                    withContext(Dispatchers.IO) {
+//                        val uploadedFile =
+//                            googleDriveService.files().create(fileMetadata, mediaContent)
+//                                .setFields("id")
+//                                .execute()
+//
+//                        val fileId = uploadedFile.id
+//
+//                        withContext(Dispatchers.Main) {
+//                            Toast.makeText(
+//                                context,
+//                                "File uploaded to Google Drive with ID: $fileId",
+//                                Toast.LENGTH_SHORT
+//                            ).show()
+//                        }
+//                    }
+//                } catch (userAuthEx: UserRecoverableAuthIOException) {
+//                    startActivity(userAuthEx.intent)
+//                } catch (e: Exception) {
+//                    e.printStackTrace()
+//                    Log.d("asdf", e.toString())
+//                    withContext(Dispatchers.Main) {
+//                        Toast.makeText(
+//                            context,
+//                            "Error occurred while uploading file: ${e.toString()}",
+//                            Toast.LENGTH_LONG
+//                        ).show()
+//                    }
+//                }
+//            }
+//        }
+//    }
+
     fun uploadFileToGDrive(context: Context) {
         mDrive.let { googleDriveService ->
             lifecycleScope.launch {
@@ -196,6 +236,15 @@ class BackUpActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
                         return@launch
+                    }
+
+                    // Check if a file with the same name already exists on Google Drive
+                    val query = "name = '$fileName'"
+                    val fileList = googleDriveService.files().list().setQ(query).execute().files
+                    if (fileList.isNotEmpty()) {
+                        // Delete the existing file before uploading the new one
+                        val fileId = fileList[0].id
+                        googleDriveService.files().delete(fileId).execute()
                     }
 
                     val fileMetadata = com.google.api.services.drive.model.File()
@@ -235,7 +284,6 @@ class BackUpActivity : AppCompatActivity() {
             }
         }
     }
-
 
     private fun restoreFromBackup() {
         mDrive.let { googleDriveService ->

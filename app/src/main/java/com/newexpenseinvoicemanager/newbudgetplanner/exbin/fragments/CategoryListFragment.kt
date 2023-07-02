@@ -18,7 +18,9 @@ class CategoryListFragment : Fragment() {
 
 
     private lateinit var binding: FragmentCategoryListBinding
-    private var isData: String = ""
+    var valueToCheck: String = ""
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -102,6 +104,7 @@ class CategoryListFragment : Fragment() {
                 ) { Category, buttonClicked ->
 
                     if (INCOME_ACTIVITY_UPDATE != null && INCOME_ACTIVITY_UPDATE == "11") {
+                        valueToCheck = "INCOME_ACTIVITY_UPDATE"
 //                        Toast.makeText(requireContext(), "Income Update", Toast.LENGTH_SHORT).show()
                         val ID_ = arguments?.getString("id")
                         val AMNT_ = arguments?.getString("amt")
@@ -122,8 +125,8 @@ class CategoryListFragment : Fragment() {
                                 args.putString("pmd", PAY_)
                                 args.putString("nt", NOTE_)
                                 args.putString("time", TIME_)
-                                args.putString("month",SMONTH_)
-                                args.putString("PMIND",PAY_MD_)
+                                args.putString("month", SMONTH_)
+                                args.putString("PMIND", PAY_MD_)
                                 args.putString("CATEGORY_Update", "${Category.CategoryName}")
                                 ldf.setArguments(args)
                                 //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
@@ -133,6 +136,8 @@ class CategoryListFragment : Fragment() {
                             }
                         }
                     } else if (EXPENSE_ACTIVITY_UPDATE != null && EXPENSE_ACTIVITY_UPDATE == "22") {
+                        valueToCheck = "EXPENSE_ACTIVITY_UPDATE"
+
                         val ID_ = arguments?.getString("id")
                         val AMNT_ = arguments?.getString("amt")
                         val DATE_ = arguments?.getString("dt")
@@ -152,8 +157,8 @@ class CategoryListFragment : Fragment() {
                                 args.putString("pmd", PAY_)
                                 args.putString("nt", NOTE_)
                                 args.putString("time", TIME_)
-                                args.putString("month",SMONTH_)
-                                args.putString("PMIND",PAY_MD_)
+                                args.putString("month", SMONTH_)
+                                args.putString("PMIND", PAY_MD_)
                                 args.putString("CATEGORY_Update", "${Category.CategoryName}")
                                 ldf.setArguments(args)
                                 //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
@@ -162,8 +167,9 @@ class CategoryListFragment : Fragment() {
                                     ?.commit()
                             }
                         }
-                    } else{
+                    } else {
                         if (INCOME_ACTIVITY != null && INCOME_ACTIVITY == "001") {
+                            valueToCheck = "INCOME_ACTIVITY"
 
                             val amnt = arguments?.getString("AMNT_VL")
                             val nte = arguments?.getString("NOTE_VL")
@@ -225,6 +231,7 @@ class CategoryListFragment : Fragment() {
                                 }
                             }
                         } else {
+                            valueToCheck = "EXPENSE_ACTIVITY"
                             custom.ivBack.visibility = View.GONE
                             binding.floatingActionButton.visibility = View.GONE
                             val amnt = arguments?.getString("AMNT_VL")
@@ -285,7 +292,7 @@ class CategoryListFragment : Fragment() {
                                 }
                             }
                         }
-                }
+                    }
                 }
                 recy.adapter = adapter
             }
@@ -312,10 +319,8 @@ class CategoryListFragment : Fragment() {
             ?.addToBackStack(null)
             ?.commit()
     }
-
-    fun getIsData(): String {
-        return isData
-    }
+    
+    
 
 
 }

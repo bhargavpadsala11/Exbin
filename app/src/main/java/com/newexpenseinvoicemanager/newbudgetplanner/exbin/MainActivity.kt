@@ -50,6 +50,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private val PERMISSION_REQUEST_CODE = 123
     private var FireBaseGooggleAdsId: String = ""
+    //  private lateinit var categoryListFragment: CategoryListFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -215,14 +216,23 @@ class MainActivity : AppCompatActivity() {
                 FireBaseGooggleAdsId = nativeAdvancedKey
                 val rewardedInterstitialKey = data?.get("Rewarded_Interstitial_key") as String
                 val rewardedKey = data?.get("Rewarded_key") as String
+                val privacy_policy = data?.get("Privacy_policy") as String
+                val terms_conditions = data?.get("terms_conditions") as String
                 val isShow = data?.get("is_show") as Boolean
 
                 val preference = getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
                 val editor = preference.edit()
+                editor.putBoolean("isShow",isShow)
                 editor.putString("Na_tive_id", nativeAdvancedKey)
                 editor.putString("inter_id", interstitialKey)
                 editor.putString("banner_Key", bannerKey)
                 editor.apply()
+
+                val pref = getSharedPreferences("TERMS_PRIVACY", AppCompatActivity.MODE_PRIVATE)
+                val edit= pref.edit()
+                edit.putString("privacy_policy",privacy_policy)
+                edit.putString("terms_conditions",terms_conditions)
+                edit.apply()
 
             }
 
@@ -328,14 +338,19 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show()
             }
         } else if (currentFragment is CategoryListFragment) {
-            val categoryListFragment = currentFragment as CategoryListFragment
-            val isDataTrueOrNot = categoryListFragment.getIsData()
 
-            if (isDataTrueOrNot != null && isDataTrueOrNot == "INCOME_ACTIVITY") {
+            val categoryListFragment = currentFragment as CategoryListFragment
+            val isDataTrueOrNot = categoryListFragment.valueToCheck
+
+            Log.d("INCOME_ACTIVITY", isDataTrueOrNot)
+            if (isDataTrueOrNot == "INCOME_ACTIVITY" || isDataTrueOrNot == "INCOME_ACTIVITY_UPDATE") {
                 loadFragmentForBack(IncomeActivity())
+            } else if (isDataTrueOrNot == "EXPENSE_ACTIVITY" || isDataTrueOrNot == "EXPENSE_ACTIVITY_UPDATE") {
+                loadFragmentForBack(ExpenseActivity())
             } else {
                 loadFragmentForBack(MoreFragment())
             }
+
         } else if (currentFragment is PaymentModeFragment) {
             loadFragmentForBack(MoreFragment())
         } else if (currentFragment is AddCategoriesFragment) {

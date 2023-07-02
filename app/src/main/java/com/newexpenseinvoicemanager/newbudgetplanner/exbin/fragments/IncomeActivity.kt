@@ -120,7 +120,7 @@ class IncomeActivity : Fragment() {
         if (INC_ != null) {
 
             val calendar = Calendar.getInstance()
-            val sdf = SimpleDateFormat("dd/M/yyyy")
+            val sdf = SimpleDateFormat("dd/MM/yyyy")
             custom.ivTitle.setText("Update Income")
             custom.ivDelete.visibility = View.VISIBLE
             // getPaymentMode()
@@ -247,7 +247,7 @@ class IncomeActivity : Fragment() {
             } else if (nte == null && amnt != null) {
                 binding.incAmount.setText(amnt)
             }
-            val sdf = SimpleDateFormat("dd/M/yyyy")
+            val sdf = SimpleDateFormat("dd/MM/yyyy")
             val sdf_1 = SimpleDateFormat("hh:mm a")
             val defaulttDate = sdf.format(Date())
             val defaultTime = sdf_1.format(Date())
@@ -322,7 +322,7 @@ class IncomeActivity : Fragment() {
 
             }
         } else {
-            val sdf = SimpleDateFormat("dd/M/yyyy")
+            val sdf = SimpleDateFormat("dd/MM/yyyy")
             val sdf_1 = SimpleDateFormat("hh:mm a")
             val defaulttDate = sdf.format(Date())
             val defaultTime = sdf_1.format(Date())

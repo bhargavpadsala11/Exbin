@@ -8,6 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebViewClient
+import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.FragmentWebViewBinding
 
@@ -15,6 +20,8 @@ import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.FragmentW
 class WebViewFragment : Fragment() {
 
     private lateinit var binding: FragmentWebViewBinding
+    private var privacyUrl:String = ""
+    private var termsyUrl:String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -22,7 +29,10 @@ class WebViewFragment : Fragment() {
     ): View? {
 
         binding = FragmentWebViewBinding.inflate(layoutInflater)
-
+        val preference =
+            requireContext().getSharedPreferences("TERMS_PRIVACY", AppCompatActivity.MODE_PRIVATE)
+        privacyUrl = preference.getString("privacy_policy", "")!!
+        termsyUrl = preference.getString("terms_conditions", "")!!
         val custom = binding.appBar1
         custom.ivDelete.visibility = View.GONE
         custom.ivBack.setOnClickListener {
@@ -33,10 +43,9 @@ class WebViewFragment : Fragment() {
         webView.webViewClient = WebViewClient()
         webView.settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
         val value = arguments?.getString("PRIVACY_KEY")
-        val privacyUrl =
-            "https://doc-hosting.flycricket.io/exbin-privacy-policy/690d0a6a-2061-43d4-9785-290268ca613c/privacy"
-        val termsyUrl =
-            "https://doc-hosting.flycricket.io/exbin-privacy-policy/690d0a6a-2061-43d4-9785-290268ca613c/privacy"
+        Log.d("privacyUrl","$privacyUrl")
+        Log.d("termsyUrl","$termsyUrl")
+
         if (value == "PRIVACY") {
             webView.loadUrl(privacyUrl)
             custom.ivTitle.setText("Privacy Policy")

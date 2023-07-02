@@ -122,7 +122,7 @@ class ExpenseActivity : Fragment() {
         if (INC_ != null) {
 
             val calendar = Calendar.getInstance()
-            val sdf = SimpleDateFormat("dd/M/yyyy")
+            val sdf = SimpleDateFormat("dd/MM/yyyy")
             custom.ivTitle.setText("Update Expense")
             custom.ivDelete.visibility = View.VISIBLE
             // getPaymentMode()
@@ -249,7 +249,7 @@ class ExpenseActivity : Fragment() {
             } else if (nte == null && amnt != null) {
                 binding.expAmount.setText(amnt)
             }
-            val sdf = SimpleDateFormat("dd/M/yyyy")
+            val sdf = SimpleDateFormat("dd/MM/yyyy")
             val sdf_1 = SimpleDateFormat("hh:mm a")
             val defaulttDate = sdf.format(Date())
             val defaultTime = sdf_1.format(Date())
@@ -318,7 +318,7 @@ class ExpenseActivity : Fragment() {
                 // checkValidation(amount, category, date, time, paymentModes, note, currentDateTime)
             }
         } else {
-            val sdf = SimpleDateFormat("dd/M/yyyy")
+            val sdf = SimpleDateFormat("dd/MM/yyyy")
             val sdf_1 = SimpleDateFormat("hh:mm a")
             val defaulttDate = sdf.format(Date())
             val defaultTime = sdf_1.format(Date())

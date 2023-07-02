@@ -17,11 +17,11 @@ data class Categories(
     companion object {
         fun getDefaultCategories(): List<Categories> {
             return listOf(
-                Categories(1, "Study", "#9400D3", "${R.drawable.ic_menu_24}"),
-                Categories(2, "Party", "#FF1744", "${R.drawable.ic_save_24}"),
-                Categories(3, "Movie", "#00CEd1", "${R.drawable.ic_storefront_24}"),
-                Categories(4, "Petrol/Diesel", "#4169E1", "${R.drawable.ic_local_gas_station_24}"),
-                Categories(5, "Shopping", "#FF4500", "${R.drawable.ic_shop_production_quantity_limits_24}")
+                Categories(1, "Food", "#FF7F50", "${R.drawable.fastfood}"),
+                Categories(2, "Shopping", "#73BFFF", "${R.drawable.grocerystore}"),
+                Categories(3, "Petrol/Diesel", "#C8AD7F", "${R.drawable.gasolinepump}"),
+                Categories(4, "Movie", "#66CDAA", "${R.drawable.movies}"),
+                Categories(5, "Study", "#F48FB1", "${R.drawable.mortarboard}")
             )
         }
     }

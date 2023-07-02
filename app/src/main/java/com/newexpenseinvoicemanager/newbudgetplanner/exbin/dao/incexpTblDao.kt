@@ -17,7 +17,7 @@ interface incexpTblDao {
     @Delete
     suspend fun deletetincexpTbl(incexpTbl : incexpTbl)
 
-    @Query("SELECT * FROM incexpTbl ORDER BY date DESC")
+    @Query("SELECT * FROM incexpTbl ORDER BY substr(date, 7, 4)||substr(date, 4, 2)||substr(date, 1, 2) DESC")
     fun getAllData():LiveData<List<incexpTbl>>
 
     @Query("SELECT * FROM incexpTbl WHERE date = :sDate")
@@ -31,6 +31,7 @@ interface incexpTblDao {
 
     @Query("SELECT * FROM incexpTbl WHERE dType = 'INCOME'")
     fun getAllIncomeData(): LiveData<List<incexpTbl>>
+
 
     @Query("SELECT * FROM incexpTbl WHERE date BETWEEN :startDate AND :endDate")
     fun getAllDataByTwoDate(startDate: String, endDate: String): LiveData<List<incexpTbl>>
