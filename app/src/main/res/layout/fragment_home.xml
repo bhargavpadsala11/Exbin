@@ -38,8 +38,8 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_weight="2"
+                        android:layout_marginStart="15dp"
+                        android:layout_weight="1"
                         android:text="INCOME"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -47,9 +47,9 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:paddingStart="10dp"
+                        android:layout_weight="1"
                         android:text="EXPENSE"
+                        android:layout_marginStart="15dp"
                         android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
