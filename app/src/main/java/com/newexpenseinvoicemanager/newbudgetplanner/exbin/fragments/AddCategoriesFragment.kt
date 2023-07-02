@@ -55,6 +55,7 @@ class AddCategoriesFragment : Fragment() {
     private var isDataorNot: String = ""
     private var isCategory: Categories? = null
     private lateinit var customTitle: CustomAppBarBinding
+    private var isAds: Boolean = false
 
 
     override fun onCreateView(
@@ -65,6 +66,7 @@ class AddCategoriesFragment : Fragment() {
         val preference =
             requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
         FireBaseGooggleAdsInterId = preference.getString("inter_id", "")!!
+        isAds = preference.getBoolean("isShow", false)
         val icons = listOf(
             R.drawable.airplane,
             R.drawable.bank,
@@ -187,7 +189,9 @@ class AddCategoriesFragment : Fragment() {
         val value = arguments?.getString("EDIT")
 
         updateMergedIcon()
-        loadAd()
+        if (isAds == true) {
+            loadAd()
+        }
         if (value != null) {
             isDataorNot = value
             custom.ivTitle.setText("Manage Category")

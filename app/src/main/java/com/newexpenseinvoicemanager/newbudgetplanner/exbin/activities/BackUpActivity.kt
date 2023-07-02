@@ -10,7 +10,13 @@ import android.os.Bundle
 import android.provider.OpenableColumns
 import android.util.Log
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
+import com.google.android.ads.nativetemplates.NativeTemplateStyle
+import com.google.android.ads.nativetemplates.TemplateView
+import com.google.android.gms.ads.AdLoader
+import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -25,9 +31,11 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.IOUtils
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.ActivityBackUpBinding
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments.MoreFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -42,11 +50,20 @@ class BackUpActivity : AppCompatActivity() {
     private lateinit var gso: GoogleSignInOptions
     private lateinit var gsc: GoogleSignInClient
     lateinit var mDrive: Drive
+    private var FireBaseGooggleAdsId: String = ""
+    private var isAds: Boolean = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBackUpBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val preference =
+            this.getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
+        FireBaseGooggleAdsId = preference.getString("Na_tive_id", "")!!
+        isAds = preference.getBoolean("isShow",false)
+
 
         gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
@@ -58,19 +75,38 @@ class BackUpActivity : AppCompatActivity() {
         binding.mbBackupBtn.setOnClickListener {
             uploadFileToGDrive(this)
         }
+        if (isAds == true) {
+            val adLoader = AdLoader.Builder(this, FireBaseGooggleAdsId)
+                .forNativeAd { nativeAd ->
+                    val styles =
+                        NativeTemplateStyle.Builder().build()
+                    val template: TemplateView = binding.myTemplate
+                    template.setStyles(styles)
+                    template.setNativeAd(nativeAd)
+                }
+                .build()
 
-
+            adLoader.loadAd(AdRequest.Builder().build())
+        }
+        binding.titleTextView.setOnClickListener {
+            this.binding.mbBackup.performClick()
+        }
         binding.mbBackup.setOnClickListener {
             SingIn()
         }
 
-
+        binding.titleTextView1.setOnClickListener {
+            this.binding.mbSingOut.performClick()
+        }
         binding.mbSingOut.setOnClickListener {
             singOut()
         }
 
         binding.mbDwnld.setOnClickListener {
             restoreFromBackup()
+        }
+        binding.editBackarrow.setOnClickListener {
+            onBackPressed()
         }
 
 
@@ -114,39 +150,17 @@ class BackUpActivity : AppCompatActivity() {
         if (account != null) {
             binding.tvEmail.text = account.email
             binding.tvName.text = account.displayName
+            val photoUrl = account.photoUrl
+            if (photoUrl != null) {
+                Glide.with(this)
+                    .load(photoUrl)
+                    .into(binding.gmailimageView)
+            }
             mDrive = getDriveService(this)
 
             // Call the exportToGoogleDrive function
         }
     }
-
-//    private fun exportDataBase(context: Context) {
-//        val sourceFile = context.getDatabasePath("EXBIN")
-//        val destinationFile = File(context.getExternalFilesDir(null), "EXBIN_DATABASE.db")
-//
-//        try {
-//            // Close any open connections to the database
-//            AppDataBase.getInstance(context).close()
-//
-//            val fileInputStream = FileInputStream(sourceFile)
-//            val fileOutputStream = FileOutputStream(destinationFile)
-//            val buffer = ByteArray(1024)
-//            var length: Int
-//            while (fileInputStream.read(buffer).also { length = it } > 0) {
-//                fileOutputStream.write(buffer, 0, length)
-//            }
-//            fileInputStream.close()
-//            fileOutputStream.close()
-//            Toast.makeText(
-//                context,
-//                "Database exported to ${destinationFile.absolutePath}",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        } catch (e: IOException) {
-//            e.printStackTrace()
-//            Toast.makeText(context, "Failed to export database", Toast.LENGTH_SHORT).show()
-//        }
-//    }
 
 
     // upload code
@@ -168,73 +182,22 @@ class BackUpActivity : AppCompatActivity() {
         return tempDrive
     }
 
-//    fun uploadFileToGDrive(context: Context) {
-//        mDrive.let { googleDriveService ->
-//            lifecycleScope.launch {
-//                try {
-//                    val fileName = "EXBIN_DATABASE.db" // The name of the file to upload
-//                    val localFile = File(context.getExternalFilesDir(null), fileName)
-//
-//                    if (!localFile.exists()) {
-//                        Toast.makeText(
-//                            context,
-//                            "Local file does not exist",
-//                            Toast.LENGTH_SHORT
-//                        ).show()
-//                        return@launch
-//                    }
-//
-//                    val fileMetadata = com.google.api.services.drive.model.File()
-//                    fileMetadata.name = fileName
-//
-//                    val mediaContent = FileContent("application/octet-stream", localFile)
-//
-//                    withContext(Dispatchers.IO) {
-//                        val uploadedFile =
-//                            googleDriveService.files().create(fileMetadata, mediaContent)
-//                                .setFields("id")
-//                                .execute()
-//
-//                        val fileId = uploadedFile.id
-//
-//                        withContext(Dispatchers.Main) {
-//                            Toast.makeText(
-//                                context,
-//                                "File uploaded to Google Drive with ID: $fileId",
-//                                Toast.LENGTH_SHORT
-//                            ).show()
-//                        }
-//                    }
-//                } catch (userAuthEx: UserRecoverableAuthIOException) {
-//                    startActivity(userAuthEx.intent)
-//                } catch (e: Exception) {
-//                    e.printStackTrace()
-//                    Log.d("asdf", e.toString())
-//                    withContext(Dispatchers.Main) {
-//                        Toast.makeText(
-//                            context,
-//                            "Error occurred while uploading file: ${e.toString()}",
-//                            Toast.LENGTH_LONG
-//                        ).show()
-//                    }
-//                }
-//            }
-//        }
-//    }
 
     fun uploadFileToGDrive(context: Context) {
         mDrive.let { googleDriveService ->
-            lifecycleScope.launch {
+            lifecycleScope.launch(Dispatchers.IO) {
                 try {
                     val fileName = "EXBIN_DATABASE.db" // The name of the file to upload
                     val localFile = File(context.getExternalFilesDir(null), fileName)
 
                     if (!localFile.exists()) {
-                        Toast.makeText(
-                            context,
-                            "Local file does not exist",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                context,
+                                "Local file does not exist",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                         return@launch
                     }
 
@@ -252,31 +215,30 @@ class BackUpActivity : AppCompatActivity() {
 
                     val mediaContent = FileContent("application/octet-stream", localFile)
 
-                    withContext(Dispatchers.IO) {
-                        val uploadedFile =
-                            googleDriveService.files().create(fileMetadata, mediaContent)
-                                .setFields("id")
-                                .execute()
+                    val uploadedFile = googleDriveService.files().create(fileMetadata, mediaContent)
+                        .setFields("id")
+                        .execute()
 
-                        val fileId = uploadedFile.id
+                    val fileId = uploadedFile.id
 
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(
-                                context,
-                                "File uploaded to Google Drive with ID: $fileId",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "File uploaded to Google Drive",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 } catch (userAuthEx: UserRecoverableAuthIOException) {
-                    startActivity(userAuthEx.intent)
+                    withContext(Dispatchers.Main) {
+                        startActivity(userAuthEx.intent)
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                     Log.d("asdf", e.toString())
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context,
-                            "Error occurred while uploading file: ${e.toString()}",
+                            "Error occurred while uploading file",
                             Toast.LENGTH_LONG
                         ).show()
                     }
@@ -316,7 +278,7 @@ class BackUpActivity : AppCompatActivity() {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             applicationContext,
-                            "Error occurred while importing database: ${e.toString()}",
+                            "Error occurred while importing database",
                             Toast.LENGTH_LONG
                         ).show()
                     }
@@ -325,36 +287,12 @@ class BackUpActivity : AppCompatActivity() {
         }
     }
 
+    private fun loadFragment() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("key_Main", "value") // Replace "key" with your desired key and "value" with the actual value to send
+        startActivity(intent)
 
-//    private fun importDatabaseFromDrive(context: Context, fileId: String) {
-//        val destinationFile = context.getDatabasePath("EXBIN")
-//
-//        try {
-//            // Check if database file exists
-//            if (destinationFile.exists()) {
-//                // Close any open connections to the database
-//                AppDataBase.getInstance(context).close()
-//
-//                // Delete the existing database file
-//                context.deleteDatabase("EXBIN")
-//            }
-//
-//            val outputStream = FileOutputStream(destinationFile)
-//            mDrive.files().get(fileId).executeMediaAndDownloadTo(outputStream)
-//
-//            // Reopen the database after importing
-//            AppDataBase.getInstance(context)
-//
-//            Toast.makeText(
-//                context,
-//                "Database imported from Google Drive",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//            Toast.makeText(context, "Failed to import database", Toast.LENGTH_SHORT).show()
-//        }
-//    }
+    }
 
     private fun importDatabaseFromDrive(context: Context, fileId: String) {
         val destinationFile = context.getDatabasePath("EXBIN")
@@ -390,5 +328,8 @@ class BackUpActivity : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
 
 }

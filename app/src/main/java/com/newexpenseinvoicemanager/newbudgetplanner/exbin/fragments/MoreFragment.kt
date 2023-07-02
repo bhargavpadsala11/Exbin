@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -41,6 +42,7 @@ class MoreFragment : Fragment() {
     private lateinit var binding: FragmentMoreBinding
     private lateinit var progressDialog: ProgressDialog
     private val RC_SIGN_IN = 123
+    private var share_link :String? = ""
     private lateinit var googleApiClient: GoogleApiClient
 
 
@@ -49,7 +51,9 @@ class MoreFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentMoreBinding.inflate(layoutInflater)
-
+        val preference =
+            requireContext().getSharedPreferences("TERMS_PRIVACY", AppCompatActivity.MODE_PRIVATE)
+        share_link = preference.getString("share_link", "")!!
         progressDialog = ProgressDialog(requireContext())
         progressDialog.setMessage("Exporting database to Google Drive...")
         progressDialog.setCancelable(false)
@@ -153,7 +157,7 @@ class MoreFragment : Fragment() {
             fileOutputStream.close()
             Toast.makeText(
                 context,
-                "Database exported to ${destinationFile.absolutePath}",
+                "Database exported",
                 Toast.LENGTH_SHORT
             ).show()
         } catch (e: IOException) {
@@ -206,7 +210,7 @@ class MoreFragment : Fragment() {
         val shareIntent = Intent(Intent.ACTION_SEND)
         shareIntent.type = "text/plain"
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Share Application")
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out this awesome app!")
+        shareIntent.putExtra(Intent.EXTRA_TEXT, share_link)
 
         startActivity(Intent.createChooser(shareIntent, "Share via"))
     }

@@ -43,6 +43,7 @@ class PaymentModeFragment : Fragment() {
     private var isTitle :String = ""
     private lateinit var mainview :View
     private var globalgetaymentModeTextView : TextInputEditText? = null
+    private var isAds :Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,6 +57,8 @@ class PaymentModeFragment : Fragment() {
         val preference =
             requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
         FireBaseGooggleAdsInterId = preference.getString("inter_id", "")!!
+        isAds = preference.getBoolean("isShow", false)
+
 
         val mainView = inflater.inflate(R.layout.fragment_payment_mode, container, false)
         mainview = mainView
@@ -67,8 +70,9 @@ class PaymentModeFragment : Fragment() {
         val getaymentModeTextView =
             addPaymentView?.findViewById<TextInputEditText>(R.id.addPaymet)
 
-        loadAd(container, getaymentModeTextView)
-
+        if (isAds == true) {
+            loadAd(container, getaymentModeTextView)
+        }
         binding.addPaymentFloating.setOnClickListener {
             // binding.addcardview.visibility = View.VISIBLE
             mainView.visibility = View.GONE

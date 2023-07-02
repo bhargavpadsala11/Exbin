@@ -8,7 +8,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
+import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
@@ -18,6 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.ads.nativetemplates.rvadapter.AdmobNativeAdAdapter
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
@@ -45,8 +48,8 @@ class TransectionFragment : Fragment() {
 
 
     private lateinit var binding: FragmentTransectionBinding
-    private var sDate: String = ""
-    private var lDate: String = ""
+    private var sDate: String? = ""
+    private var lDate: String? = ""
     private var tMode: String = ""
     private var PDF_OR_EXCEL: Boolean = true
     private var FireBaseGooggleAdsId: String = ""
@@ -54,6 +57,7 @@ class TransectionFragment : Fragment() {
     private var cDate: String? = ""
     private var mInterstitialAd: InterstitialAd? = null
     private var isFilter: Boolean = false
+    private var isAds: Boolean = false
 
 
     override fun onCreateView(
@@ -69,6 +73,7 @@ class TransectionFragment : Fragment() {
             requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
         FireBaseGooggleAdsId = preference.getString("Na_tive_id", "")!!
         FireBaseGooggleAdsInterId = preference.getString("inter_id", "")!!
+        isAds = preference.getBoolean("isShow", false)
 
 
         val custom = binding.appBar
@@ -80,6 +85,8 @@ class TransectionFragment : Fragment() {
             (activity as MainActivity?)!!.setBottomNavigationAsHome()
             loadFragment(HomeFragment())
         }
+
+
         custom.ivTitle.setText("Transaction List")
 
         custom.ivDelete.setImageResource(R.drawable.ic_filter)
@@ -95,7 +102,9 @@ class TransectionFragment : Fragment() {
         }
 //        getIdofNativeAds()
 
-        loadAd(dao, currencyClass, createFilter, categoryMap)
+        if (isAds == true) {
+            loadAd(dao, currencyClass, createFilter, categoryMap)
+        }
         getTransecton(currencyClass)
 
         val inComeButton = binding.btnIncome
@@ -113,13 +122,6 @@ class TransectionFragment : Fragment() {
 
         }
 
-        binding.tvStartdate.setOnClickListener {
-            getStartDate()
-        }
-
-        binding.tvEnddate.setOnClickListener {
-            getLastDate()
-        }
 
         binding.tvAddStartdate.setOnClickListener {
             getStartDate()
@@ -158,6 +160,8 @@ class TransectionFragment : Fragment() {
         }
 
         binding.btnReset.setOnClickListener {
+
+
             isFilter = false
             sDate = ""
             lDate = ""
@@ -179,41 +183,67 @@ class TransectionFragment : Fragment() {
         }
 
         binding.btnApply.setOnClickListener {
-            isFilter = true
 
-            filter.visibility = View.GONE
-            if (sDate != null && lDate != null && tMode == "INCOME") {
-                dao.incexpTblDao().getAllIncomeDataByDate(sDate, lDate).observe(requireActivity()) {
-                    binding.transectionItem.adapter =
-                        adapterOfTransection(it, categoryMap, currencyClass)
+            if (tMode == "" && sDate == "" && lDate == "") {
+                isFilter = false
+                sDate = ""
+                lDate = ""
+                tMode = ""
+                binding.tvAddStartdate.setText("00/00/0000")
+                binding.tvAddEnddate.setText("00/00/0000")
+                filter.visibility = View.GONE
+                getTransecton(currencyClass)
+                ViewCompat.setBackgroundTintList(
+                    inComeButton,
+                    ContextCompat.getColorStateList(requireContext(), R.color.white)
+                )
+                ViewCompat.setBackgroundTintList(
+                    exPenseButton,
+                    ContextCompat.getColorStateList(requireContext(), R.color.white)
+                )
+                (activity as MainActivity?)!!.showBottomNavigationView()
+            } else {
+                isFilter = true
 
-                }
-            } else if (sDate != null && lDate != null && tMode == "EXPENSE") {
+                filter.visibility = View.GONE
+                if (tMode == "EXPENSE") {
+                    if (sDate != "" && lDate != "") {
+                        dao.incexpTblDao().getAllExpenseDataByDate(sDate!!, lDate!!)
+                            .observe(requireActivity()) {
+                                binding.transectionItem.adapter =
+                                    adapterOfTransection(it, categoryMap, currencyClass)
 
-                dao.incexpTblDao().getAllExpenseDataByDate(sDate, lDate)
-                    .observe(requireActivity()) {
-                        binding.transectionItem.adapter =
-                            adapterOfTransection(it, categoryMap, currencyClass)
-
+                            }
+                    } else {
+                        dao.incexpTblDao().getAllExpenseData().observe(requireActivity()) {
+                            binding.transectionItem.adapter =
+                                adapterOfTransection(it, categoryMap, currencyClass)
+                        }
                     }
-            } else if (sDate != null && lDate != null) {
-                dao.incexpTblDao().getAllDataByTwoDate(sDate, lDate).observe(requireActivity()) {
-                    binding.transectionItem.adapter =
-                        adapterOfTransection(it, categoryMap, currencyClass)
+                } else if (tMode == "INCOME") {
+                    if (sDate != "" && lDate != "") {
+                        dao.incexpTblDao().getAllIncomeDataByDate(sDate!!, lDate!!)
+                            .observe(requireActivity()) {
+                                binding.transectionItem.adapter =
+                                    adapterOfTransection(it, categoryMap, currencyClass)
 
+                            }
+                    } else {
+                        dao.incexpTblDao().getAllIncomeData().observe(requireActivity()) {
+                            binding.transectionItem.adapter =
+                                adapterOfTransection(it, categoryMap, currencyClass)
+                        }
+                    }
+                } else if (sDate != null && lDate != null) {
+                    dao.incexpTblDao().getAllDataByTwoDate(sDate!!, lDate!!)
+                        .observe(requireActivity()) {
+                            binding.transectionItem.adapter =
+                                adapterOfTransection(it, categoryMap, currencyClass)
+
+                        }
                 }
-            } else if (tMode == "EXPENSE") {
-                dao.incexpTblDao().getAllExpenseData().observe(requireActivity()) {
-                    binding.transectionItem.adapter =
-                        adapterOfTransection(it, categoryMap, currencyClass)
-                }
-            } else if (tMode == "INCOME") {
-                dao.incexpTblDao().getAllIncomeData().observe(requireActivity()) {
-                    binding.transectionItem.adapter =
-                        adapterOfTransection(it, categoryMap, currencyClass)
-                }
+                (activity as MainActivity?)!!.showBottomNavigationView()
             }
-            (activity as MainActivity?)!!.showBottomNavigationView()
 
         }
 
@@ -242,41 +272,49 @@ class TransectionFragment : Fragment() {
                         mInterstitialAd?.show(requireActivity())
                     } else {
                         if (isFilter == true) {
-                            if (sDate != null && lDate != null && tMode == "INCOME") {
-                                dao.incexpTblDao().getAllIncomeDataByDate(sDate, lDate)
-                                    .observe(requireActivity()) {
-                                        val adapter =
-                                            adapterOfTransection(it, categoryMap, currencyClass)
-                                        generatePdf("Income Transaction By Date", adapter)
-                                    }
-                            } else if (sDate != null && lDate != null && tMode == "EXPENSE") {
 
-                                dao.incexpTblDao().getAllExpenseDataByDate(sDate, lDate)
-                                    .observe(requireActivity()) {
-                                        val adapter =
-                                            adapterOfTransection(it, categoryMap, currencyClass)
-                                        generatePdf("Expense Transaction By Date", adapter)
-                                    }
-                            } else if (sDate != null && lDate != null) {
-                                dao.incexpTblDao().getAllDataByTwoDate(sDate, lDate)
+
+                            if (tMode == "EXPENSE") {
+                                if (sDate != "" && lDate != "") {
+
+                                    dao.incexpTblDao().getAllExpenseDataByDate(sDate!!, lDate!!)
+                                        .observe(requireActivity()) {
+                                            val adapter =
+                                                adapterOfTransection(it, categoryMap, currencyClass)
+                                            generatePdf("Expense Transaction By Date", adapter)
+                                        }
+                                } else {
+                                    dao.incexpTblDao().getAllExpenseData()
+                                        .observe(requireActivity()) {
+                                            val adapter =
+                                                adapterOfTransection(it, categoryMap, currencyClass)
+                                            generatePdf("All Expense Transaction", adapter)
+                                        }
+                                }
+                            } else if (tMode == "INCOME") {
+                                if (sDate != "" && lDate != "") {
+                                    dao.incexpTblDao().getAllIncomeDataByDate(sDate!!, lDate!!)
+                                        .observe(requireActivity()) {
+                                            val adapter =
+                                                adapterOfTransection(it, categoryMap, currencyClass)
+                                            generatePdf("Income Transaction By Date", adapter)
+                                        }
+                                } else {
+                                    dao.incexpTblDao().getAllIncomeData()
+                                        .observe(requireActivity()) {
+                                            val adapter =
+                                                adapterOfTransection(it, categoryMap, currencyClass)
+                                            generatePdf("All Income Transaction", adapter)
+                                        }
+                                }
+                            } else if (sDate != "" && lDate != "") {
+                                dao.incexpTblDao().getAllDataByTwoDate(sDate!!, lDate!!)
                                     .observe(requireActivity()) {
                                         val adapter =
                                             adapterOfTransection(it, categoryMap, currencyClass)
                                         generatePdf("All Transaction By Date", adapter)
 
                                     }
-                            } else if (tMode == "EXPENSE") {
-                                dao.incexpTblDao().getAllExpenseData().observe(requireActivity()) {
-                                    val adapter =
-                                        adapterOfTransection(it, categoryMap, currencyClass)
-                                    generatePdf("All Expense Transaction", adapter)
-                                }
-                            } else if (tMode == "INCOME") {
-                                dao.incexpTblDao().getAllIncomeData().observe(requireActivity()) {
-                                    val adapter =
-                                        adapterOfTransection(it, categoryMap, currencyClass)
-                                    generatePdf("All Income Transaction", adapter)
-                                }
                             }
                         } else {
                             Log.d("TAG", "The interstitial ad wasn't ready yet.")
@@ -294,43 +332,48 @@ class TransectionFragment : Fragment() {
                     } else {
                         Log.d("TAG", "The interstitial ad wasn't ready yet.")
                         if (isFilter == true) {
-                            if (sDate != null && lDate != null && tMode == "INCOME") {
-                                dao.incexpTblDao().getAllIncomeDataByDate(sDate, lDate)
-                                    .observe(requireActivity()) {
-                                        val adapter =
-                                            adapterOfTransection(it, categoryMap, currencyClass)
-                                        exportToExcel(adapter, requireContext())
-                                    }
-                            } else if (sDate != null && lDate != null && tMode == "EXPENSE") {
+                            if (tMode == "EXPENSE") {
+                                if (sDate != "" && lDate != "") {
 
-                                dao.incexpTblDao().getAllExpenseDataByDate(sDate, lDate)
-                                    .observe(requireActivity()) {
-                                        val adapter =
-                                            adapterOfTransection(it, categoryMap, currencyClass)
-                                        exportToExcel(adapter, requireContext())
-                                    }
-                            } else if (sDate != null && lDate != null) {
-                                dao.incexpTblDao().getAllDataByTwoDate(sDate, lDate)
-                                    .observe(requireActivity()) {
-                                        val adapter =
-                                            adapterOfTransection(it, categoryMap, currencyClass)
-                                        exportToExcel(adapter, requireContext())
-                                    }
-                            } else if (tMode == "EXPENSE") {
-                                dao.incexpTblDao().getAllExpenseData().observe(requireActivity()) {
-                                    val adapter =
-                                        adapterOfTransection(it, categoryMap, currencyClass)
-                                    exportToExcel(adapter, requireContext())
+                                    dao.incexpTblDao().getAllExpenseDataByDate(sDate!!, lDate!!)
+                                        .observe(requireActivity()) {
+                                            val adapter =
+                                                adapterOfTransection(it, categoryMap, currencyClass)
+                                            exportToExcel(adapter, requireContext())
+                                        }
+                                } else {
+                                    dao.incexpTblDao().getAllExpenseData()
+                                        .observe(requireActivity()) {
+                                            val adapter =
+                                                adapterOfTransection(it, categoryMap, currencyClass)
+                                            exportToExcel(adapter, requireContext())
+                                        }
                                 }
                             } else if (tMode == "INCOME") {
-                                dao.incexpTblDao().getAllIncomeData().observe(requireActivity()) {
-                                    val adapter =
-                                        adapterOfTransection(it, categoryMap, currencyClass)
-                                    exportToExcel(adapter, requireContext())
+                                if (sDate != "" && lDate != "") {
+                                    dao.incexpTblDao().getAllIncomeDataByDate(sDate!!, lDate!!)
+                                        .observe(requireActivity()) {
+                                            val adapter =
+                                                adapterOfTransection(it, categoryMap, currencyClass)
+                                            exportToExcel(adapter, requireContext())
+                                        }
+                                } else {
+                                    dao.incexpTblDao().getAllIncomeData()
+                                        .observe(requireActivity()) {
+                                            val adapter =
+                                                adapterOfTransection(it, categoryMap, currencyClass)
+                                            exportToExcel(adapter, requireContext())
+                                        }
                                 }
+                            } else if (sDate != "" && lDate != "") {
+                                dao.incexpTblDao().getAllDataByTwoDate(sDate!!, lDate!!)
+                                    .observe(requireActivity()) {
+                                        val adapter =
+                                            adapterOfTransection(it, categoryMap, currencyClass)
+                                        exportToExcel(adapter, requireContext())
+                                    }
                             }
                         } else {
-
                             dao.incexpTblDao().getAllData().observe(requireActivity()) {
                                 val adapter = adapterOfTransection(it, categoryMap, currencyClass)
                                 exportToExcel(adapter, requireContext())
@@ -373,14 +416,21 @@ class TransectionFragment : Fragment() {
             }
         }
 
-        dao.incexpTblDao().getAllData().observe(requireActivity()) {
-            val adapter = adapterOfTransection(it, categoryMap, currencyClass)
-            val admobNativeAdAdapter = AdmobNativeAdAdapter.Builder.with(
-                FireBaseGooggleAdsId,
-                adapter,
-                "small"   // "medium" it can also used
-            ).adItemInterval(4).build()
-            binding.transectionItem.adapter = admobNativeAdAdapter
+        if (isAds == true) {
+            dao.incexpTblDao().getAllData().observe(requireActivity()) {
+                val adapter = adapterOfTransection(it, categoryMap, currencyClass)
+                val admobNativeAdAdapter = AdmobNativeAdAdapter.Builder.with(
+                    FireBaseGooggleAdsId,
+                    adapter,
+                    "small"   // "medium" it can also used
+                ).adItemInterval(4).build()
+                binding.transectionItem.adapter = admobNativeAdAdapter
+            }
+        } else {
+            dao.incexpTblDao().getAllData().observe(requireActivity()) {
+                val adapter = adapterOfTransection(it, categoryMap, currencyClass)
+                binding.transectionItem.adapter = adapter
+            }
         }
     }
 
@@ -533,7 +583,7 @@ class TransectionFragment : Fragment() {
             requireContext().startActivity(intent)
 
             // Display a toast message with the file path
-            Toast.makeText(context, "File saved to $filePath", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "File saved", Toast.LENGTH_LONG).show()
 //            Log.d("Path Tag","$filePath")
         } else {
             // Show an error message
@@ -585,7 +635,7 @@ class TransectionFragment : Fragment() {
 
             // Display a toast message with the file path
             val filePath = file.absolutePath
-            Toast.makeText(context, "File saved to $filePath", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "File saved", Toast.LENGTH_LONG).show()
             Log.d("Path Tag", "$filePath")
         } else {
             // Show an error message
@@ -690,37 +740,71 @@ class TransectionFragment : Fragment() {
                                 if (PDF_OR_EXCEL == true) {
                                     //add ads here
                                     if (isFilter == true) {
-                                        if (sDate != null && lDate != null && tMode == "INCOME") {
-                                            dao.incexpTblDao().getAllIncomeDataByDate(sDate, lDate)
-                                                .observe(requireActivity()) {
-                                                    val adapter =
-                                                        adapterOfTransection(
-                                                            it,
-                                                            categoryMap,
-                                                            currencyClass
-                                                        )
-                                                    generatePdf(
-                                                        "Income Transaction By Date",
-                                                        adapter
-                                                    )
-                                                }
-                                        } else if (sDate != null && lDate != null && tMode == "EXPENSE") {
+                                        if (tMode == "EXPENSE") {
+                                            if (sDate != "" && lDate != "") {
 
-                                            dao.incexpTblDao().getAllExpenseDataByDate(sDate, lDate)
-                                                .observe(requireActivity()) {
-                                                    val adapter =
-                                                        adapterOfTransection(
-                                                            it,
-                                                            categoryMap,
-                                                            currencyClass
+                                                dao.incexpTblDao()
+                                                    .getAllExpenseDataByDate(sDate!!, lDate!!)
+                                                    .observe(requireActivity()) {
+                                                        val adapter =
+                                                            adapterOfTransection(
+                                                                it,
+                                                                categoryMap,
+                                                                currencyClass
+                                                            )
+                                                        generatePdf(
+                                                            "Expense Transaction By Date",
+                                                            adapter
                                                         )
-                                                    generatePdf(
-                                                        "Expense Transaction By Date",
-                                                        adapter
-                                                    )
-                                                }
-                                        } else if (sDate != null && lDate != null) {
-                                            dao.incexpTblDao().getAllDataByTwoDate(sDate, lDate)
+                                                    }
+                                            } else {
+                                                dao.incexpTblDao().getAllExpenseData()
+                                                    .observe(requireActivity()) {
+                                                        val adapter =
+                                                            adapterOfTransection(
+                                                                it,
+                                                                categoryMap,
+                                                                currencyClass
+                                                            )
+                                                        generatePdf(
+                                                            "All Expense Transaction",
+                                                            adapter
+                                                        )
+                                                    }
+                                            }
+                                        } else if (tMode == "INCOME") {
+                                            if (sDate != "" && lDate != "") {
+                                                dao.incexpTblDao()
+                                                    .getAllIncomeDataByDate(sDate!!, lDate!!)
+                                                    .observe(requireActivity()) {
+                                                        val adapter =
+                                                            adapterOfTransection(
+                                                                it,
+                                                                categoryMap,
+                                                                currencyClass
+                                                            )
+                                                        generatePdf(
+                                                            "Income Transaction By Date",
+                                                            adapter
+                                                        )
+                                                    }
+                                            } else {
+                                                dao.incexpTblDao().getAllIncomeData()
+                                                    .observe(requireActivity()) {
+                                                        val adapter =
+                                                            adapterOfTransection(
+                                                                it,
+                                                                categoryMap,
+                                                                currencyClass
+                                                            )
+                                                        generatePdf(
+                                                            "All Income Transaction",
+                                                            adapter
+                                                        )
+                                                    }
+                                            }
+                                        } else if (sDate != "" && lDate != "") {
+                                            dao.incexpTblDao().getAllDataByTwoDate(sDate!!, lDate!!)
                                                 .observe(requireActivity()) {
                                                     val adapter =
                                                         adapterOfTransection(
@@ -730,28 +814,6 @@ class TransectionFragment : Fragment() {
                                                         )
                                                     generatePdf("All Transaction By Date", adapter)
 
-                                                }
-                                        } else if (tMode == "EXPENSE") {
-                                            dao.incexpTblDao().getAllExpenseData()
-                                                .observe(requireActivity()) {
-                                                    val adapter =
-                                                        adapterOfTransection(
-                                                            it,
-                                                            categoryMap,
-                                                            currencyClass
-                                                        )
-                                                    generatePdf("All Expense Transaction", adapter)
-                                                }
-                                        } else if (tMode == "INCOME") {
-                                            dao.incexpTblDao().getAllIncomeData()
-                                                .observe(requireActivity()) {
-                                                    val adapter =
-                                                        adapterOfTransection(
-                                                            it,
-                                                            categoryMap,
-                                                            currencyClass
-                                                        )
-                                                    generatePdf("All Income Transaction", adapter)
                                                 }
                                         }
                                     } else {
@@ -769,53 +831,59 @@ class TransectionFragment : Fragment() {
 
                                     Log.d("TAG", "The interstitial ad wasn't ready yet.")
                                     if (isFilter == true) {
-                                        if (sDate != null && lDate != null && tMode == "INCOME") {
-                                            dao.incexpTblDao().getAllIncomeDataByDate(sDate, lDate)
-                                                .observe(requireActivity()) {
-                                                    val adapter =
-                                                        adapterOfTransection(
-                                                            it,
-                                                            categoryMap,
-                                                            currencyClass
-                                                        )
-                                                    exportToExcel(adapter, requireContext())
-                                                }
-                                        } else if (sDate != null && lDate != null && tMode == "EXPENSE") {
+                                        if (tMode == "EXPENSE") {
+                                            if (sDate != "" && lDate != "") {
 
-                                            dao.incexpTblDao().getAllExpenseDataByDate(sDate, lDate)
-                                                .observe(requireActivity()) {
-                                                    val adapter =
-                                                        adapterOfTransection(
-                                                            it,
-                                                            categoryMap,
-                                                            currencyClass
-                                                        )
-                                                    exportToExcel(adapter, requireContext())
-                                                }
-                                        } else if (sDate != null && lDate != null) {
-                                            dao.incexpTblDao().getAllDataByTwoDate(sDate, lDate)
-                                                .observe(requireActivity()) {
-                                                    val adapter =
-                                                        adapterOfTransection(
-                                                            it,
-                                                            categoryMap,
-                                                            currencyClass
-                                                        )
-                                                    exportToExcel(adapter, requireContext())
-                                                }
-                                        } else if (tMode == "EXPENSE") {
-                                            dao.incexpTblDao().getAllExpenseData()
-                                                .observe(requireActivity()) {
-                                                    val adapter =
-                                                        adapterOfTransection(
-                                                            it,
-                                                            categoryMap,
-                                                            currencyClass
-                                                        )
-                                                    exportToExcel(adapter, requireContext())
-                                                }
+                                                dao.incexpTblDao()
+                                                    .getAllExpenseDataByDate(sDate!!, lDate!!)
+                                                    .observe(requireActivity()) {
+                                                        val adapter =
+                                                            adapterOfTransection(
+                                                                it,
+                                                                categoryMap,
+                                                                currencyClass
+                                                            )
+                                                        exportToExcel(adapter, requireContext())
+                                                    }
+                                            } else {
+                                                dao.incexpTblDao().getAllExpenseData()
+                                                    .observe(requireActivity()) {
+                                                        val adapter =
+                                                            adapterOfTransection(
+                                                                it,
+                                                                categoryMap,
+                                                                currencyClass
+                                                            )
+                                                        exportToExcel(adapter, requireContext())
+                                                    }
+                                            }
                                         } else if (tMode == "INCOME") {
-                                            dao.incexpTblDao().getAllIncomeData()
+                                            if (sDate != "" && lDate != "") {
+                                                dao.incexpTblDao()
+                                                    .getAllIncomeDataByDate(sDate!!, lDate!!)
+                                                    .observe(requireActivity()) {
+                                                        val adapter =
+                                                            adapterOfTransection(
+                                                                it,
+                                                                categoryMap,
+                                                                currencyClass
+                                                            )
+                                                        exportToExcel(adapter, requireContext())
+                                                    }
+                                            } else {
+                                                dao.incexpTblDao().getAllIncomeData()
+                                                    .observe(requireActivity()) {
+                                                        val adapter =
+                                                            adapterOfTransection(
+                                                                it,
+                                                                categoryMap,
+                                                                currencyClass
+                                                            )
+                                                        exportToExcel(adapter, requireContext())
+                                                    }
+                                            }
+                                        } else if (sDate != "" && lDate != "") {
+                                            dao.incexpTblDao().getAllDataByTwoDate(sDate!!, lDate!!)
                                                 .observe(requireActivity()) {
                                                     val adapter =
                                                         adapterOfTransection(
@@ -864,4 +932,6 @@ class TransectionFragment : Fragment() {
         super.onResume()
         (activity as MainActivity?)!!.showBottomNavigationView()
     }
+
+
 }

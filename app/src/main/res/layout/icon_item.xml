@@ -11,6 +11,7 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:clipToOutline="true"
+        android:scaleType="centerInside"
         tools:srcCompat="@tools:sample/avatars"/>
 
 </androidx.cardview.widget.CardView>

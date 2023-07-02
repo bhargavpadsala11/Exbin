@@ -41,7 +41,7 @@ class HomeFragment : Fragment() {
     var crnSymb: String? = ""
     private var FireBaseGooggleAdsId:String = ""
     private lateinit var nativeAd: NativeAd
-    private var isLoading: Boolean = false
+    private var isAds: Boolean = false
 
 
     override fun onCreateView(
@@ -53,21 +53,26 @@ class HomeFragment : Fragment() {
         val preference =
             requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
         FireBaseGooggleAdsId = preference.getString("Na_tive_id","")!!
+        isAds = preference.getBoolean("isShow", false)
 
 
 
-        val adLoader = AdLoader.Builder(requireContext(),FireBaseGooggleAdsId )
-            .forNativeAd { nativeAd ->
-                val styles =
-                    NativeTemplateStyle.Builder().build()
-                val template: TemplateView = binding.myTemplate
-                template.setStyles(styles)
-                template.setNativeAd(nativeAd)
-            }
-            .build()
 
-        adLoader.loadAd(AdRequest.Builder().build())
+        if (isAds == true) {
+            val adLoader = AdLoader.Builder(requireContext(), FireBaseGooggleAdsId)
+                .forNativeAd { nativeAd ->
+                    val styles =
+                        NativeTemplateStyle.Builder().build()
+                    val template: TemplateView = binding.myTemplate
+                    template.setStyles(styles)
+                    template.setNativeAd(nativeAd)
+                }
+                .build()
 
+            adLoader.loadAd(AdRequest.Builder().build())
+        }else{
+            binding.myTemplate.visibility = View.GONE
+        }
         (activity as MainActivity?)!!.showBottomNavigationView()
         val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
        // showData()
@@ -92,68 +97,127 @@ class HomeFragment : Fragment() {
         dao.incexpTblDao().getAllDataHome().observe(requireActivity()) { transactions ->
             if (transactions != null && transactions.isNotEmpty()) {
                 showData()
-                val adapter = TransectionListAdapter(
-                    requireContext(),
-                    transactions,
-                    categoryMap,
-                    currencyClass
-                ){value,mode ->
-                    val id = value.Id
-                    val amaount = value.amount
-                    val category = value.category
-                    val month = value.sMonth
-                    val date = value.date
-                    val pMode = value.paymentMode
-                    val note = value.note
-                    val time = value.time
-                    val pmtIndex = value.paymentModeIndex
-                    if (mode == "INCOME") {
-                        val ldf = IncomeActivity()
-                        val args = Bundle()
-                        args.putString("INC_", "INCOME")
-                        args.putString("id", "$id")
-                        args.putString("amt", amaount)
-                        args.putString("cty", category)
-                        args.putString("dt", date)
-                        args.putString("pmd", pMode)
-                        args.putString("nt", note)
-                        args.putString("time", time)
-                        args.putString("month",month)
-                        args.putString("PMIND",pmtIndex)
-                        ldf.setArguments(args)
-                        //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
-                        activity?.supportFragmentManager?.beginTransaction()
-                            ?.replace(R.id.fragment_container, ldf)
-                            ?.addToBackStack(null)
-                            ?.commit()
-                    } else if (mode == "EXPENSE") {
-                        val ldf = ExpenseActivity()
-                        val args = Bundle()
-                        args.putString("EXP_", "EXPENSE")
-                        args.putString("id", "$id")
-                        args.putString("amt", amaount)
-                        args.putString("cty", category)
-                        args.putString("dt", date)
-                        args.putString("pmd", pMode)
-                        args.putString("nt", note)
-                        args.putString("time", time)
-                        args.putString("month",month)
-                        args.putString("PMIND",pmtIndex)
-                        ldf.setArguments(args)
-                        //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
-                        activity?.supportFragmentManager?.beginTransaction()
-                            ?.replace(R.id.fragment_container, ldf)
-                            ?.addToBackStack(null)
-                            ?.commit()
-                    }
-                }
-                val admobNativeAdAdapter = AdmobNativeAdAdapter.Builder.with(
-                    FireBaseGooggleAdsId,
-                    adapter,
-                    "small"   // "medium" it can also used
-                ).adItemInterval(2).build()
-                binding.homeTranRecy.adapter = admobNativeAdAdapter
 
+                if(isAds == true) {
+                    val adapter = TransectionListAdapter(
+                        requireContext(),
+                        transactions,
+                        categoryMap,
+                        currencyClass
+                    ) { value, mode ->
+                        val id = value.Id
+                        val amaount = value.amount
+                        val category = value.category
+                        val month = value.sMonth
+                        val date = value.date
+                        val pMode = value.paymentMode
+                        val note = value.note
+                        val time = value.time
+                        val pmtIndex = value.paymentModeIndex
+                        if (mode == "INCOME") {
+                            val ldf = IncomeActivity()
+                            val args = Bundle()
+                            args.putString("INC_", "INCOME")
+                            args.putString("id", "$id")
+                            args.putString("amt", amaount)
+                            args.putString("cty", category)
+                            args.putString("dt", date)
+                            args.putString("pmd", pMode)
+                            args.putString("nt", note)
+                            args.putString("time", time)
+                            args.putString("month", month)
+                            args.putString("PMIND", pmtIndex)
+                            ldf.setArguments(args)
+                            //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
+                            activity?.supportFragmentManager?.beginTransaction()
+                                ?.replace(R.id.fragment_container, ldf)
+                                ?.addToBackStack(null)
+                                ?.commit()
+                        } else if (mode == "EXPENSE") {
+                            val ldf = ExpenseActivity()
+                            val args = Bundle()
+                            args.putString("EXP_", "EXPENSE")
+                            args.putString("id", "$id")
+                            args.putString("amt", amaount)
+                            args.putString("cty", category)
+                            args.putString("dt", date)
+                            args.putString("pmd", pMode)
+                            args.putString("nt", note)
+                            args.putString("time", time)
+                            args.putString("month", month)
+                            args.putString("PMIND", pmtIndex)
+                            ldf.setArguments(args)
+                            //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
+                            activity?.supportFragmentManager?.beginTransaction()
+                                ?.replace(R.id.fragment_container, ldf)
+                                ?.addToBackStack(null)
+                                ?.commit()
+                        }
+                    }
+                    val admobNativeAdAdapter = AdmobNativeAdAdapter.Builder.with(
+                        FireBaseGooggleAdsId,
+                        adapter,
+                        "small"   // "medium" it can also used
+                    ).adItemInterval(2).build()
+                    binding.homeTranRecy.adapter = admobNativeAdAdapter
+                }else{
+                    val adapter = TransectionListAdapter(
+                        requireContext(),
+                        transactions,
+                        categoryMap,
+                        currencyClass
+                    ) { value, mode ->
+                        val id = value.Id
+                        val amaount = value.amount
+                        val category = value.category
+                        val month = value.sMonth
+                        val date = value.date
+                        val pMode = value.paymentMode
+                        val note = value.note
+                        val time = value.time
+                        val pmtIndex = value.paymentModeIndex
+                        if (mode == "INCOME") {
+                            val ldf = IncomeActivity()
+                            val args = Bundle()
+                            args.putString("INC_", "INCOME")
+                            args.putString("id", "$id")
+                            args.putString("amt", amaount)
+                            args.putString("cty", category)
+                            args.putString("dt", date)
+                            args.putString("pmd", pMode)
+                            args.putString("nt", note)
+                            args.putString("time", time)
+                            args.putString("month", month)
+                            args.putString("PMIND", pmtIndex)
+                            ldf.setArguments(args)
+                            //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
+                            activity?.supportFragmentManager?.beginTransaction()
+                                ?.replace(R.id.fragment_container, ldf)
+                                ?.addToBackStack(null)
+                                ?.commit()
+                        } else if (mode == "EXPENSE") {
+                            val ldf = ExpenseActivity()
+                            val args = Bundle()
+                            args.putString("EXP_", "EXPENSE")
+                            args.putString("id", "$id")
+                            args.putString("amt", amaount)
+                            args.putString("cty", category)
+                            args.putString("dt", date)
+                            args.putString("pmd", pMode)
+                            args.putString("nt", note)
+                            args.putString("time", time)
+                            args.putString("month", month)
+                            args.putString("PMIND", pmtIndex)
+                            ldf.setArguments(args)
+                            //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
+                            activity?.supportFragmentManager?.beginTransaction()
+                                ?.replace(R.id.fragment_container, ldf)
+                                ?.addToBackStack(null)
+                                ?.commit()
+                        }
+                    }
+                    binding.homeTranRecy.adapter = adapter
+                }
             } else {
                 // handle empty transaction list
                 hideData()

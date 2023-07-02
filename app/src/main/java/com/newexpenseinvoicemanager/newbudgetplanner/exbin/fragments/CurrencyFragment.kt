@@ -36,6 +36,7 @@ class CurrencyFragment : Fragment() {
     private var selectedCurrencyPosition: Int? = null
     private var mInterstitialAd: InterstitialAd? = null
     private var FireBaseGooggleAdsInterId: String = ""
+    private var isAds: Boolean = false
 
 
     override fun onCreateView(
@@ -51,6 +52,7 @@ class CurrencyFragment : Fragment() {
         val preference =
             requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
         FireBaseGooggleAdsInterId = preference.getString("inter_id", "")!!
+        isAds = preference.getBoolean("isShow", false)
 
 
         val dao = AppDataBase.getInstance(requireContext()).currencyDao()
@@ -71,7 +73,9 @@ class CurrencyFragment : Fragment() {
                 binding.rvCurrency.scrollToPosition(selectedIndex)
             }
         }
-        loadAd()
+        if (isAds == true) {
+            loadAd()
+        }
         binding.mbCurrencySet.setOnClickListener {
             if (mInterstitialAd != null) {
                 mInterstitialAd?.show(requireActivity())

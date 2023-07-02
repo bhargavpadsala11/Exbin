@@ -51,6 +51,7 @@ class BudgetFragment : Fragment() {
     private var mInterstitialAd: InterstitialAd? = null
     private var FireBaseGooggleAdsInterId: String = ""
     private var _ID: Int? = null
+    private var isAds:Boolean = false
 
     //    var monthName: String = DateFormatSymbols().months[currentMonth]
     private var editBudgetView: View? = null
@@ -65,6 +66,11 @@ class BudgetFragment : Fragment() {
             requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
         FireBaseGooggleAdsId = preference.getString("Na_tive_id", "")!!
         FireBaseGooggleAdsInterId = preference.getString("inter_id", "")!!
+        isAds = preference.getBoolean("isShow", false)
+
+
+
+
         if (editBudgetView != null) {
             binding.createBudget.isEnabled = false
             binding.amountText.isEnabled = false
@@ -209,6 +215,10 @@ class BudgetFragment : Fragment() {
                     }
                 }
             }
+        }
+
+        binding.editBackarrow.setOnClickListener {
+            loadFragment(BudgetFragment())
         }
 
 
@@ -418,7 +428,8 @@ class BudgetFragment : Fragment() {
                     budgetdetail?.visibility = View.VISIBLE
                     editudgetLayout?.visibility = View.GONE
                 }
-                loadAd(budgetTextView,budgetdetail,editudgetLayout,container)
+                if (isAds == true){
+                loadAd(budgetTextView,budgetdetail,editudgetLayout,container)}
                 val budgetSaveButton =
                     editBudgetView?.findViewById<MaterialButton>(R.id.edit_btn_save)
                 budgetSaveButton?.setOnClickListener {

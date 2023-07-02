@@ -79,121 +79,115 @@ class MainActivity : AppCompatActivity() {
             bottomAppBar = findViewById<BottomAppBar>(R.id.bottomAppBar)
 
             fab = binding.fab
-            val CHECK_VALUE = intent.getStringExtra("SELECT_CATEGORY_01")
 
-            if (CHECK_VALUE != null) {
-                val args = Bundle()
-                args.putString("SELECT_CAT", "001")
-                val fragmentManager = supportFragmentManager
-                val fragmentTransaction = fragmentManager.beginTransaction()
-                val fragment = CategoryListFragment()
-                fragment.setArguments(args)
-                fragmentTransaction.replace(R.id.fragment_container, fragment)
-                fragmentTransaction.addToBackStack(null)
-                fragmentTransaction.commit()
-            } else {
-                val isConnected = isInternet()
-                if (isConnected) {
 
-                    bottomNavigationView?.setOnItemSelectedListener { item ->
-                        currentFragment =
-                            supportFragmentManager.findFragmentById(R.id.fragment_container)
-                        var fragment: Fragment
-                        when (item.itemId) {
-                            R.id.navigation_home -> {
-                                if (!(currentFragment is HomeFragment)) {
-                                    toolbar?.setTitle("Home")
-                                    fragment = HomeFragment()
-                                    loadFragment(fragment)
-                                    if (fab?.isPressed == true) {
-                                        floatButtonShow()
-                                    }
-                                    true
-                                } else {
-                                    false
-                                }
-                            }
-                            R.id.navigation_transection -> {
-                                if (!(currentFragment is TransectionFragment)) {
-                                    floatButtonHide()
-                                    toolbar?.setTitle("Transection")
-                                    fragment = TransectionFragment()
-                                    loadFragment(fragment)
-                                    true
-                                } else {
-                                    false
-                                }
-                            }
-                            R.id.navigation_add -> {
-                                floatButtonShow()
+            val isConnected = isInternet()
+            if (isConnected) {
+                val value =
+                    intent.getStringExtra("key_Main") // Replace "key" with the key used in the first activity
+                if (value != null) {
+                    // Do something with the value
+                    loadFragment(MoreFragment())
+                }
+                bottomNavigationView?.setOnItemSelectedListener { item ->
+                    currentFragment =
+                        supportFragmentManager.findFragmentById(R.id.fragment_container)
+                    var fragment: Fragment
+                    when (item.itemId) {
+                        R.id.navigation_home -> {
+                            if (!(currentFragment is HomeFragment)) {
                                 toolbar?.setTitle("Home")
                                 fragment = HomeFragment()
                                 loadFragment(fragment)
-                                floatButtonShow()
+                                if (fab?.isPressed == true) {
+                                    floatButtonShow()
+                                }
                                 true
+                            } else {
+                                false
                             }
-                            R.id.navigation_budget -> {
-                                if (!(currentFragment is BudgetFragment)) {
-                                    floatButtonHide()
-                                    toolbar?.setTitle("Budget")
-                                    fragment = BudgetFragment()
-                                    loadFragment(fragment)
-                                    true
-                                } else {
-                                    false
-                                }
-                            }
-                            R.id.navigation_more -> {
-                                if (currentFragment !is MoreFragment) {
-                                    floatButtonHide()
-                                    toolbar?.setTitle("More")
-                                    fragment = MoreFragment()
-                                    loadFragment(fragment)
-                                    true
-                                } else {
-                                    false
-                                }
-                            }
-                            else -> false
                         }
+                        R.id.navigation_transection -> {
+                            if (!(currentFragment is TransectionFragment)) {
+                                floatButtonHide()
+                                toolbar?.setTitle("Transection")
+                                fragment = TransectionFragment()
+                                loadFragment(fragment)
+                                true
+                            } else {
+                                false
+                            }
+                        }
+                        R.id.navigation_add -> {
+                            floatButtonShow()
+                            toolbar?.setTitle("Home")
+                            fragment = HomeFragment()
+                            loadFragment(fragment)
+                            floatButtonShow()
+                            true
+                        }
+                        R.id.navigation_budget -> {
+                            if (!(currentFragment is BudgetFragment)) {
+                                floatButtonHide()
+                                toolbar?.setTitle("Budget")
+                                fragment = BudgetFragment()
+                                loadFragment(fragment)
+                                true
+                            } else {
+                                false
+                            }
+                        }
+                        R.id.navigation_more -> {
+                            if (currentFragment !is MoreFragment) {
+                                floatButtonHide()
+                                toolbar?.setTitle("More")
+                                fragment = MoreFragment()
+                                loadFragment(fragment)
+                                true
+                            } else {
+                                false
+                            }
+                        }
+                        else -> false
                     }
-                    if (!(currentFragment is HomeFragment)) {
-                        bottomNavigationView?.selectedItemId = R.id.navigation_home
-                    }
-                } else {
-                    showNoInternetDialog()
                 }
-                if (isConnected) {
-                    fab?.setOnClickListener {
+                if (!(currentFragment is HomeFragment)) {
+                    bottomNavigationView?.selectedItemId = R.id.navigation_home
+                }
+            } else {
+                showNoInternetDialog()
+            }
+            if (isConnected) {
+                fab?.setOnClickListener {
 
 //                        Toast.makeText(this, "$currentDate", Toast.LENGTH_SHORT).show()
-                        currentFragment =
-                            supportFragmentManager.findFragmentById(R.id.fragment_container)
-                        if (!(currentFragment is HomeFragment)) {
-                            bottomNavigationView?.selectedItemId = R.id.navigation_home
-                            val fragment = HomeFragment()
-                            loadFragment(fragment)
-                        } else {
-                            floatButtonShow()
-                        }
-
-                    }
+                    currentFragment =
+                        supportFragmentManager.findFragmentById(R.id.fragment_container)
                     if (!(currentFragment is HomeFragment)) {
                         bottomNavigationView?.selectedItemId = R.id.navigation_home
+                        val fragment = HomeFragment()
+                        loadFragment(fragment)
+                    } else {
+                        floatButtonShow()
                     }
-                } else {
-                    showNoInternetDialog()
-                }
 
-                binding.inc.setOnClickListener {
-                    floatButtonHide()
-                    loadFragment(IncomeActivity())
                 }
-                binding.exp.setOnClickListener {
-                    floatButtonHide()
-                    loadFragment(ExpenseActivity())
+                if (!(currentFragment is HomeFragment)) {
+                    bottomNavigationView?.selectedItemId = R.id.navigation_home
                 }
+            } else {
+                showNoInternetDialog()
             }
+
+            binding.inc.setOnClickListener {
+                floatButtonHide()
+                loadFragment(IncomeActivity())
+            }
+            binding.exp.setOnClickListener {
+                floatButtonHide()
+                loadFragment(ExpenseActivity())
+            }
+
         } else {
             showNoInternetDialog()
         }
@@ -218,20 +212,29 @@ class MainActivity : AppCompatActivity() {
                 val rewardedKey = data?.get("Rewarded_key") as String
                 val privacy_policy = data?.get("Privacy_policy") as String
                 val terms_conditions = data?.get("terms_conditions") as String
-                val isShow = data?.get("is_show") as Boolean
+                val share_link = data?.get("share_link") as String
+                val isShowAds = data?.get("is_show") as String
 
+                var isShow: Boolean = false
+                if (isShowAds == "true") {
+                    isShow = true
+                } else {
+                    !isShow
+                }
+Log.d("status","$isShow")
                 val preference = getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
                 val editor = preference.edit()
-                editor.putBoolean("isShow",isShow)
+                editor.putBoolean("isShow", isShow)
                 editor.putString("Na_tive_id", nativeAdvancedKey)
                 editor.putString("inter_id", interstitialKey)
                 editor.putString("banner_Key", bannerKey)
                 editor.apply()
 
                 val pref = getSharedPreferences("TERMS_PRIVACY", AppCompatActivity.MODE_PRIVATE)
-                val edit= pref.edit()
-                edit.putString("privacy_policy",privacy_policy)
-                edit.putString("terms_conditions",terms_conditions)
+                val edit = pref.edit()
+                edit.putString("privacy_policy", privacy_policy)
+                edit.putString("terms_conditions", terms_conditions)
+                edit.putString("share_link", share_link)
                 edit.apply()
 
             }

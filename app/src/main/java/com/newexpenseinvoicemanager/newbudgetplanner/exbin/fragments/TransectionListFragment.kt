@@ -24,7 +24,7 @@ class TransectionListFragment : Fragment() {
 
     private lateinit var binding: FragmentTransectionListBinding
     private var inc: Double = 0.0
-    private var exp: Double = 0.0
+    private var isAds: Boolean = false
     private var sDate: String = ""
     private var lDate: String = ""
     private var FireBaseGooggleAdsId: String = ""
@@ -40,6 +40,8 @@ class TransectionListFragment : Fragment() {
         val preference =
             requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
         FireBaseGooggleAdsId = preference.getString("Na_tive_id", "")!!
+        isAds = preference.getBoolean("isShow", false)
+
 
 
         val custom = binding.appBar

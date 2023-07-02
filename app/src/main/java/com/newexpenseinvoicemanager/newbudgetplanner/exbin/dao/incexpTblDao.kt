@@ -26,7 +26,7 @@ interface incexpTblDao {
 //    @Query("SELECT * FROM incexpTbl ORDER BY date DESC LIMIT 5")
 //    fun getAllDataHome():LiveData<List<incexpTbl>>
 
-    @Query("SELECT * FROM incexpTbl ORDER BY date DESC, currentDate DESC LIMIT 5")
+    @Query("SELECT * FROM incexpTbl ORDER BY substr(date, 7, 4)||substr(date, 4, 2)||substr(date, 1, 2) DESC, currentDate DESC LIMIT 5")
     fun getAllDataHome(): LiveData<List<incexpTbl>>
 
     @Query("SELECT * FROM incexpTbl WHERE dType = 'INCOME'")

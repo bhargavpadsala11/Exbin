@@ -56,6 +56,7 @@ class IncomeActivity : Fragment() {
     private var mInterstitialAd: InterstitialAd? = null
     private var FireBaseGooggleAdsInterId: String = ""
     private var FireBaseGooggleAdsBanner: String = ""
+    private var isAds : Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,45 +75,48 @@ class IncomeActivity : Fragment() {
             requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
         FireBaseGooggleAdsInterId = preference.getString("inter_id", "")!!
         FireBaseGooggleAdsBanner = preference.getString("banner_Key", "")!!
+        isAds = preference.getBoolean("isShow", false)
 
-        val adContainer = binding.adView
-        val mAdView = AdView(requireContext())
-        mAdView.setAdSize(AdSize.BANNER)
-        mAdView.adUnitId = FireBaseGooggleAdsBanner
-        adContainer.addView(mAdView)
-        val adRequest = AdRequest.Builder().build()
-        mAdView.loadAd(adRequest)
 
-        mAdView.adListener = object: AdListener() {
-            override fun onAdClicked() {
-                // Code to be executed when the user clicks on an ad.
+        if (isAds == true) {
+            val adContainer = binding.adView
+            val mAdView = AdView(requireContext())
+            mAdView.setAdSize(AdSize.BANNER)
+            mAdView.adUnitId = FireBaseGooggleAdsBanner
+            adContainer.addView(mAdView)
+            val adRequest = AdRequest.Builder().build()
+            mAdView.loadAd(adRequest)
+
+            mAdView.adListener = object : AdListener() {
+                override fun onAdClicked() {
+                    // Code to be executed when the user clicks on an ad.
+                }
+
+                override fun onAdClosed() {
+                    // Code to be executed when the user is about to return
+                    // to the app after tapping on an ad.
+                }
+
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    // Code to be executed when an ad request fails.
+                }
+
+                override fun onAdImpression() {
+                    // Code to be executed when an impression is recorded
+                    // for an ad.
+                }
+
+                override fun onAdLoaded() {
+                    // Code to be executed when an ad finishes loading.
+                }
+
+                override fun onAdOpened() {
+                    // Code to be executed when an ad opens an overlay that
+                    // covers the screen.
+                }
             }
 
-            override fun onAdClosed() {
-                // Code to be executed when the user is about to return
-                // to the app after tapping on an ad.
-            }
-
-            override fun onAdFailedToLoad(adError : LoadAdError) {
-                // Code to be executed when an ad request fails.
-            }
-
-            override fun onAdImpression() {
-                // Code to be executed when an impression is recorded
-                // for an ad.
-            }
-
-            override fun onAdLoaded() {
-                // Code to be executed when an ad finishes loading.
-            }
-
-            override fun onAdOpened() {
-                // Code to be executed when an ad opens an overlay that
-                // covers the screen.
-            }
         }
-
-
 
         val SELECTED_CATEGORY = arguments?.getString("CATEGORY")
         val INC_ = arguments?.getString("INC_")
@@ -140,7 +144,8 @@ class IncomeActivity : Fragment() {
             SMONTH_ = arguments?.getString("month")
             _ID = ID_
 
-            loadAd()
+            if (isAds){
+            loadAd()}
             binding.category.setOnClickListener { getCategoryForUpdate() }
             spinnerSet(PAY_!!)
             //PaymentModeList.set(PAY_MD_!!.toInt(),PAY_!!)
