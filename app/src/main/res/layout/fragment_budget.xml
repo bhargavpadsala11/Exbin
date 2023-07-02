@@ -127,6 +127,30 @@ tools:context=".fragments.BudgetFragment">
     android:layout_height="match_parent"
     android:visibility="gone">
 
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/edit_backarrow"
+        android:layout_width="35dp"
+        android:layout_height="30dp"
+        android:layout_margin="10dp"
+        android:src="@drawable/ic_left_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/white" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/edit_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="Create Budget"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@id/edit_backarrow"
+        app:layout_constraintStart_toEndOf="@id/edit_backarrow"
+        app:layout_constraintTop_toTopOf="@id/edit_backarrow" />
+
+
     <View
         android:id="@+id/view1"
         android:layout_width="match_parent"
