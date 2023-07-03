@@ -201,15 +201,10 @@ class MainActivity : AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val data = snapshot.value as Map<*, *>?
 
-                val appOpenKey = data?.get("App_Open_key") as String
                 val bannerKey = data?.get("Banner_key") as String
-                val interstitialVideoKey = data?.get("Interstitial_Video_key") as String
                 val interstitialKey = data?.get("Interstitial_key") as String
-                val nativeAdKey = data?.get("Native_Advanced_Video_key") as String
                 val nativeAdvancedKey = data?.get("Native_Advanced_key") as String
                 FireBaseGooggleAdsId = nativeAdvancedKey
-                val rewardedInterstitialKey = data?.get("Rewarded_Interstitial_key") as String
-                val rewardedKey = data?.get("Rewarded_key") as String
                 val privacy_policy = data?.get("Privacy_policy") as String
                 val terms_conditions = data?.get("terms_conditions") as String
                 val share_link = data?.get("share_link") as String
