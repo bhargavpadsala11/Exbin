@@ -13,6 +13,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.FragmentWebViewBinding
 
@@ -29,6 +30,8 @@ class WebViewFragment : Fragment() {
     ): View? {
 
         binding = FragmentWebViewBinding.inflate(layoutInflater)
+        (activity as MainActivity?)!!.floatButtonHide()
+
         val preference =
             requireContext().getSharedPreferences("TERMS_PRIVACY", AppCompatActivity.MODE_PRIVATE)
         privacyUrl = preference.getString("privacy_policy", "")!!

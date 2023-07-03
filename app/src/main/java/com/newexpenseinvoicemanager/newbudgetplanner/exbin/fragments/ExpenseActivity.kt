@@ -53,8 +53,7 @@ class ExpenseActivity : Fragment() {
     private var mInterstitialAd: InterstitialAd? = null
     private var FireBaseGooggleAdsInterId: String = ""
     private var FireBaseGooggleAdsBanner: String = ""
-    private var isAds:Boolean = false
-
+    private var isAds: Boolean = false
 
 
     override fun onCreateView(
@@ -63,6 +62,8 @@ class ExpenseActivity : Fragment() {
     ): View? {
         binding = ActivityExpenseBinding.inflate(layoutInflater)
         (activity as MainActivity?)!!.floatButtonHide()
+        (activity as MainActivity?)!!.getIdofNativeAds()
+
         val preference =
             requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
         FireBaseGooggleAdsInterId = preference.getString("inter_id", "")!!
@@ -145,8 +146,9 @@ class ExpenseActivity : Fragment() {
             NOTE_ = arguments?.getString("nt")
             SMONTH_ = arguments?.getString("month")
             _ID = ID_
-            if (isAds == true){
-            loadAd()}
+            if (isAds == true) {
+                loadAd()
+            }
             spinnerSet(PAY_!!)
             binding.expcategory.setOnClickListener { getCategoryForUpdate() }
             //PaymentModeList.set(PAY_MD_!!.toInt(),PAY_!!)
@@ -246,22 +248,30 @@ class ExpenseActivity : Fragment() {
         } else if (SELECTED_CATEGORY != null) {
             val amnt = arguments?.getString("amnt_vle")
             val nte = arguments?.getString("nte_vle")
-            if (amnt != null && nte != null) {
-                binding.expAmount.setText(amnt)
-                binding.expNote.setText(nte)
-            } else if (amnt == null && nte != null) {
-                binding.expNote.setText(nte)
-            } else if (nte == null && amnt != null) {
-                binding.expAmount.setText(amnt)
+            val dte = arguments?.getString("dte_vle")
+            val tme = arguments?.getString("tme_vle")
+            val py_ind_ = arguments?.getString("pay_ind_vle")
+            binding.expAmount.setText(amnt)
+            binding.expNote.setText(nte)
+            if (tme != null) {
+                binding.exptime.setText(tme)
+                time = binding.exptime.text.toString()
             }
+            spinnerSet(py_ind_!!)
+
             val sdf = SimpleDateFormat("dd/MM/yyyy")
             val sdf_1 = SimpleDateFormat("hh:mm a")
             val defaulttDate = sdf.format(Date())
             val defaultTime = sdf_1.format(Date())
             date = defaulttDate
             time = defaultTime
-            binding.expdate.setText(defaulttDate)
-            binding.exptime.setText(defaultTime)
+            if (dte != null) {
+                binding.expdate.setText(dte)
+                date = binding.expdate.text.toString()
+            } else {
+                binding.expdate.setText(defaulttDate)
+            }
+
             val selectedDateString = binding.expdate.text.toString()
             val selectedDate = sdf.parse(selectedDateString)
             val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
@@ -270,7 +280,6 @@ class ExpenseActivity : Fragment() {
 //            Toast.makeText(requireContext(), "Selected $SELECTED_CATEGORY", Toast.LENGTH_SHORT).show()
             binding.expcategory.setOnClickListener { getCategory() }
             binding.expcategory.setText(SELECTED_CATEGORY)
-            getPaymentMode()
 
             val calendar = Calendar.getInstance()
 
@@ -537,6 +546,9 @@ class ExpenseActivity : Fragment() {
         args.putString("SELECT_CAT_EXP", "002")
         args.putString("AMNT_VL", "${binding.expAmount.text.toString()}")
         args.putString("NOTE_VL", "${binding.expNote.text.toString()}")
+        args.putString("DATE_VL", "$date")
+        args.putString("TIME_VL", "$time")
+        args.putString("PAY_IND_VL", "${binding.exppaymentMode.selectedItem as String}")
         ldf.setArguments(args)
         //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
         activity?.supportFragmentManager?.beginTransaction()

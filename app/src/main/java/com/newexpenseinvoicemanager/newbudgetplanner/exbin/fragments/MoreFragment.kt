@@ -51,6 +51,8 @@ class MoreFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentMoreBinding.inflate(layoutInflater)
+        (activity as MainActivity?)!!.floatButtonHide()
+
         val preference =
             requireContext().getSharedPreferences("TERMS_PRIVACY", AppCompatActivity.MODE_PRIVATE)
         share_link = preference.getString("share_link", "")!!

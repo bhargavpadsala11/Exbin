@@ -6,6 +6,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.PaymentModes
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.WeeklyAverage
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.incexpTbl
 
@@ -26,11 +27,14 @@ interface incexpTblDao {
 //    @Query("SELECT * FROM incexpTbl ORDER BY date DESC LIMIT 5")
 //    fun getAllDataHome():LiveData<List<incexpTbl>>
 
-    @Query("SELECT * FROM incexpTbl ORDER BY substr(date, 7, 4)||substr(date, 4, 2)||substr(date, 1, 2) DESC, currentDate DESC LIMIT 5")
+    @Query("SELECT * FROM incexpTbl ORDER BY substr(date, 7, 4)||substr(date, 4, 2)||substr(date, 1, 2) DESC LIMIT 5")
     fun getAllDataHome(): LiveData<List<incexpTbl>>
 
     @Query("SELECT * FROM incexpTbl WHERE dType = 'INCOME'")
     fun getAllIncomeData(): LiveData<List<incexpTbl>>
+
+    @Query("SELECT * FROM incexpTbl WHERE paymentMode = :name")
+    fun getPaymentModeByName(name: String): LiveData<List<incexpTbl>>
 
 
     @Query("SELECT * FROM incexpTbl WHERE date BETWEEN :startDate AND :endDate")

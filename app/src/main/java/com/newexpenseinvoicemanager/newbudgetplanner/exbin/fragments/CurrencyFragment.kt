@@ -44,6 +44,8 @@ class CurrencyFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentCurrencyBinding.inflate(inflater, container, false)
+        (activity as MainActivity?)!!.floatButtonHide()
+        (activity as MainActivity?)!!.getIdofNativeAds()
 
         val custom = binding.appBar
         custom.ivDelete.visibility = View.GONE

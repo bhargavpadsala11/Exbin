@@ -193,7 +193,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun getIdofNativeAds() {
+    public fun getIdofNativeAds() {
         val database = FirebaseDatabase.getInstance()
         val ref = database.getReference("Keys")
 
@@ -275,6 +275,7 @@ Log.d("status","$isShow")
     public fun floatButtonHide() {
         binding.exp.visibility = View.GONE
         binding.inc.visibility = View.GONE
+        isButtonVisible = isButtonVisible
     }
 
     public fun showBottomNavigationView() {

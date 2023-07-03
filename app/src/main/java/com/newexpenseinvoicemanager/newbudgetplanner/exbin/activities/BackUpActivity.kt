@@ -4,11 +4,14 @@ import android.app.Activity
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -62,7 +65,7 @@ class BackUpActivity : AppCompatActivity() {
         val preference =
             this.getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
         FireBaseGooggleAdsId = preference.getString("Na_tive_id", "")!!
-        isAds = preference.getBoolean("isShow",false)
+        isAds = preference.getBoolean("isShow", false)
 
 
         gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -75,18 +78,30 @@ class BackUpActivity : AppCompatActivity() {
         binding.mbBackupBtn.setOnClickListener {
             uploadFileToGDrive(this)
         }
-        if (isAds == true) {
-            val adLoader = AdLoader.Builder(this, FireBaseGooggleAdsId)
-                .forNativeAd { nativeAd ->
-                    val styles =
-                        NativeTemplateStyle.Builder().build()
-                    val template: TemplateView = binding.myTemplate
-                    template.setStyles(styles)
-                    template.setNativeAd(nativeAd)
-                }
-                .build()
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
 
-            adLoader.loadAd(AdRequest.Builder().build())
+
+        if (isAds == true) {
+            if (networkInfo != null && networkInfo.isConnected) {
+                val adLoader = AdLoader.Builder(this, FireBaseGooggleAdsId)
+                    .forNativeAd { nativeAd ->
+                        val styles =
+                            NativeTemplateStyle.Builder().build()
+                        val template: TemplateView = binding.myTemplate
+                        template.setStyles(styles)
+                        template.setNativeAd(nativeAd)
+                    }
+                    .build()
+
+                adLoader.loadAd(AdRequest.Builder().build())
+            } else {
+                binding.myTemplate.visibility = View.GONE
+            }
+        } else {
+            binding.myTemplate.visibility = View.GONE
+
         }
         binding.titleTextView.setOnClickListener {
             this.binding.mbBackup.performClick()
@@ -99,11 +114,33 @@ class BackUpActivity : AppCompatActivity() {
             this.binding.mbSingOut.performClick()
         }
         binding.mbSingOut.setOnClickListener {
-            singOut()
+            gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build()
+
+            gsc = GoogleSignIn.getClient(this, gso)
+
+            var account: GoogleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)!!
+            if (account != null) {
+                singOut()
+            } else {
+                Toast.makeText(this, "Log in First", Toast.LENGTH_SHORT).show()
+            }
         }
 
         binding.mbDwnld.setOnClickListener {
-            restoreFromBackup()
+            gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build()
+
+            gsc = GoogleSignIn.getClient(this, gso)
+
+            var account: GoogleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)!!
+            if (account != null) {
+                restoreFromBackup()
+            } else {
+                Toast.makeText(this, "Log in First", Toast.LENGTH_SHORT).show()
+            }
         }
         binding.editBackarrow.setOnClickListener {
             onBackPressed()
@@ -289,7 +326,10 @@ class BackUpActivity : AppCompatActivity() {
 
     private fun loadFragment() {
         val intent = Intent(this, MainActivity::class.java)
-        intent.putExtra("key_Main", "value") // Replace "key" with your desired key and "value" with the actual value to send
+        intent.putExtra(
+            "key_Main",
+            "value"
+        ) // Replace "key" with your desired key and "value" with the actual value to send
         startActivity(intent)
 
     }

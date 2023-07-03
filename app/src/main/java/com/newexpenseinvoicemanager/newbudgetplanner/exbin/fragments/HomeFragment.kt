@@ -1,7 +1,9 @@
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
 
+import android.content.Context
 import android.graphics.Color
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -39,7 +41,7 @@ class HomeFragment : Fragment() {
     private var inc: Double = 0.0
     private var exp: Double = 0.0
     var crnSymb: String? = ""
-    private var FireBaseGooggleAdsId:String = ""
+    private var FireBaseGooggleAdsId: String = ""
     private lateinit var nativeAd: NativeAd
     private var isAds: Boolean = false
 
@@ -50,32 +52,39 @@ class HomeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(layoutInflater)
+        (activity as MainActivity?)!!.getIdofNativeAds()
         val preference =
             requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
-        FireBaseGooggleAdsId = preference.getString("Na_tive_id","")!!
+        FireBaseGooggleAdsId = preference.getString("Na_tive_id", "")!!
         isAds = preference.getBoolean("isShow", false)
 
 
-
-
+        val connectivityManager =
+            requireActivity().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
         if (isAds == true) {
-            val adLoader = AdLoader.Builder(requireContext(), FireBaseGooggleAdsId)
-                .forNativeAd { nativeAd ->
-                    val styles =
-                        NativeTemplateStyle.Builder().build()
-                    val template: TemplateView = binding.myTemplate
-                    template.setStyles(styles)
-                    template.setNativeAd(nativeAd)
-                }
-                .build()
+            if (networkInfo != null && networkInfo.isConnected) {
 
-            adLoader.loadAd(AdRequest.Builder().build())
-        }else{
+                val adLoader = AdLoader.Builder(requireContext(), FireBaseGooggleAdsId)
+                    .forNativeAd { nativeAd ->
+                        val styles =
+                            NativeTemplateStyle.Builder().build()
+                        val template: TemplateView = binding.myTemplate
+                        template.setStyles(styles)
+                        template.setNativeAd(nativeAd)
+                    }
+                    .build()
+
+                adLoader.loadAd(AdRequest.Builder().build())
+            }else {
+                binding.myTemplate.visibility = View.GONE
+            }
+        } else {
             binding.myTemplate.visibility = View.GONE
         }
         (activity as MainActivity?)!!.showBottomNavigationView()
         val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
-       // showData()
+        // showData()
         getTotalIncome(currencyClass)
         getDailyAvg(currencyClass)
         getDailyAvgExp(currencyClass)
@@ -84,7 +93,7 @@ class HomeFragment : Fragment() {
         // createPieChart()
         //val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
 
-       // crnSymb = currencyClass.getCurrencies()!!
+        // crnSymb = currencyClass.getCurrencies()!!
 
         val dao = AppDataBase.getInstance(requireContext())
         val categoryMap = mutableMapOf<String, Categories>()
@@ -98,7 +107,7 @@ class HomeFragment : Fragment() {
             if (transactions != null && transactions.isNotEmpty()) {
                 showData()
 
-                if(isAds == true) {
+                if (isAds == true) {
                     val adapter = TransectionListAdapter(
                         requireContext(),
                         transactions,
@@ -160,7 +169,7 @@ class HomeFragment : Fragment() {
                         "small"   // "medium" it can also used
                     ).adItemInterval(2).build()
                     binding.homeTranRecy.adapter = admobNativeAdAdapter
-                }else{
+                } else {
                     val adapter = TransectionListAdapter(
                         requireContext(),
                         transactions,
@@ -427,15 +436,6 @@ class HomeFragment : Fragment() {
         pieChart.setHoleRadius(50f) // set hole radius
         pieChart.invalidate()
     }
-
-
-
-
-
-
-
-
-
 
 
 }

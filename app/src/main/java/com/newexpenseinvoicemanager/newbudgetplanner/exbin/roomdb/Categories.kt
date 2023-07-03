@@ -18,10 +18,10 @@ data class Categories(
         fun getDefaultCategories(): List<Categories> {
             return listOf(
                 Categories(1, "Food", "#FF7F50", "${R.drawable.fastfood}"),
-                Categories(2, "Shopping", "#73BFFF", "${R.drawable.grocerystore}"),
+                Categories(2, "Shopping", "#73BFFF", "${R.drawable.shoping_bags}"),
                 Categories(3, "Petrol/Diesel", "#C8AD7F", "${R.drawable.gasolinepump}"),
                 Categories(4, "Movie", "#66CDAA", "${R.drawable.movies}"),
-                Categories(5, "Study", "#F48FB1", "${R.drawable.mortarboard}")
+                Categories(5, "Study", "#F48FB1", "${R.drawable.invoice}")
             )
         }
     }

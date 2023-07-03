@@ -37,6 +37,8 @@ class TransectionListFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentTransectionListBinding.inflate(layoutInflater)
         (activity as MainActivity?)!!.floatButtonHide()
+        (activity as MainActivity?)!!.getIdofNativeAds()
+
         val preference =
             requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
         FireBaseGooggleAdsId = preference.getString("Na_tive_id", "")!!

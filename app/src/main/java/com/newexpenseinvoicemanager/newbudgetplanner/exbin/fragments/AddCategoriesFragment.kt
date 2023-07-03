@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.*
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -63,6 +65,9 @@ class AddCategoriesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentAddCategoriesBinding.inflate(layoutInflater)
+        (activity as MainActivity?)!!.floatButtonHide()
+        (activity as MainActivity?)!!.getIdofNativeAds()
+
         val preference =
             requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
         FireBaseGooggleAdsInterId = preference.getString("inter_id", "")!!
@@ -189,8 +194,13 @@ class AddCategoriesFragment : Fragment() {
         val value = arguments?.getString("EDIT")
 
         updateMergedIcon()
+        val connectivityManager =
+            requireActivity().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
         if (isAds == true) {
-            loadAd()
+            if (networkInfo != null && networkInfo.isConnected) {
+                loadAd()
+            }
         }
         if (value != null) {
             isDataorNot = value
@@ -494,8 +504,8 @@ class AddCategoriesFragment : Fragment() {
     private fun updateMergedIcon() {
         val imageView = binding.mergedImage
         if (selectedIcon == null && selectedColor == null) {
-            binding.selectIcon.setImageResource(R.drawable.ic_home)
-            val color = "#FF6200EE"
+            binding.selectIcon.setImageResource(R.drawable.bank)
+            val color = "#73BFFF"
             val colorInt = Color.parseColor(color!!)
             binding.selectColor.setBackgroundColor(colorInt)
             val hsl = FloatArray(3)
@@ -506,14 +516,14 @@ class AddCategoriesFragment : Fragment() {
                 hsl[2] = 1.0f // Cap the lightness value at 100%
             }
             val lightColor = ColorUtils.HSLToColor(hsl)
-            imageView.setImageResource(R.drawable.ic_home)
+            imageView.setImageResource(R.drawable.bank)
             imageView.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN)
             imageView.setBackgroundColor(lightColor)
 
-            selectedIcon = R.drawable.ic_home
+            selectedIcon = R.drawable.bank
             selectedColor = color
         } else if (selectedIcon != null && selectedColor == null) {
-            val color = "#FF6200EE"
+            val color = "#73BFFF"
             val colorInt = Color.parseColor(color!!)
             val hsl = FloatArray(3)
             ColorUtils.colorToHSL(colorInt, hsl)
@@ -540,11 +550,11 @@ class AddCategoriesFragment : Fragment() {
             }
             val lightColor = ColorUtils.HSLToColor(hsl)
 
-            binding.selectIcon.setImageResource(R.drawable.ic_home)
-            imageView.setImageResource(R.drawable.ic_home)
+            binding.selectIcon.setImageResource(R.drawable.bank)
+            imageView.setImageResource(R.drawable.bank)
             imageView.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN)
             imageView.setBackgroundColor(lightColor)
-            selectedIcon = R.drawable.ic_home
+            selectedIcon = R.drawable.bank
         } else if (selectedIcon != null && selectedColor != null) {
             val colorInt = Color.parseColor(selectedColor!!)
             val hsl = FloatArray(3)

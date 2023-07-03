@@ -56,7 +56,7 @@ class IncomeActivity : Fragment() {
     private var mInterstitialAd: InterstitialAd? = null
     private var FireBaseGooggleAdsInterId: String = ""
     private var FireBaseGooggleAdsBanner: String = ""
-    private var isAds : Boolean = false
+    private var isAds: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,6 +64,8 @@ class IncomeActivity : Fragment() {
     ): View? {
         binding = ActivityIncomeBinding.inflate(layoutInflater)
         (activity as MainActivity?)!!.floatButtonHide()
+        (activity as MainActivity?)!!.getIdofNativeAds()
+
         val custom = binding.appBar
         custom.ivDelete.visibility = View.GONE
         custom.ivTitle.setText("Add Income")
@@ -142,10 +144,12 @@ class IncomeActivity : Fragment() {
             PAY_MD_ = arguments?.getString("PMIND")
             NOTE_ = arguments?.getString("nt")
             SMONTH_ = arguments?.getString("month")
+            Log.d("PAY_", "$PAY_")
             _ID = ID_
 
-            if (isAds){
-            loadAd()}
+            if (isAds) {
+                loadAd()
+            }
             binding.category.setOnClickListener { getCategoryForUpdate() }
             spinnerSet(PAY_!!)
             //PaymentModeList.set(PAY_MD_!!.toInt(),PAY_!!)
@@ -244,14 +248,19 @@ class IncomeActivity : Fragment() {
         } else if (SELECTED_CATEGORY != null) {
             val amnt = arguments?.getString("amnt_vle")
             val nte = arguments?.getString("nte_vle")
-            if (amnt != null && nte != null) {
-                binding.incAmount.setText(amnt)
-                binding.incNote.setText(nte)
-            } else if (amnt == null && nte != null) {
-                binding.incNote.setText(nte)
-            } else if (nte == null && amnt != null) {
-                binding.incAmount.setText(amnt)
+            val dte = arguments?.getString("dte_vle")
+            val tme = arguments?.getString("tme_vle")
+            val py_ind_ = arguments?.getString("pay_ind_vle")
+            binding.incAmount.setText(amnt)
+            binding.incNote.setText(nte)
+            if (tme != null) {
+
+                binding.inctime.setText(tme)
+                time = binding.inctime.text.toString()
             }
+            spinnerSet(py_ind_!!)
+
+
             val sdf = SimpleDateFormat("dd/MM/yyyy")
             val sdf_1 = SimpleDateFormat("hh:mm a")
             val defaulttDate = sdf.format(Date())
@@ -261,8 +270,12 @@ class IncomeActivity : Fragment() {
 
             date = defaulttDate
             time = defaultTime
-            binding.incdate.setText(defaulttDate)
-            binding.inctime.setText(defaultTime)
+            if (dte != null) {
+                binding.incdate.setText(dte)
+                date = binding.incdate.text.toString()
+            } else {
+                binding.incdate.setText(defaulttDate)
+            }
             val selectedDateString = binding.incdate.text.toString()
             val selectedDate = sdf.parse(selectedDateString)
             val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
@@ -274,7 +287,6 @@ class IncomeActivity : Fragment() {
             }
             binding.category.setText(SELECTED_CATEGORY)
 //            Toast.makeText(requireContext(), "$SELECTED_CATEGORY", Toast.LENGTH_SHORT).show()
-            getPaymentMode()
 
             val calendar = Calendar.getInstance()
 
@@ -615,6 +627,10 @@ class IncomeActivity : Fragment() {
         args.putString("SELECT_CAT_INC", "001")
         args.putString("AMNT_VL", "${binding.incAmount.text.toString()}")
         args.putString("NOTE_VL", "${binding.incNote.text.toString()}")
+        args.putString("DATE_VL", "$date")
+        args.putString("TIME_VL", "$time")
+        args.putString("PAY_IND_VL", "${binding.paymentMode.selectedItem as String}")
+
         ldf.setArguments(args)
         //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
         activity?.supportFragmentManager?.beginTransaction()
@@ -684,6 +700,7 @@ class IncomeActivity : Fragment() {
             }
         }
     }
+
     fun loadAd(
     ) {
         var adRequest = AdRequest.Builder().build()
@@ -701,37 +718,52 @@ class IncomeActivity : Fragment() {
                 override fun onAdLoaded(interstitialAd: InterstitialAd) {
                     Log.d(TAG, "Ad was loaded.")
                     mInterstitialAd = interstitialAd
-                    mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
-                        override fun onAdClicked() {
-                            // Called when a click is recorded for an ad.
-                            Log.d(TAG, "Ad was clicked.")
-                        }
+                    mInterstitialAd?.fullScreenContentCallback =
+                        object : FullScreenContentCallback() {
+                            override fun onAdClicked() {
+                                // Called when a click is recorded for an ad.
+                                Log.d(TAG, "Ad was clicked.")
+                            }
 
-                        override fun onAdDismissedFullScreenContent() {
-                            // Called when ad is dismissed.
-                            Log.d(TAG, "Ad dismissed fullscreen content.")
+                            override fun onAdDismissedFullScreenContent() {
+                                // Called when ad is dismissed.
+                                Log.d(TAG, "Ad dismissed fullscreen content.")
 
                                 mInterstitialAd = null
-                            val AMNT_ = binding.incAmount.text.toString()
-                            val NOTE_ = binding.incNote.text.toString()
-                            val PAY_ = binding.paymentMode.selectedItem as String
-                            val PAY_MD_ = binding.paymentMode.selectedItemPosition.toString()
-                            updateIncome(_ID, CAT_, AMNT_, DATE_, TIME_, PAY_, PAY_MD_, NOTE_, SMONTH_)
-                            Toast.makeText(requireContext(), "Income Updated", Toast.LENGTH_SHORT).show()
-                            loadFragment(HomeFragment())
+                                val AMNT_ = binding.incAmount.text.toString()
+                                val NOTE_ = binding.incNote.text.toString()
+                                val PAY_ = binding.paymentMode.selectedItem as String
+                                val PAY_MD_ = binding.paymentMode.selectedItemPosition.toString()
+                                updateIncome(
+                                    _ID,
+                                    CAT_,
+                                    AMNT_,
+                                    DATE_,
+                                    TIME_,
+                                    PAY_,
+                                    PAY_MD_,
+                                    NOTE_,
+                                    SMONTH_
+                                )
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Income Updated",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                loadFragment(HomeFragment())
 
-                        }
+                            }
 
-                        override fun onAdImpression() {
-                            // Called when an impression is recorded for an ad.
-                            Log.d(TAG, "Ad recorded an impression.")
-                        }
+                            override fun onAdImpression() {
+                                // Called when an impression is recorded for an ad.
+                                Log.d(TAG, "Ad recorded an impression.")
+                            }
 
-                        override fun onAdShowedFullScreenContent() {
-                            // Called when ad is shown.
-                            Log.d(TAG, "Ad showed fullscreen content.")
+                            override fun onAdShowedFullScreenContent() {
+                                // Called when ad is shown.
+                                Log.d(TAG, "Ad showed fullscreen content.")
+                            }
                         }
-                    }
 
                 }
             })

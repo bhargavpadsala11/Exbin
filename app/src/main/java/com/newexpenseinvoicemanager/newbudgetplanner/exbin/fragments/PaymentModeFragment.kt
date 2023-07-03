@@ -38,12 +38,12 @@ class PaymentModeFragment : Fragment() {
     private var deletePaymentView: View? = null
     private var mInterstitialAd: InterstitialAd? = null
     private var FireBaseGooggleAdsInterId: String = ""
-    private lateinit var isTitleOrNot :AppCompatTextView
-    private lateinit var PaymentIds :String
-    private var isTitle :String = ""
-    private lateinit var mainview :View
-    private var globalgetaymentModeTextView : TextInputEditText? = null
-    private var isAds :Boolean = false
+    private lateinit var isTitleOrNot: AppCompatTextView
+    private lateinit var PaymentIds: String
+    private var isTitle: String = ""
+    private lateinit var mainview: View
+    private var globalgetaymentModeTextView: TextInputEditText? = null
+    private var isAds: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,6 +51,9 @@ class PaymentModeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentPaymentModeBinding.inflate(layoutInflater)
+        (activity as MainActivity?)!!.floatButtonHide()
+        (activity as MainActivity?)!!.getIdofNativeAds()
+
         val custom = binding.appBar
         custom.ivDelete.visibility = View.GONE
         custom.ivBack.setOnClickListener { loadFragment(MoreFragment()) }
@@ -195,10 +198,22 @@ class PaymentModeFragment : Fragment() {
                     val deletePaymentModeCnlBtn =
                         deletePaymentView?.findViewById<MaterialButton>(R.id.btncancel)
                     deletePaymentModeBtn?.setOnClickListener {
-
+                        Toast.makeText(requireContext(), "Pressed", Toast.LENGTH_SHORT).show()
+                        val db = AppDataBase.getInstance(requireContext()).incexpTblDao()
+                        val existingpayment =
+                            db.getPaymentModeByName(getaymentModeTextView?.text.toString())
+                        if (existingpayment == null) {
+                            Log.d("in if", "$existingpayment")
                             val paymentId = paymentMode.paymentModeId
                             deltePaymentMode(paymentId)
                             container?.removeView(deletePaymentView)
+                        } else {
+                            Toast.makeText(
+                                requireContext(),
+                                "Can not delete This Payment Mode It is in use",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
 
                     }
 
@@ -298,7 +313,7 @@ class PaymentModeFragment : Fragment() {
                                 Log.d("Add Payment Mode", "$isTitle")
                                 mInterstitialAd = null
 
-                                if(isTitle == "ADD"){
+                                if (isTitle == "ADD") {
                                     Log.d("Add Payment Mode", "$isTitle")
                                     addPaymentMode(getaymentModeTextView?.text.toString())
                                     mainview.visibility = View.VISIBLE
@@ -306,7 +321,7 @@ class PaymentModeFragment : Fragment() {
                                     container?.removeView(addPaymentView)
                                     getaymentModeTextView?.setText("")
                                     loadFragment(PaymentModeFragment())
-                                }else if(isTitle == "EDIT"){
+                                } else if (isTitle == "EDIT") {
                                     Log.d("EDIT", "$globalgetaymentModeTextView")
                                     updatePaymentMode(
                                         PaymentIds.toInt(),

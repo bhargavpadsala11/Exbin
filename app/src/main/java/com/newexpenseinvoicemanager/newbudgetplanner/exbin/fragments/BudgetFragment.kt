@@ -61,6 +61,8 @@ class BudgetFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentBudgetBinding.inflate(layoutInflater)
+        (activity as MainActivity?)!!.floatButtonHide()
+        (activity as MainActivity?)!!.getIdofNativeAds()
 
         val preference =
             requireContext().getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
@@ -303,84 +305,89 @@ class BudgetFragment : Fragment() {
 
     fun setBudgetView(inflater: LayoutInflater, container: ViewGroup?, sdMonth: String) {
 
-        val adapter = BudgetAndExpenseAdapter(emptyList()) { it, progress, limitShow, remain ->
-            binding.createBudget.isEnabled = false
-            binding.amountText.isEnabled = false
-            binding.saveBudget.isEnabled = false
-            binding.budgetRecy.isEnabled = false
-            binding.materialButton1.isEnabled = false
-            binding.materialButton.isEnabled = false
-            binding.categorySpin.setOnTouchListener { v, event ->
-                true
-            }
-            binding.saveBudget.isEnabled = false
-            binding.budgetRecy.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
-                override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-                    // Return true to consume the touch event and prevent further handling
-                    return true
+        if (isAds == true) {
+            val adapter = BudgetAndExpenseAdapter(emptyList()) { it, progress, limitShow, remain ->
+                binding.createBudget.isEnabled = false
+                binding.amountText.isEnabled = false
+                binding.saveBudget.isEnabled = false
+                binding.budgetRecy.isEnabled = false
+                binding.materialButton1.isEnabled = false
+                binding.materialButton.isEnabled = false
+                binding.categorySpin.setOnTouchListener { v, event ->
+                    true
                 }
+                binding.saveBudget.isEnabled = false
+                binding.budgetRecy.addOnItemTouchListener(object :
+                    RecyclerView.OnItemTouchListener {
+                    override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                        // Return true to consume the touch event and prevent further handling
+                        return true
+                    }
 
-                override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
-                    // No-op, as touch events are intercepted and not propagated
+                    override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
+                        // No-op, as touch events are intercepted and not propagated
+                    }
+
+                    override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+                        // No-op
+                    }
+                })
+                val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
+
+                // Log.d("It/prog/limit", "$it $progress $limitShow")
+                val bId = it.budgetId
+                _ID = bId
+                val bData = it
+
+                val mainlayoutView = inflater.inflate(R.layout.fragment_budget, container, false)
+                editBudgetView = inflater.inflate(R.layout.all_budget_layout, container, false)
+                container?.removeView(mainlayoutView)
+                container?.addView(editBudgetView)
+
+
+                val budgetdetail =
+                    editBudgetView?.findViewById<ConstraintLayout>(R.id.cl_pre_screen)
+                budgetdetail!!.isEnabled = false
+                val budgetProgress =
+                    editBudgetView?.findViewById<ProgressBar>(R.id.pre_determinate_bar)
+                val budgetLimitImage =
+                    editBudgetView?.findViewById<AppCompatImageView>(R.id.pre_ic_arror)
+                val budgetLimitTextView =
+                    editBudgetView?.findViewById<AppCompatTextView>(R.id.pre_tv_alert_limit)
+                val budgetIconImageView =
+                    editBudgetView?.findViewById<ShapeableImageView>(R.id.pre_iv_catagory)
+                val editButton = editBudgetView?.findViewById<MaterialButton>(R.id.editButton)
+                val deleteButton =
+                    editBudgetView?.findViewById<AppCompatImageView>(R.id.deleteButton)
+                val categoryName = editBudgetView?.findViewById<TextView>(R.id.pre_tv_cat_name)
+                val backButtonBudget =
+                    editBudgetView?.findViewById<AppCompatImageView>(R.id.backButtonBudget)
+                budgetdetail?.visibility = View.VISIBLE
+
+                (activity as MainActivity?)!!.hideBottomNavigationView()
+                backButtonBudget?.setOnClickListener {
+                    loadFragment(BudgetFragment())
+                    container?.removeView(editBudgetView)
+                    (activity as MainActivity?)!!.showBottomNavigationView()
                 }
-
-                override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-                    // No-op
+                if (limitShow == true) {
+                    budgetLimitImage?.visibility = View.VISIBLE
+                    budgetLimitTextView?.visibility = View.VISIBLE
+                } else {
+                    budgetLimitImage?.visibility = View.GONE
+                    budgetLimitTextView?.visibility = View.GONE
                 }
-            })
-            val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
-
-            // Log.d("It/prog/limit", "$it $progress $limitShow")
-            val bId = it.budgetId
-            _ID = bId
-            val bData = it
-
-            val mainlayoutView = inflater.inflate(R.layout.fragment_budget, container, false)
-            editBudgetView = inflater.inflate(R.layout.all_budget_layout, container, false)
-            container?.removeView(mainlayoutView)
-            container?.addView(editBudgetView)
-
-
-            val budgetdetail = editBudgetView?.findViewById<ConstraintLayout>(R.id.cl_pre_screen)
-            budgetdetail!!.isEnabled = false
-            val budgetProgress = editBudgetView?.findViewById<ProgressBar>(R.id.pre_determinate_bar)
-            val budgetLimitImage =
-                editBudgetView?.findViewById<AppCompatImageView>(R.id.pre_ic_arror)
-            val budgetLimitTextView =
-                editBudgetView?.findViewById<AppCompatTextView>(R.id.pre_tv_alert_limit)
-            val budgetIconImageView =
-                editBudgetView?.findViewById<ShapeableImageView>(R.id.pre_iv_catagory)
-            val editButton = editBudgetView?.findViewById<MaterialButton>(R.id.editButton)
-            val deleteButton = editBudgetView?.findViewById<AppCompatImageView>(R.id.deleteButton)
-            val categoryName = editBudgetView?.findViewById<TextView>(R.id.pre_tv_cat_name)
-            val backButtonBudget =
-                editBudgetView?.findViewById<AppCompatImageView>(R.id.backButtonBudget)
-            budgetdetail?.visibility = View.VISIBLE
-
-            (activity as MainActivity?)!!.hideBottomNavigationView()
-            backButtonBudget?.setOnClickListener {
-                loadFragment(BudgetFragment())
-                container?.removeView(editBudgetView)
-                (activity as MainActivity?)!!.showBottomNavigationView()
-            }
-            if (limitShow == true) {
-                budgetLimitImage?.visibility = View.VISIBLE
-                budgetLimitTextView?.visibility = View.VISIBLE
-            } else {
-                budgetLimitImage?.visibility = View.GONE
-                budgetLimitTextView?.visibility = View.GONE
-            }
-            deleteButton?.setOnClickListener {
-                // Toast.makeText(requireContext(), "Button Pressed", Toast.LENGTH_SHORT).show()
-                val deleteDialog =
-                    editBudgetView?.findViewById<ConstraintLayout>(R.id.budgetDeleteCard)
+                deleteButton?.setOnClickListener {
+                    // Toast.makeText(requireContext(), "Button Pressed", Toast.LENGTH_SHORT).show()
+                    val deleteDialog =
+                        editBudgetView?.findViewById<ConstraintLayout>(R.id.budgetDeleteCard)
 //                budgetdetail?.visibility = View.GONE
-                deleteDialog?.visibility = View.VISIBLE
-                val cancelBtn = editBudgetView?.findViewById<MaterialButton>(R.id.btncancel)
-                val deleteBtn = editBudgetView?.findViewById<MaterialButton>(R.id.btn_delete)
+                    deleteDialog?.visibility = View.VISIBLE
+                    val cancelBtn = editBudgetView?.findViewById<MaterialButton>(R.id.btncancel)
+                    val deleteBtn = editBudgetView?.findViewById<MaterialButton>(R.id.btn_delete)
 
-                deleteBtn?.setOnClickListener {
-                    // add ads here
+                    deleteBtn?.setOnClickListener {
+                        // add ads here
 
                         deleteBudget(bId)
                         deleteDialog?.visibility = View.GONE
@@ -389,138 +396,353 @@ class BudgetFragment : Fragment() {
                         container?.removeView(editBudgetView)
                         loadFragment(BudgetFragment())
 
+                    }
+
+                    cancelBtn?.setOnClickListener {
+                        deleteDialog?.visibility = View.GONE
+                        budgetdetail?.visibility = View.VISIBLE
+
+                    }
                 }
-
-                cancelBtn?.setOnClickListener {
-                    deleteDialog?.visibility = View.GONE
-                    budgetdetail?.visibility = View.VISIBLE
-
-                }
-            }
-            val budgetTextView = editBudgetView?.findViewById<EditText>(R.id.edit_amount)
-            budgetTextView!!.isEnabled = true
-
-            if (editButton!!.isPressed) {
-                budgetTextView!!.isEnabled = true
-            } else if (editBudgetView != null && !editButton!!.isPressed) {
-                budgetTextView!!.isEnabled = false
-            }
-
-            editButton?.setOnClickListener {
+                val budgetTextView = editBudgetView?.findViewById<EditText>(R.id.edit_amount)
                 budgetTextView!!.isEnabled = true
 
-                val editudgetLayout =
-                    editBudgetView?.findViewById<ConstraintLayout>(R.id.cl_edit_budget)
-                budgetdetail?.visibility = View.GONE
-                editudgetLayout?.visibility = View.VISIBLE
-
-                val bSymbol = editBudgetView?.findViewById<TextView>(R.id.edit_currency_symbol)
-                currencyClass.getCurrencies { crnSymb ->
-                    bSymbol?.setText(crnSymb)
+                if (editButton!!.isPressed) {
+                    budgetTextView!!.isEnabled = true
+                } else if (editBudgetView != null && !editButton!!.isPressed) {
+                    budgetTextView!!.isEnabled = false
                 }
-                budgetTextView?.setText(bData.budget)
-                val budgetCatTextView =
-                    editBudgetView?.findViewById<AppCompatTextView>(R.id.edit_category_spin)
-                budgetCatTextView?.setText(bData.budgetCat)
-                val budgetBackButoon =
-                    editBudgetView?.findViewById<AppCompatImageView>(R.id.edit_backarrow)
-                budgetBackButoon?.setOnClickListener {
-                    budgetdetail?.visibility = View.VISIBLE
-                    editudgetLayout?.visibility = View.GONE
-                }
-                if (isAds == true){
-                loadAd(budgetTextView,budgetdetail,editudgetLayout,container)}
-                val budgetSaveButton =
-                    editBudgetView?.findViewById<MaterialButton>(R.id.edit_btn_save)
-                budgetSaveButton?.setOnClickListener {
-                    // add ads here
-                    if (mInterstitialAd != null) {
-                        mInterstitialAd?.show(requireActivity())
-                    } else {
-                        Log.d("TAG", "The interstitial ad wasn't ready yet.")
 
-                        updateBudget(bId, budgetTextView?.text.toString())
-                        Toast.makeText(
-                            requireContext(),
-                            "Budget Updated Successfully",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                editButton?.setOnClickListener {
+                    budgetTextView!!.isEnabled = true
+
+                    val editudgetLayout =
+                        editBudgetView?.findViewById<ConstraintLayout>(R.id.cl_edit_budget)
+                    budgetdetail?.visibility = View.GONE
+                    editudgetLayout?.visibility = View.VISIBLE
+
+                    val bSymbol = editBudgetView?.findViewById<TextView>(R.id.edit_currency_symbol)
+                    currencyClass.getCurrencies { crnSymb ->
+                        bSymbol?.setText(crnSymb)
+                    }
+                    budgetTextView?.setText(bData.budget)
+                    val budgetCatTextView =
+                        editBudgetView?.findViewById<AppCompatTextView>(R.id.edit_category_spin)
+                    budgetCatTextView?.setText(bData.budgetCat)
+                    val budgetBackButoon =
+                        editBudgetView?.findViewById<AppCompatImageView>(R.id.edit_backarrow)
+                    budgetBackButoon?.setOnClickListener {
                         budgetdetail?.visibility = View.VISIBLE
                         editudgetLayout?.visibility = View.GONE
+                    }
+                    if (isAds == true) {
+                        loadAd(budgetTextView, budgetdetail, editudgetLayout, container)
+                    }
+                    val budgetSaveButton =
+                        editBudgetView?.findViewById<MaterialButton>(R.id.edit_btn_save)
+                    budgetSaveButton?.setOnClickListener {
+                        // add ads here
+                        if (mInterstitialAd != null) {
+                            mInterstitialAd?.show(requireActivity())
+                        } else {
+                            Log.d("TAG", "The interstitial ad wasn't ready yet.")
+
+                            updateBudget(bId, budgetTextView?.text.toString())
+                            Toast.makeText(
+                                requireContext(),
+                                "Budget Updated Successfully",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            budgetdetail?.visibility = View.VISIBLE
+                            editudgetLayout?.visibility = View.GONE
+                            container?.removeView(editBudgetView)
+                            loadFragment(BudgetFragment())
+                        }
+                        //container?.addView(editBudgetView)
+                    }
+                }
+
+                val remainingAmount = editBudgetView?.findViewById<TextView>(R.id.pre_tv_amount)
+                categoryName?.setText("${it.budgetCat}")
+                val color = it.catColor
+                val colorInt = Color.parseColor(color!!)
+                val hsl = FloatArray(3)
+                ColorUtils.colorToHSL(colorInt, hsl)
+
+                hsl[2] += 0.2f // Increase the lightness value by 20%
+                if (hsl[2] > 1.0f) {
+                    hsl[2] = 1.0f // Cap the lightness value at 100%
+                }
+                val lightColor = ColorUtils.HSLToColor(hsl)
+                budgetIconImageView?.setImageResource(it.catImage!!.toInt())
+                budgetIconImageView?.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN)
+                budgetIconImageView?.setBackgroundColor(lightColor)
+
+
+                if (it.budgetCat != null && it.amount == null) {
+                    currencyClass.getCurrencies { crnSymb ->
+                        remainingAmount?.setText("$crnSymb" + " " + "${it.amount}")
+                    }
+                } else {
+                    currencyClass.getCurrencies { crnSymb ->
+
+                        remainingAmount?.setText(crnSymb + " " + "$remain")
+                    }
+
+                    if (it.budget != null && it.amount1 != null) {
+
+                        budgetProgress?.progress = progress.toInt()
+                        budgetProgress?.progressTintList =
+                            ColorStateList.valueOf(Color.parseColor(it.catColor))
+
+                    } else {
+                        budgetProgress?.progress = 0
+                        budgetProgress?.progressTintList =
+                            ColorStateList.valueOf(Color.parseColor(it.catColor))
+                    }
+
+                }
+
+            }
+            val admobNativeAdAdapter = AdmobNativeAdAdapter.Builder.with(
+                FireBaseGooggleAdsId,
+                adapter,
+                "small"   // "medium" it can also used
+            ).adItemInterval(3).build()
+            binding.budgetRecy.adapter = admobNativeAdAdapter
+            val dao = AppDataBase.getInstance(requireContext()).budgetDao()
+            lifecycleScope.launch {
+                val budgetAndExpenseList = dao.getBudgetAndExpense(sdMonth)
+                if (budgetAndExpenseList.isEmpty()) {
+                    binding.ydtextView.visibility = View.VISIBLE
+                    binding.budgetRecy.visibility = View.GONE
+//                Log.d("from if Mont","$sdMonth")
+                } else {
+//                Log.d("from else Mont","$sdMonth")
+                    binding.budgetRecy.visibility = View.VISIBLE
+                    binding.ydtextView.visibility = View.GONE
+                    adapter.budgetAndExpenseList = budgetAndExpenseList
+                    adapter.notifyDataSetChanged()
+//                Toast.makeText(requireContext(), "Button pressed And data avilable", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }else{
+            val adapter = BudgetAndExpenseAdapter(emptyList()) { it, progress, limitShow, remain ->
+                binding.createBudget.isEnabled = false
+                binding.amountText.isEnabled = false
+                binding.saveBudget.isEnabled = false
+                binding.budgetRecy.isEnabled = false
+                binding.materialButton1.isEnabled = false
+                binding.materialButton.isEnabled = false
+                binding.categorySpin.setOnTouchListener { v, event ->
+                    true
+                }
+                binding.saveBudget.isEnabled = false
+                binding.budgetRecy.addOnItemTouchListener(object :
+                    RecyclerView.OnItemTouchListener {
+                    override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                        // Return true to consume the touch event and prevent further handling
+                        return true
+                    }
+
+                    override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
+                        // No-op, as touch events are intercepted and not propagated
+                    }
+
+                    override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+                        // No-op
+                    }
+                })
+                val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
+
+                // Log.d("It/prog/limit", "$it $progress $limitShow")
+                val bId = it.budgetId
+                _ID = bId
+                val bData = it
+
+                val mainlayoutView = inflater.inflate(R.layout.fragment_budget, container, false)
+                editBudgetView = inflater.inflate(R.layout.all_budget_layout, container, false)
+                container?.removeView(mainlayoutView)
+                container?.addView(editBudgetView)
+
+
+                val budgetdetail =
+                    editBudgetView?.findViewById<ConstraintLayout>(R.id.cl_pre_screen)
+                budgetdetail!!.isEnabled = false
+                val budgetProgress =
+                    editBudgetView?.findViewById<ProgressBar>(R.id.pre_determinate_bar)
+                val budgetLimitImage =
+                    editBudgetView?.findViewById<AppCompatImageView>(R.id.pre_ic_arror)
+                val budgetLimitTextView =
+                    editBudgetView?.findViewById<AppCompatTextView>(R.id.pre_tv_alert_limit)
+                val budgetIconImageView =
+                    editBudgetView?.findViewById<ShapeableImageView>(R.id.pre_iv_catagory)
+                val editButton = editBudgetView?.findViewById<MaterialButton>(R.id.editButton)
+                val deleteButton =
+                    editBudgetView?.findViewById<AppCompatImageView>(R.id.deleteButton)
+                val categoryName = editBudgetView?.findViewById<TextView>(R.id.pre_tv_cat_name)
+                val backButtonBudget =
+                    editBudgetView?.findViewById<AppCompatImageView>(R.id.backButtonBudget)
+                budgetdetail?.visibility = View.VISIBLE
+
+                (activity as MainActivity?)!!.hideBottomNavigationView()
+                backButtonBudget?.setOnClickListener {
+                    loadFragment(BudgetFragment())
+                    container?.removeView(editBudgetView)
+                    (activity as MainActivity?)!!.showBottomNavigationView()
+                }
+                if (limitShow == true) {
+                    budgetLimitImage?.visibility = View.VISIBLE
+                    budgetLimitTextView?.visibility = View.VISIBLE
+                } else {
+                    budgetLimitImage?.visibility = View.GONE
+                    budgetLimitTextView?.visibility = View.GONE
+                }
+                deleteButton?.setOnClickListener {
+                    // Toast.makeText(requireContext(), "Button Pressed", Toast.LENGTH_SHORT).show()
+                    val deleteDialog =
+                        editBudgetView?.findViewById<ConstraintLayout>(R.id.budgetDeleteCard)
+//                budgetdetail?.visibility = View.GONE
+                    deleteDialog?.visibility = View.VISIBLE
+                    val cancelBtn = editBudgetView?.findViewById<MaterialButton>(R.id.btncancel)
+                    val deleteBtn = editBudgetView?.findViewById<MaterialButton>(R.id.btn_delete)
+
+                    deleteBtn?.setOnClickListener {
+                        // add ads here
+
+                        deleteBudget(bId)
+                        deleteDialog?.visibility = View.GONE
+                        Toast.makeText(requireContext(), "Budget Deleted", Toast.LENGTH_SHORT)
+                            .show()
                         container?.removeView(editBudgetView)
                         loadFragment(BudgetFragment())
+
                     }
-                    //container?.addView(editBudgetView)
+
+                    cancelBtn?.setOnClickListener {
+                        deleteDialog?.visibility = View.GONE
+                        budgetdetail?.visibility = View.VISIBLE
+
+                    }
                 }
-            }
+                val budgetTextView = editBudgetView?.findViewById<EditText>(R.id.edit_amount)
+                budgetTextView!!.isEnabled = true
 
-            val remainingAmount = editBudgetView?.findViewById<TextView>(R.id.pre_tv_amount)
-            categoryName?.setText("${it.budgetCat}")
-            val color = it.catColor
-            val colorInt = Color.parseColor(color!!)
-            val hsl = FloatArray(3)
-            ColorUtils.colorToHSL(colorInt, hsl)
-
-            hsl[2] += 0.2f // Increase the lightness value by 20%
-            if (hsl[2] > 1.0f) {
-                hsl[2] = 1.0f // Cap the lightness value at 100%
-            }
-            val lightColor = ColorUtils.HSLToColor(hsl)
-            budgetIconImageView?.setImageResource(it.catImage!!.toInt())
-            budgetIconImageView?.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN)
-            budgetIconImageView?.setBackgroundColor(lightColor)
-
-
-            if (it.budgetCat != null && it.amount == null) {
-                currencyClass.getCurrencies { crnSymb ->
-                    remainingAmount?.setText("$crnSymb" + " " + "${it.amount}")
-                }
-            } else {
-                currencyClass.getCurrencies { crnSymb ->
-
-                    remainingAmount?.setText(crnSymb + " " + "$remain")
+                if (editButton!!.isPressed) {
+                    budgetTextView!!.isEnabled = true
+                } else if (editBudgetView != null && !editButton!!.isPressed) {
+                    budgetTextView!!.isEnabled = false
                 }
 
-                if (it.budget != null && it.amount1 != null) {
+                editButton?.setOnClickListener {
+                    budgetTextView!!.isEnabled = true
 
-                    budgetProgress?.progress = progress.toInt()
-                    budgetProgress?.progressTintList =
-                        ColorStateList.valueOf(Color.parseColor(it.catColor))
+                    val editudgetLayout =
+                        editBudgetView?.findViewById<ConstraintLayout>(R.id.cl_edit_budget)
+                    budgetdetail?.visibility = View.GONE
+                    editudgetLayout?.visibility = View.VISIBLE
 
+                    val bSymbol = editBudgetView?.findViewById<TextView>(R.id.edit_currency_symbol)
+                    currencyClass.getCurrencies { crnSymb ->
+                        bSymbol?.setText(crnSymb)
+                    }
+                    budgetTextView?.setText(bData.budget)
+                    val budgetCatTextView =
+                        editBudgetView?.findViewById<AppCompatTextView>(R.id.edit_category_spin)
+                    budgetCatTextView?.setText(bData.budgetCat)
+                    val budgetBackButoon =
+                        editBudgetView?.findViewById<AppCompatImageView>(R.id.edit_backarrow)
+                    budgetBackButoon?.setOnClickListener {
+                        budgetdetail?.visibility = View.VISIBLE
+                        editudgetLayout?.visibility = View.GONE
+                    }
+                    if (isAds == true) {
+                        loadAd(budgetTextView, budgetdetail, editudgetLayout, container)
+                    }
+                    val budgetSaveButton =
+                        editBudgetView?.findViewById<MaterialButton>(R.id.edit_btn_save)
+                    budgetSaveButton?.setOnClickListener {
+                        // add ads here
+                        if (mInterstitialAd != null) {
+                            mInterstitialAd?.show(requireActivity())
+                        } else {
+                            Log.d("TAG", "The interstitial ad wasn't ready yet.")
+
+                            updateBudget(bId, budgetTextView?.text.toString())
+                            Toast.makeText(
+                                requireContext(),
+                                "Budget Updated Successfully",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            budgetdetail?.visibility = View.VISIBLE
+                            editudgetLayout?.visibility = View.GONE
+                            container?.removeView(editBudgetView)
+                            loadFragment(BudgetFragment())
+                        }
+                        //container?.addView(editBudgetView)
+                    }
+                }
+
+                val remainingAmount = editBudgetView?.findViewById<TextView>(R.id.pre_tv_amount)
+                categoryName?.setText("${it.budgetCat}")
+                val color = it.catColor
+                val colorInt = Color.parseColor(color!!)
+                val hsl = FloatArray(3)
+                ColorUtils.colorToHSL(colorInt, hsl)
+
+                hsl[2] += 0.2f // Increase the lightness value by 20%
+                if (hsl[2] > 1.0f) {
+                    hsl[2] = 1.0f // Cap the lightness value at 100%
+                }
+                val lightColor = ColorUtils.HSLToColor(hsl)
+                budgetIconImageView?.setImageResource(it.catImage!!.toInt())
+                budgetIconImageView?.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN)
+                budgetIconImageView?.setBackgroundColor(lightColor)
+
+
+                if (it.budgetCat != null && it.amount == null) {
+                    currencyClass.getCurrencies { crnSymb ->
+                        remainingAmount?.setText("$crnSymb" + " " + "${it.amount}")
+                    }
                 } else {
-                    budgetProgress?.progress = 0
-                    budgetProgress?.progressTintList =
-                        ColorStateList.valueOf(Color.parseColor(it.catColor))
+                    currencyClass.getCurrencies { crnSymb ->
+
+                        remainingAmount?.setText(crnSymb + " " + "$remain")
+                    }
+
+                    if (it.budget != null && it.amount1 != null) {
+
+                        budgetProgress?.progress = progress.toInt()
+                        budgetProgress?.progressTintList =
+                            ColorStateList.valueOf(Color.parseColor(it.catColor))
+
+                    } else {
+                        budgetProgress?.progress = 0
+                        budgetProgress?.progressTintList =
+                            ColorStateList.valueOf(Color.parseColor(it.catColor))
+                    }
+
                 }
 
             }
-
-        }
-        val admobNativeAdAdapter = AdmobNativeAdAdapter.Builder.with(
-            FireBaseGooggleAdsId,
-            adapter,
-            "small"   // "medium" it can also used
-        ).adItemInterval(3).build()
-
-
-        binding.budgetRecy.adapter = admobNativeAdAdapter
-        val dao = AppDataBase.getInstance(requireContext()).budgetDao()
-        lifecycleScope.launch {
-            val budgetAndExpenseList = dao.getBudgetAndExpense(sdMonth)
-            if (budgetAndExpenseList.isEmpty()) {
-                binding.ydtextView.visibility = View.VISIBLE
-                binding.budgetRecy.visibility = View.GONE
+            binding.budgetRecy.adapter = adapter
+            val dao = AppDataBase.getInstance(requireContext()).budgetDao()
+            lifecycleScope.launch {
+                val budgetAndExpenseList = dao.getBudgetAndExpense(sdMonth)
+                if (budgetAndExpenseList.isEmpty()) {
+                    binding.ydtextView.visibility = View.VISIBLE
+                    binding.budgetRecy.visibility = View.GONE
 //                Log.d("from if Mont","$sdMonth")
-            } else {
+                } else {
 //                Log.d("from else Mont","$sdMonth")
-                binding.budgetRecy.visibility = View.VISIBLE
-                binding.ydtextView.visibility = View.GONE
-                adapter.budgetAndExpenseList = budgetAndExpenseList
-                adapter.notifyDataSetChanged()
+                    binding.budgetRecy.visibility = View.VISIBLE
+                    binding.ydtextView.visibility = View.GONE
+                    adapter.budgetAndExpenseList = budgetAndExpenseList
+                    adapter.notifyDataSetChanged()
 //                Toast.makeText(requireContext(), "Button pressed And data avilable", Toast.LENGTH_SHORT).show()
+                }
             }
         }
-
     }
 
 

@@ -58,6 +58,7 @@ class TransectionFragment : Fragment() {
     private var mInterstitialAd: InterstitialAd? = null
     private var isFilter: Boolean = false
     private var isAds: Boolean = false
+    private var isFiltrDiloge : View? = null
 
 
     override fun onCreateView(
@@ -67,6 +68,8 @@ class TransectionFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentTransectionBinding.inflate(layoutInflater)
         (activity as MainActivity?)!!.showBottomNavigationView()
+        (activity as MainActivity?)!!.floatButtonHide()
+        (activity as MainActivity?)!!.getIdofNativeAds()
         val sdf = SimpleDateFormat("ddMyyyyhhmmss")
         cDate = sdf.format(Date())
         val preference =
@@ -78,8 +81,11 @@ class TransectionFragment : Fragment() {
 
         val custom = binding.appBar
         custom.ivPdf.visibility = VISIBLE
+        custom.ivPdf.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white))
         val filter = binding.clFliter
         val createFilter = binding.clConverter
+        isFiltrDiloge =  binding.clConverter
+
 
         custom.ivBack.setOnClickListener {
             (activity as MainActivity?)!!.setBottomNavigationAsHome()
@@ -88,8 +94,8 @@ class TransectionFragment : Fragment() {
 
 
         custom.ivTitle.setText("Transaction List")
-
         custom.ivDelete.setImageResource(R.drawable.ic_filter)
+        custom.ivDelete.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white))
 
 
         val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
@@ -502,22 +508,17 @@ class TransectionFragment : Fragment() {
         // Add adapter data to PDF
 
         val font = Font(Font.FontFamily.TIMES_ROMAN, 22f)
-        val table = PdfPTable(4)
-        table.addCell(Phrase("Category", font))
+        val table = PdfPTable(5)
         table.addCell(Phrase("Date", font))
+        table.addCell(Phrase("Category", font))
         table.addCell(Phrase("Inc/Exp", font))
-//        val notCell = PdfPCell(Phrase("Note",font))
-//        notCell.minimumHeight = 10f
-//        table.addCell(notCell)
         table.addCell(Phrase("Amount", font))
-
-        // Add empty cell with height of 20f
+        table.addCell(Phrase("Note", font))
         val emptyCell = PdfPCell()
         emptyCell.border = PdfPCell.NO_BORDER
         emptyCell.fixedHeight = 20f
 
-        // table.addCell(emptyCell)
-
+        table.addCell(emptyCell)
         table.addCell(emptyCell)
         table.addCell(emptyCell)
         table.addCell(emptyCell)
@@ -526,48 +527,28 @@ class TransectionFragment : Fragment() {
 
         for (i in 0 until adapter.itemCount) {
             val item = adapter.list[i]
-            table.addCell(Phrase(item.category, font))
             table.addCell(Phrase(item.date, font))
+            table.addCell(Phrase(item.category, font))
             table.addCell(Phrase(item.dType, font))
 
             // Create a cell with the amount and set the color based on dType
             val amountFont = Font(Font.FontFamily.TIMES_ROMAN, 22f)
-            if (item.dType == "Income") {
+            if (item.dType == "INCOME") {
                 amountFont.color = BaseColor.GREEN
-            } else if (item.dType == "Expense") {
+            }  else if (item.dType == "EXPENSE") {
                 amountFont.color = BaseColor.RED
+                "-${item.amount}"
+            } else {
+                item.amount.toString()
             }
             val amountCell = PdfPCell(Phrase(item.amount.toString(), amountFont))
             table.addCell(amountCell)
+            table.addCell(Phrase(item.note,font))
         }
-
-//        for (i in 0 until adapter.itemCount) {
-//            val item = adapter.list[i]
-//            //val category = adapter.categoryMap[item.category]
-//
-//            // Add item data to PDF
-//            table.addCell(Phrase(item.category, font))
-//            table.addCell(Phrase(item.date, font))
-//            table.addCell(Phrase(item.dType, font))
-////            val noteCell = PdfPCell(Phrase(item.note,font))
-////            noteCell.minimumHeight = 10f
-////            table.addCell(noteCell)
-//            table.addCell(Phrase(item.amount.toString(), font))
-//        }
 
         document.add(table)
         document.close()
 
-        // Open the PDF file
-//        val file = File(filePath)
-//        val uri = FileProvider.getUriForFile(
-//            requireContext(),
-//            "${requireContext().packageName}.provider",
-//            file
-//        )
-//        val intent = Intent(Intent.ACTION_VIEW)
-//        intent.setDataAndType(uri, "provider/pdf")
-//        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         val uri = FileProvider.getUriForFile(
             requireContext(),
             "${requireContext().packageName}.provider",
@@ -602,15 +583,16 @@ class TransectionFragment : Fragment() {
         val writer = CSVWriter(FileWriter(file))
 
         // Write the header row
-        writer.writeNext(arrayOf("Category", "Amount", "Date", "Note"))
+        writer.writeNext(arrayOf("Date", "Category","Inc/Exp", "Amount", "Note"))
 
         // Write the data to the CSV file
         for (item in data) {
-            val category = item.category
-            val amount = if (item.dType == "EXPENSE") "-${item.amount}" else "${item.amount}"
             val date = item.date
+            val category = item.category
+            val dType = item.dType
+            val amount = if (item.dType == "EXPENSE") "-${item.amount}" else "${item.amount}"
             val note = item.note
-            writer.writeNext(arrayOf(category, amount, date, note))
+            writer.writeNext(arrayOf(date,category,dType,amount,note))
         }
 
         // Close the writer
@@ -930,6 +912,9 @@ class TransectionFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        isFiltrDiloge?.visibility = View.GONE
+        (activity as MainActivity?)!!.floatButtonHide()
+
         (activity as MainActivity?)!!.showBottomNavigationView()
     }
 
