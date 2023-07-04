@@ -1,5 +1,3 @@
-@file:Suppress("NAME_SHADOWING")
-
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
 import android.app.DatePickerDialog
@@ -11,9 +9,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.ads.*
@@ -23,10 +23,13 @@ import com.google.android.material.button.MaterialButton
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.getCurrencyClass
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.ActivityIncomeBinding
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.incexpTbl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.FieldPosition
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -65,7 +68,7 @@ class IncomeActivity : Fragment() {
 
         val custom = binding.appBar
         custom.ivDelete.visibility = View.GONE
-        custom.ivTitle.text = "Add Income"
+        custom.ivTitle.setText("Add Income")
         custom.ivBack.setOnClickListener {
             (activity as MainActivity?)!!.setBottomNavigationAsHome()
             loadFragment(HomeFragment())
@@ -124,7 +127,7 @@ class IncomeActivity : Fragment() {
 
             val calendar = Calendar.getInstance()
             val sdf = SimpleDateFormat("dd/MM/yyyy")
-            custom.ivTitle.text = "Update Income"
+            custom.ivTitle.setText("Update Income")
             custom.ivDelete.visibility = View.VISIBLE
             // getPaymentMode()
             val UPDATE_CAT = arguments?.getString("CATEGORY_Update")
@@ -151,10 +154,10 @@ class IncomeActivity : Fragment() {
             spinnerSet(PAY_!!)
             //PaymentModeList.set(PAY_MD_!!.toInt(),PAY_!!)
             binding.incAmount.setText(AMNT_)
-            binding.incdate.text = DATE_
-            binding.category.text = CAT_
+            binding.incdate.setText(DATE_)
+            binding.category.setText(CAT_)
             binding.incNote.setText(NOTE_)
-            binding.inctime.text = TIME_
+            binding.inctime.setText(TIME_)
             custom.ivDelete.setOnClickListener {
                 deleteCategoryView =
                     inflater.inflate(R.layout.custom_delete_dialog, container, false)
@@ -165,7 +168,7 @@ class IncomeActivity : Fragment() {
                     deleteCategoryView?.findViewById<MaterialButton>(R.id.btncancel)
                 val hintText =
                     deleteCategoryView?.findViewById<AppCompatTextView>(R.id.tv_delete_title)
-                hintText?.text = "Are you sure you want to delete this Income Item?"
+                hintText?.setText("Are you sure you want to delete this Income Item?")
                 deleteBtn?.setOnClickListener {
                     val db = AppDataBase.getInstance(requireContext()).incexpTblDao()
                     lifecycleScope.launch(Dispatchers.IO) {
@@ -226,7 +229,7 @@ class IncomeActivity : Fragment() {
                 )
                 timePicker.show()
             }
-            binding.addIncomeBtn.text = "Update"
+            binding.addIncomeBtn.setText("Update")
 
             binding.addIncomeBtn.setOnClickListener {
                 validationOfDataForUpdate(
@@ -252,7 +255,7 @@ class IncomeActivity : Fragment() {
             binding.incNote.setText(nte)
             if (tme != null) {
 
-                binding.inctime.text = tme
+                binding.inctime.setText(tme)
                 time = binding.inctime.text.toString()
             }
             spinnerSet(py_ind_!!)
@@ -268,10 +271,10 @@ class IncomeActivity : Fragment() {
             date = defaulttDate
             time = defaultTime
             if (dte != null) {
-                binding.incdate.text = dte
+                binding.incdate.setText(dte)
                 date = binding.incdate.text.toString()
             } else {
-                binding.incdate.text = defaulttDate
+                binding.incdate.setText(defaulttDate)
             }
             val selectedDateString = binding.incdate.text.toString()
             val selectedDate = sdf.parse(selectedDateString)
@@ -282,7 +285,7 @@ class IncomeActivity : Fragment() {
             binding.category.setOnClickListener {
                 getCategory()
             }
-            binding.category.text = SELECTED_CATEGORY
+            binding.category.setText(SELECTED_CATEGORY)
 //            Toast.makeText(requireContext(), "$SELECTED_CATEGORY", Toast.LENGTH_SHORT).show()
 
             val calendar = Calendar.getInstance()
@@ -342,8 +345,8 @@ class IncomeActivity : Fragment() {
             val defaultTime = sdf_1.format(Date())
             date = defaulttDate
             time = defaultTime
-            binding.incdate.text = defaulttDate
-            binding.inctime.text = defaultTime
+            binding.incdate.setText(defaulttDate)
+            binding.inctime.setText(defaultTime)
             val selectedDateString = binding.incdate.text.toString()
             val selectedDate = sdf.parse(selectedDateString)
             val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
@@ -422,7 +425,7 @@ class IncomeActivity : Fragment() {
         args.putString("month", SMONTH_)
         args.putString("PMIND", PAY_MD_)
         args.putString("id", _ID)
-        ldf.arguments = args
+        ldf.setArguments(args)
         //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
         activity?.supportFragmentManager?.beginTransaction()
             ?.replace(R.id.fragment_container, ldf)
@@ -622,13 +625,13 @@ class IncomeActivity : Fragment() {
         val ldf = CategoryListFragment()
         val args = Bundle()
         args.putString("SELECT_CAT_INC", "001")
-        args.putString("AMNT_VL", binding.incAmount.text.toString())
-        args.putString("NOTE_VL", binding.incNote.text.toString())
+        args.putString("AMNT_VL", "${binding.incAmount.text.toString()}")
+        args.putString("NOTE_VL", "${binding.incNote.text.toString()}")
         args.putString("DATE_VL", "$date")
         args.putString("TIME_VL", "$time")
-        args.putString("PAY_IND_VL", binding.paymentMode.selectedItem as String)
+        args.putString("PAY_IND_VL", "${binding.paymentMode.selectedItem as String}")
 
-        ldf.arguments = args
+        ldf.setArguments(args)
         //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
         activity?.supportFragmentManager?.beginTransaction()
             ?.replace(R.id.fragment_container, ldf)
@@ -639,9 +642,9 @@ class IncomeActivity : Fragment() {
     fun clearText() {
         binding.incAmount.setText("")
         binding.incNote.setText("")
-        binding.incdate.text = "$date"
-        binding.inctime.text = "$time"
-        binding.category.text = ""
+        binding.incdate.setText("$date")
+        binding.inctime.setText("$time")
+        binding.category.setText("")
         Toast.makeText(requireContext(), "Income Added Successfully", Toast.LENGTH_SHORT).show()
         loadFragment(HomeFragment())
     }
@@ -700,7 +703,7 @@ class IncomeActivity : Fragment() {
 
     fun loadAd(
     ) {
-        val adRequest = AdRequest.Builder().build()
+        var adRequest = AdRequest.Builder().build()
 
         InterstitialAd.load(
             requireContext(),
@@ -708,7 +711,7 @@ class IncomeActivity : Fragment() {
             adRequest,
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
-                    Log.d(TAG, adError.toString())
+                    Log.d(TAG, adError?.toString()!!)
                     mInterstitialAd = null
                 }
 

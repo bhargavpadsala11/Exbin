@@ -1,5 +1,3 @@
-@file:Suppress("ClassName")
-
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.dao
 
 import androidx.lifecycle.LiveData

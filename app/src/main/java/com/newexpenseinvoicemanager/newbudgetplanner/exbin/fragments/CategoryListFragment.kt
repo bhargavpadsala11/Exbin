@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
@@ -29,6 +30,7 @@ class CategoryListFragment : Fragment() {
         val custom = binding.appBar
         custom.ivDelete.visibility = View.GONE
         (activity as MainActivity?)!!.floatButtonHide()
+
 
 
         val INCOME_ACTIVITY = arguments?.getString("SELECT_CAT_INC")

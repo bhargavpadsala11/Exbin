@@ -1,5 +1,3 @@
-@file:Suppress("SENSELESS_COMPARISON")
-
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter
 
 import android.content.res.ColorStateList
@@ -11,6 +9,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.ItemBudgetLayoutBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.BudgetAndExpense
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.BudgetDb
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.PaymentModes
 
 class BudgetAndExpenseAdapter(
     var budgetAndExpenseList: List<BudgetAndExpense>,
@@ -35,7 +35,7 @@ class BudgetAndExpenseAdapter(
         val item = budgetAndExpenseList[position]
         var progress: Int? = null
         var limitShow: Boolean? = null
-        val remaining: String?
+        var remaining: String? = ""
 
         val budgetAmount = item.budget.toDoubleOrNull()
         val expenseAmount = item.amount1?.toDoubleOrNull()
@@ -47,7 +47,7 @@ class BudgetAndExpenseAdapter(
             holder.binding.remainingTxt.text = "Remaining ${item.amount}"
             remaining = item.amount
         } else {
-            val sum = item.amount!!.toInt() - item.amount1!!.toInt()
+            var sum = item.amount!!.toInt() - item.amount1!!.toInt()
             holder.binding.remainingTxt.text = "Remaining ${sum}"
             remaining = sum.toString()
         }
@@ -68,7 +68,7 @@ class BudgetAndExpenseAdapter(
                 progress = (expenseAmount / budgetAmount * 100).toInt()
                 val pro = progress
                 Log.d("From Adapter", "$pro")
-                holder.binding.determinateBar.progress = progress
+                holder.binding.determinateBar.progress = progress!!
                 holder.binding.determinateBar.progressTintList =
                     ColorStateList.valueOf(Color.parseColor(item.catColor))
                 val color = Color.parseColor(item.catColor)

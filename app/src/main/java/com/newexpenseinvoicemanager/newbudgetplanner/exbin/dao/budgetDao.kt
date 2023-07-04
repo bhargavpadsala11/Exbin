@@ -1,5 +1,3 @@
-@file:Suppress("ClassName")
-
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.dao
 
 import androidx.lifecycle.LiveData
@@ -9,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.BudgetAndExpense
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.BudgetDb
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
 
 @Dao
 interface budgetDao {

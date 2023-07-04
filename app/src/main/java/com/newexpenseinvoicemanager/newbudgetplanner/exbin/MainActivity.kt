@@ -209,7 +209,7 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     !isShow
                 }
-Log.d("status","$isShow")
+                Log.d("status", "$isShow")
                 val preference = getSharedPreferences("NativeId", MODE_PRIVATE)
                 val editor = preference.edit()
                 editor.putBoolean("isShow", isShow)
@@ -307,6 +307,7 @@ Log.d("status","$isShow")
                     binding.fragmentContainer.isEnabled = true
                 }
                 val deleteDiloug = binding.exitDialog
+
                 val adLoader = AdLoader.Builder(this, FireBaseGooggleAdsId)
                     .forNativeAd { nativeAd ->
                         val styles =

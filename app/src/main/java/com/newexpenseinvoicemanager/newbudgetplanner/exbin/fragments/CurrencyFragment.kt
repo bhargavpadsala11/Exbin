@@ -3,11 +3,13 @@ package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 import android.content.ContentValues
 import android.os.Bundle
 import android.util.Log
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.ads.AdRequest
@@ -15,10 +17,15 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.CurrencyAdapter
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.PaymentModesAdapter
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dao.currencyDao
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.getCurrencyClass
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.FragmentCurrencyBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,6 +33,7 @@ import kotlinx.coroutines.launch
 class CurrencyFragment : Fragment() {
     private lateinit var binding: FragmentCurrencyBinding
     private var selectedCurrencyId: Int? = null
+    private var selectedCurrencyPosition: Int? = null
     private var mInterstitialAd: InterstitialAd? = null
     private var FireBaseGooggleAdsInterId: String = ""
     private var isAds: Boolean = false
@@ -67,7 +75,7 @@ class CurrencyFragment : Fragment() {
                 binding.rvCurrency.scrollToPosition(selectedIndex)
             }
         }
-        if (isAds) {
+        if (isAds == true) {
             loadAd()
         }
         binding.mbCurrencySet.setOnClickListener {
@@ -124,7 +132,7 @@ class CurrencyFragment : Fragment() {
             adRequest,
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
-                    Log.d(ContentValues.TAG, adError.toString())
+                    Log.d(ContentValues.TAG, adError?.toString()!!)
                     mInterstitialAd = null
                 }
 

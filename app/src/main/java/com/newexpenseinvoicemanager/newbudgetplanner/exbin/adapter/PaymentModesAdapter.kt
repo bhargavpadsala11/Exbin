@@ -1,13 +1,26 @@
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter
 
 
+import android.R
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.commit
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.textfield.TextInputEditText
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.PaymentModeItemLayoutBinding
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments.HomeFragment
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.PaymentModes
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.launch
 
 
 class PaymentModesAdapter(
@@ -16,6 +29,7 @@ class PaymentModesAdapter(
     private val onImageClickListener: (PaymentModes,String) -> Unit
 ) :
     RecyclerView.Adapter<PaymentModesAdapter.PaymentModeViewHolder>() {
+    private val inflater = LayoutInflater.from(context)
 
     inner class PaymentModeViewHolder(val binding: PaymentModeItemLayoutBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -52,4 +66,22 @@ class PaymentModesAdapter(
         return list.size
     }
 
+    private fun updatePaymentMode(id: Int, addPaymet: String) {
+        val db = AppDataBase.getInstance(context).paymentModesDao()
+        GlobalScope.launch(Dispatchers.IO) {
+            db.updatePaymentMode(id, addPaymet)
+        }
+    }
+
+    private fun clearText(addPaymet: TextInputEditText) {
+        addPaymet.setText("")
+    }
+
+    private fun hideFragment(addcardview: MaterialCardView) {
+        addcardview.visibility = View.GONE
+    }
 }
+
+//interface FragmentCallListener {
+//    fun openDialog()
+//}
