@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
 
@@ -25,6 +23,8 @@ import com.google.android.ads.nativetemplates.TemplateView
 import com.google.android.ads.nativetemplates.rvadapter.AdmobNativeAdAdapter
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.nativead.NativeAd
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.TransectionListAdapter
@@ -40,7 +40,9 @@ class HomeFragment : Fragment() {
     private lateinit var pieChart: PieChart
     private var inc: Double = 0.0
     private var exp: Double = 0.0
+    var crnSymb: String? = ""
     private var FireBaseGooggleAdsId: String = ""
+    private lateinit var nativeAd: NativeAd
     private var isAds: Boolean = false
 
 
@@ -60,7 +62,7 @@ class HomeFragment : Fragment() {
         val connectivityManager =
             requireActivity().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = connectivityManager.activeNetworkInfo
-        if (isAds) {
+        if (isAds == true) {
             if (networkInfo != null && networkInfo.isConnected) {
 
                 val adLoader = AdLoader.Builder(requireContext(), FireBaseGooggleAdsId)
@@ -105,7 +107,7 @@ class HomeFragment : Fragment() {
             if (transactions != null && transactions.isNotEmpty()) {
                 showData()
 
-                if (isAds) {
+                if (isAds == true) {
                     val adapter = TransectionListAdapter(
                         requireContext(),
                         transactions,
@@ -134,7 +136,7 @@ class HomeFragment : Fragment() {
                             args.putString("time", time)
                             args.putString("month", month)
                             args.putString("PMIND", pmtIndex)
-                            ldf.arguments = args
+                            ldf.setArguments(args)
                             //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
                             activity?.supportFragmentManager?.beginTransaction()
                                 ?.replace(R.id.fragment_container, ldf)
@@ -153,7 +155,7 @@ class HomeFragment : Fragment() {
                             args.putString("time", time)
                             args.putString("month", month)
                             args.putString("PMIND", pmtIndex)
-                            ldf.arguments = args
+                            ldf.setArguments(args)
                             //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
                             activity?.supportFragmentManager?.beginTransaction()
                                 ?.replace(R.id.fragment_container, ldf)
@@ -196,7 +198,7 @@ class HomeFragment : Fragment() {
                             args.putString("time", time)
                             args.putString("month", month)
                             args.putString("PMIND", pmtIndex)
-                            ldf.arguments = args
+                            ldf.setArguments(args)
                             //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
                             activity?.supportFragmentManager?.beginTransaction()
                                 ?.replace(R.id.fragment_container, ldf)
@@ -215,7 +217,7 @@ class HomeFragment : Fragment() {
                             args.putString("time", time)
                             args.putString("month", month)
                             args.putString("PMIND", pmtIndex)
-                            ldf.arguments = args
+                            ldf.setArguments(args)
                             //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
                             activity?.supportFragmentManager?.beginTransaction()
                                 ?.replace(R.id.fragment_container, ldf)
@@ -236,7 +238,7 @@ class HomeFragment : Fragment() {
                 val ldf = TransectionListFragment()
                 val args = Bundle()
                 args.putString("TRANSECTIONKEY", "INCOME")
-                ldf.arguments = args
+                ldf.setArguments(args)
                 val transaction = activity?.supportFragmentManager?.beginTransaction()
                 transaction?.replace(R.id.fragment_container, ldf)
                 transaction?.addToBackStack(null)
@@ -249,7 +251,7 @@ class HomeFragment : Fragment() {
                 val ldf = TransectionListFragment()
                 val args = Bundle()
                 args.putString("TRANSECTIONKEY", "EXPENSE")
-                ldf.arguments = args
+                ldf.setArguments(args)
                 val transaction = activity?.supportFragmentManager?.beginTransaction()
                 transaction?.replace(R.id.fragment_container, ldf)
                 transaction?.addToBackStack(null)
@@ -275,14 +277,14 @@ class HomeFragment : Fragment() {
                 inc = income
                 val formattedAvg = String.format("%.2f", inc)
                 currencyClass.getCurrencies { crnSymb ->
-                    binding.totalIncome.text = "$crnSymb $formattedAvg"
+                    binding.totalIncome.setText("$crnSymb $formattedAvg")
                 }
                 createPieChart()
             } else {
                 // handle empty income
                 hideData()
                 currencyClass.getCurrencies { crnSymb ->
-                    binding.totalIncome.text = "$crnSymb 00.00"
+                    binding.totalIncome.setText("$crnSymb 00.00")
                 }
             }
         }
@@ -296,7 +298,7 @@ class HomeFragment : Fragment() {
                 exp = expense
                 val formattedAvg = String.format("%.2f", exp)
                 currencyClass.getCurrencies { crnSymb ->
-                    binding.expTtl.text = "$crnSymb $formattedAvg"
+                    binding.expTtl.setText("$crnSymb $formattedAvg")
                 }
                 createPieChart()
             } else {
@@ -304,7 +306,7 @@ class HomeFragment : Fragment() {
                 hideData()
                 currencyClass.getCurrencies { crnSymb ->
 
-                    binding.expTtl.text = "$crnSymb 00.00"
+                    binding.expTtl.setText("$crnSymb 00.00")
                 }
             }
         }
@@ -372,7 +374,7 @@ class HomeFragment : Fragment() {
                     binding.currentBalanceTxt.setTextColor(
                         ContextCompat.getColor(
                             requireContext(),
-                            R.color.transectionRed
+                            com.newexpenseinvoicemanager.newbudgetplanner.exbin.R.color.transectionRed
                         )
                     )
 
@@ -431,7 +433,7 @@ class HomeFragment : Fragment() {
         pieChart.data = data
         pieChart.animateY(1000, Easing.EaseInOutQuad)
         pieChart.setHoleColor(Color.TRANSPARENT) // set hole color to transparent
-        pieChart.holeRadius = 50f // set hole radius
+        pieChart.setHoleRadius(50f) // set hole radius
         pieChart.invalidate()
     }
 

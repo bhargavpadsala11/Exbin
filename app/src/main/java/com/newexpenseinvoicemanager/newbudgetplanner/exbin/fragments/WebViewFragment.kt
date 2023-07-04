@@ -2,13 +2,17 @@ package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
 import android.os.Bundle
 import android.util.Log
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.FragmentWebViewBinding
@@ -42,15 +46,15 @@ class WebViewFragment : Fragment() {
         webView.webViewClient = WebViewClient()
         webView.settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
         val value = arguments?.getString("PRIVACY_KEY")
-        Log.d("privacyUrl", privacyUrl)
-        Log.d("termsyUrl", termsyUrl)
+        Log.d("privacyUrl","$privacyUrl")
+        Log.d("termsyUrl","$termsyUrl")
 
         if (value == "PRIVACY") {
             webView.loadUrl(privacyUrl)
-            custom.ivTitle.text = "Privacy Policy"
+            custom.ivTitle.setText("Privacy Policy")
         } else if (value == "TERMS") {
             webView.loadUrl(termsyUrl)
-            custom.ivTitle.text = "Terms & Conditions"
+            custom.ivTitle.setText("Terms & Conditions")
 
         }
         // Inflate the layout for this fragment

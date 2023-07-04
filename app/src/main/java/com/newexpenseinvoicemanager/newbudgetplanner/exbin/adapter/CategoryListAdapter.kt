@@ -22,10 +22,10 @@ class CategoryListAdapter(
     private val onImageClickListener: (Categories, String) -> Unit
 ) :
     RecyclerView.Adapter<CategoryListAdapter.CategoryListViewHolder>() {
-    private val INCOMEACTIVITY = INCOME_ACTIVITY
-    private val EXPENSEACTIVITY = EXPENSE_ACTIVITY
-    private val INCOMEACTIVITYUP = INCOME_UPDATE
-    private val EXPENSEACTIVITYUP = EXPENSE_Update
+    val INCOMEACTIVITY = INCOME_ACTIVITY
+    val EXPENSEACTIVITY = EXPENSE_ACTIVITY
+    val INCOMEACTIVITYUP = INCOME_UPDATE
+    val EXPENSEACTIVITYUP = EXPENSE_Update
 
     inner class CategoryListViewHolder(val binding: CategoryItemLayoutBinding) :
         RecyclerView.ViewHolder(binding.root)
