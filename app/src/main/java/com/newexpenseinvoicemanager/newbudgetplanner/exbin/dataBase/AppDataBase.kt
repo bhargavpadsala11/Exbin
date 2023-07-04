@@ -28,7 +28,7 @@ abstract class AppDataBase : RoomDatabase() {
                 )
                     .allowMainThreadQueries()
                     .fallbackToDestructiveMigration()
-                    .addCallback(object : RoomDatabase.Callback() {
+                    .addCallback(object : Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
                             super.onCreate(db)
                             val defaultPaymentModes = listOf(

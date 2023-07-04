@@ -1,17 +1,15 @@
+@file:Suppress("DEPRECATION")
+
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
-import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
-import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.getCurrencyClass
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.CurrencyItemLayoutBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Currency
-import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.PaymentModes
 
 class CurrencyAdapter(
     val context: Context,
@@ -20,7 +18,6 @@ class CurrencyAdapter(
 ): RecyclerView.Adapter<CurrencyAdapter.CurrencyViewHolder>() {
     var selectedPosition = -1
 //    private var previouslySelectedPosition = -1
-    var symb :String? =""
 //    private var selectedCurrencyId: Int? = null
 
     inner class CurrencyViewHolder(val binding: CurrencyItemLayoutBinding) :
@@ -56,11 +53,6 @@ val binding =CurrencyItemLayoutBinding.inflate(LayoutInflater.from(context),pare
        return list.size
     }
 
-    fun updateCurrencyStatus(currencyId: Int) {
-        val dao = AppDataBase.getInstance(context).currencyDao()
-        dao.updateStatus(currencyId)
-        dao.resetOtherCurrencyStatus(currencyId)
-    }
 
 
 }

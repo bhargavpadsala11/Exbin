@@ -1,3 +1,5 @@
+@file:Suppress("NAME_SHADOWING")
+
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
 
@@ -8,9 +10,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
-import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
@@ -20,15 +20,16 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.ads.nativetemplates.rvadapter.AdmobNativeAdAdapter
-import com.google.android.gms.ads.*
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
 import com.itextpdf.text.pdf.PdfWriter
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.itextpdf.text.*
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.TransectionListAdapter
@@ -93,7 +94,7 @@ class TransectionFragment : Fragment() {
         }
 
 
-        custom.ivTitle.setText("Transaction List")
+        custom.ivTitle.text = "Transaction List"
         custom.ivDelete.setImageResource(R.drawable.ic_filter)
         custom.ivDelete.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white))
 
@@ -108,7 +109,7 @@ class TransectionFragment : Fragment() {
         }
 //        getIdofNativeAds()
 
-        if (isAds == true) {
+        if (isAds) {
             loadAd(dao, currencyClass, createFilter, categoryMap)
         }
         getTransecton(currencyClass)
@@ -120,12 +121,7 @@ class TransectionFragment : Fragment() {
 
 
         dao.incexpTblDao().getAllData().observe(requireActivity()) {
-            val adapter = adapterOfTransection(it, categoryMap, currencyClass)
-//            MobileAds.initialize(requireContext()) {
             binding.transectionItem.adapter
-            //adapter.loadAds()
-//            }
-
         }
 
 
@@ -172,8 +168,8 @@ class TransectionFragment : Fragment() {
             sDate = ""
             lDate = ""
             tMode = ""
-            binding.tvAddStartdate.setText("00/00/0000")
-            binding.tvAddEnddate.setText("00/00/0000")
+            binding.tvAddStartdate.text = "00/00/0000"
+            binding.tvAddEnddate.text = "00/00/0000"
             filter.visibility = View.GONE
             getTransecton(currencyClass)
             ViewCompat.setBackgroundTintList(
@@ -195,8 +191,8 @@ class TransectionFragment : Fragment() {
                 sDate = ""
                 lDate = ""
                 tMode = ""
-                binding.tvAddStartdate.setText("00/00/0000")
-                binding.tvAddEnddate.setText("00/00/0000")
+                binding.tvAddStartdate.text = "00/00/0000"
+                binding.tvAddEnddate.text = "00/00/0000"
                 filter.visibility = View.GONE
                 getTransecton(currencyClass)
                 ViewCompat.setBackgroundTintList(
@@ -391,7 +387,7 @@ class TransectionFragment : Fragment() {
                 }
             }
             val filePath = File(requireContext().filesDir, "YOUR_FILE")
-            binding.actFilePath.setText("File Path: " + "$filePath")
+            binding.actFilePath.text = "File Path: " + "$filePath"
 
             binding.btncancel.setOnClickListener {
                 createFilter.visibility = View.GONE
@@ -452,7 +448,7 @@ class TransectionFragment : Fragment() {
                 calendar.set(year, month, dayOfMonth)
                 lDate =
                     SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(calendar.time)
-                binding.tvAddEnddate.setText(lDate)
+                binding.tvAddEnddate.text = lDate
 
             },
             year,
@@ -476,7 +472,7 @@ class TransectionFragment : Fragment() {
                 calendar.set(year, month, dayOfMonth)
                 sDate =
                     SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(calendar.time)
-                binding.tvAddStartdate.setText(sDate)
+                binding.tvAddStartdate.text = sDate
 
             },
             year,
@@ -618,7 +614,7 @@ class TransectionFragment : Fragment() {
             // Display a toast message with the file path
             val filePath = file.absolutePath
             Toast.makeText(context, "File saved", Toast.LENGTH_LONG).show()
-            Log.d("Path Tag", "$filePath")
+            Log.d("Path Tag", filePath)
         } else {
             // Show an error message
             Toast.makeText(context, "No app found to open CSV file", Toast.LENGTH_SHORT).show()
@@ -658,7 +654,7 @@ class TransectionFragment : Fragment() {
                 args.putString("time", time)
                 args.putString("month", month)
                 args.putString("PMIND", pmtIndex)
-                ldf.setArguments(args)
+                ldf.arguments = args
                 //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
                 activity?.supportFragmentManager?.beginTransaction()
                     ?.replace(R.id.fragment_container, ldf)
@@ -676,7 +672,7 @@ class TransectionFragment : Fragment() {
                 args.putString("time", time)
                 args.putString("month", month)
                 args.putString("PMIND", pmtIndex)
-                ldf.setArguments(args)
+                ldf.arguments = args
                 //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
                 activity?.supportFragmentManager?.beginTransaction()
                     ?.replace(R.id.fragment_container, ldf)

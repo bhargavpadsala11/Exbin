@@ -1,19 +1,18 @@
+@file:Suppress(
+    "NAME_SHADOWING", "DEPRECATION", "ReplaceGetOrSet", "SENSELESS_COMPARISON",
+    "UNREACHABLE_CODE", "FunctionName"
+)
+
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.activities
 
-import android.app.Activity
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.OpenableColumns
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.google.android.ads.nativetemplates.NativeTemplateStyle
@@ -29,30 +28,24 @@ import com.google.android.gms.tasks.Task
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
-import com.google.api.client.http.FileContent
 import com.google.api.client.json.jackson2.JacksonFactory
-import com.google.api.client.util.IOUtils
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
-import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.ActivityBackUpBinding
-import com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments.MoreFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.io.IOException
 
 class BackUpActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityBackUpBinding
     private lateinit var gso: GoogleSignInOptions
     private lateinit var gsc: GoogleSignInClient
-    lateinit var mDrive: Drive
+    private lateinit var mDrive: Drive
     private var FireBaseGooggleAdsId: String = ""
     private var isAds: Boolean = false
 
@@ -63,7 +56,7 @@ class BackUpActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val preference =
-            this.getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
+            this.getSharedPreferences("NativeId", MODE_PRIVATE)
         FireBaseGooggleAdsId = preference.getString("Na_tive_id", "")!!
         isAds = preference.getBoolean("isShow", false)
 
@@ -83,7 +76,7 @@ class BackUpActivity : AppCompatActivity() {
         val networkInfo = connectivityManager.activeNetworkInfo
 
 
-        if (isAds == true) {
+        if (isAds) {
             if (networkInfo != null && networkInfo.isConnected) {
                 val adLoader = AdLoader.Builder(this, FireBaseGooggleAdsId)
                     .forNativeAd { nativeAd ->
@@ -120,7 +113,7 @@ class BackUpActivity : AppCompatActivity() {
 
             gsc = GoogleSignIn.getClient(this, gso)
 
-            var account: GoogleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)!!
+            val account: GoogleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)!!
             if (account != null) {
                 singOut()
             } else {
@@ -135,7 +128,7 @@ class BackUpActivity : AppCompatActivity() {
 
             gsc = GoogleSignIn.getClient(this, gso)
 
-            var account: GoogleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)!!
+            val account: GoogleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)!!
             if (account != null) {
                 restoreFromBackup()
             } else {
@@ -183,7 +176,7 @@ class BackUpActivity : AppCompatActivity() {
 
         gsc = GoogleSignIn.getClient(this, gso)
 
-        var account: GoogleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)!!
+        val account: GoogleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)!!
         if (account != null) {
             binding.tvEmail.text = account.email
             binding.tvName.text = account.displayName
@@ -201,7 +194,7 @@ class BackUpActivity : AppCompatActivity() {
 
 
     // upload code
-    fun getDriveService(context: Context): Drive {
+    private fun getDriveService(context: Context): Drive {
         GoogleSignIn.getLastSignedInAccount(context).let { googleAccount ->
             val credential = GoogleAccountCredential.usingOAuth2(
                 this, listOf(DriveScopes.DRIVE_FILE)
@@ -220,7 +213,7 @@ class BackUpActivity : AppCompatActivity() {
     }
 
 
-    fun uploadFileToGDrive(context: Context) {
+    private fun uploadFileToGDrive(context: Context) {
         mDrive.let { googleDriveService ->
             lifecycleScope.launch(Dispatchers.IO) {
                 try {
@@ -250,13 +243,9 @@ class BackUpActivity : AppCompatActivity() {
                     val fileMetadata = com.google.api.services.drive.model.File()
                     fileMetadata.name = fileName
 
-                    val mediaContent = FileContent("application/octet-stream", localFile)
 
-                    val uploadedFile = googleDriveService.files().create(fileMetadata, mediaContent)
-                        .setFields("id")
-                        .execute()
 
-                    val fileId = uploadedFile.id
+
 
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
@@ -324,15 +313,6 @@ class BackUpActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadFragment() {
-        val intent = Intent(this, MainActivity::class.java)
-        intent.putExtra(
-            "key_Main",
-            "value"
-        ) // Replace "key" with your desired key and "value" with the actual value to send
-        startActivity(intent)
-
-    }
 
     private fun importDatabaseFromDrive(context: Context, fileId: String) {
         val destinationFile = context.getDatabasePath("EXBIN")
@@ -368,6 +348,10 @@ class BackUpActivity : AppCompatActivity() {
         }
     }
 
+    @Deprecated(
+        "Deprecated in Java",
+        ReplaceWith("super.onBackPressed()", "androidx.appcompat.app.AppCompatActivity")
+    )
     override fun onBackPressed() {
         super.onBackPressed()
     }

@@ -1,24 +1,21 @@
+@file:Suppress("NAME_SHADOWING", "DEPRECATION", "ReplaceGetOrSet")
+
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin
 
+import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.text.Layout
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityOptionsCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.ads.nativetemplates.NativeTemplateStyle
@@ -34,8 +31,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.ActivityMainBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -45,12 +40,10 @@ class MainActivity : AppCompatActivity() {
     private var backPressedTime: Long = 0
     private val backPressedTimeout: Long = 2000 // 2 seconds
     private var isButtonVisible = false
-    private var addupdatetView: View? = null
     private var currentFragment: Fragment? = null
     private lateinit var sharedPreferences: SharedPreferences
     private val PERMISSION_REQUEST_CODE = 123
     private var FireBaseGooggleAdsId: String = ""
-    //  private lateinit var categoryListFragment: CategoryListFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,9 +67,9 @@ class MainActivity : AppCompatActivity() {
 
 
             getIdofNativeAds()
-            val toolbar = getSupportActionBar();
-            bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-            bottomAppBar = findViewById<BottomAppBar>(R.id.bottomAppBar)
+            val toolbar = supportActionBar
+            bottomNavigationView = findViewById(R.id.bottomNavigationView)
+            bottomAppBar = findViewById(R.id.bottomAppBar)
 
             fab = binding.fab
 
@@ -92,11 +85,11 @@ class MainActivity : AppCompatActivity() {
                 bottomNavigationView?.setOnItemSelectedListener { item ->
                     currentFragment =
                         supportFragmentManager.findFragmentById(R.id.fragment_container)
-                    var fragment: Fragment
+                    val fragment: Fragment
                     when (item.itemId) {
                         R.id.navigation_home -> {
-                            if (!(currentFragment is HomeFragment)) {
-                                toolbar?.setTitle("Home")
+                            if (currentFragment !is HomeFragment) {
+                                toolbar?.title = "Home"
                                 fragment = HomeFragment()
                                 loadFragment(fragment)
                                 if (fab?.isPressed == true) {
@@ -108,9 +101,9 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                         R.id.navigation_transection -> {
-                            if (!(currentFragment is TransectionFragment)) {
+                            if (currentFragment !is TransectionFragment) {
                                 floatButtonHide()
-                                toolbar?.setTitle("Transection")
+                                toolbar?.title = "Transection"
                                 fragment = TransectionFragment()
                                 loadFragment(fragment)
                                 true
@@ -120,16 +113,16 @@ class MainActivity : AppCompatActivity() {
                         }
                         R.id.navigation_add -> {
                             floatButtonShow()
-                            toolbar?.setTitle("Home")
+                            toolbar?.title = "Home"
                             fragment = HomeFragment()
                             loadFragment(fragment)
                             floatButtonShow()
                             true
                         }
                         R.id.navigation_budget -> {
-                            if (!(currentFragment is BudgetFragment)) {
+                            if (currentFragment !is BudgetFragment) {
                                 floatButtonHide()
-                                toolbar?.setTitle("Budget")
+                                toolbar?.title = "Budget"
                                 fragment = BudgetFragment()
                                 loadFragment(fragment)
                                 true
@@ -140,7 +133,7 @@ class MainActivity : AppCompatActivity() {
                         R.id.navigation_more -> {
                             if (currentFragment !is MoreFragment) {
                                 floatButtonHide()
-                                toolbar?.setTitle("More")
+                                toolbar?.title = "More"
                                 fragment = MoreFragment()
                                 loadFragment(fragment)
                                 true
@@ -151,7 +144,7 @@ class MainActivity : AppCompatActivity() {
                         else -> false
                     }
                 }
-                if (!(currentFragment is HomeFragment)) {
+                if (currentFragment !is HomeFragment) {
                     bottomNavigationView?.selectedItemId = R.id.navigation_home
                 }
             } else {
@@ -163,7 +156,7 @@ class MainActivity : AppCompatActivity() {
 //                        Toast.makeText(this, "$currentDate", Toast.LENGTH_SHORT).show()
                     currentFragment =
                         supportFragmentManager.findFragmentById(R.id.fragment_container)
-                    if (!(currentFragment is HomeFragment)) {
+                    if (currentFragment !is HomeFragment) {
                         bottomNavigationView?.selectedItemId = R.id.navigation_home
                         val fragment = HomeFragment()
                         loadFragment(fragment)
@@ -172,7 +165,7 @@ class MainActivity : AppCompatActivity() {
                     }
 
                 }
-                if (!(currentFragment is HomeFragment)) {
+                if (currentFragment !is HomeFragment) {
                     bottomNavigationView?.selectedItemId = R.id.navigation_home
                 }
             } else {
@@ -193,7 +186,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    public fun getIdofNativeAds() {
+    fun getIdofNativeAds() {
         val database = FirebaseDatabase.getInstance()
         val ref = database.getReference("Keys")
 
@@ -202,22 +195,22 @@ class MainActivity : AppCompatActivity() {
                 val data = snapshot.value as Map<*, *>?
 
                 val bannerKey = data?.get("Banner_key") as String
-                val interstitialKey = data?.get("Interstitial_key") as String
-                val nativeAdvancedKey = data?.get("Native_Advanced_key") as String
+                val interstitialKey = data.get("Interstitial_key") as String
+                val nativeAdvancedKey = data.get("Native_Advanced_key") as String
                 FireBaseGooggleAdsId = nativeAdvancedKey
-                val privacy_policy = data?.get("Privacy_policy") as String
-                val terms_conditions = data?.get("terms_conditions") as String
-                val share_link = data?.get("share_link") as String
-                val isShowAds = data?.get("is_show") as String
+                val privacy_policy = data.get("Privacy_policy") as String
+                val terms_conditions = data.get("terms_conditions") as String
+                val share_link = data.get("share_link") as String
+                val isShowAds = data.get("is_show") as String
 
-                var isShow: Boolean = false
+                var isShow = false
                 if (isShowAds == "true") {
                     isShow = true
                 } else {
                     !isShow
                 }
 Log.d("status","$isShow")
-                val preference = getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
+                val preference = getSharedPreferences("NativeId", MODE_PRIVATE)
                 val editor = preference.edit()
                 editor.putBoolean("isShow", isShow)
                 editor.putString("Na_tive_id", nativeAdvancedKey)
@@ -225,7 +218,7 @@ Log.d("status","$isShow")
                 editor.putString("banner_Key", bannerKey)
                 editor.apply()
 
-                val pref = getSharedPreferences("TERMS_PRIVACY", AppCompatActivity.MODE_PRIVATE)
+                val pref = getSharedPreferences("TERMS_PRIVACY", MODE_PRIVATE)
                 val edit = pref.edit()
                 edit.putString("privacy_policy", privacy_policy)
                 edit.putString("terms_conditions", terms_conditions)
@@ -240,9 +233,10 @@ Log.d("status","$isShow")
         })
     }
 
+    @SuppressLint("CommitTransaction")
     private fun loadFragment(fragment: Fragment) {
 
-        var isConnected = isInternet()
+        val isConnected = isInternet()
         if (isConnected) {
             supportFragmentManager.beginTransaction()
                 //add animation code here   .setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out)
@@ -267,30 +261,30 @@ Log.d("status","$isShow")
         isButtonVisible = !isButtonVisible
     }
 
-    public fun floatButtonHide() {
+    fun floatButtonHide() {
         binding.exp.visibility = View.GONE
         binding.inc.visibility = View.GONE
-        isButtonVisible = isButtonVisible
     }
 
-    public fun showBottomNavigationView() {
-        bottomNavigationView?.setVisibility(View.VISIBLE)
+    fun showBottomNavigationView() {
+        bottomNavigationView?.visibility = View.VISIBLE
         bottomAppBar?.visibility = View.VISIBLE
         fab?.visibility = View.VISIBLE
     }
 
-    public fun setBottomNavigationAsHome() {
+    fun setBottomNavigationAsHome() {
         bottomNavigationView?.selectedItemId = R.id.navigation_home
     }
 
-    public fun hideBottomNavigationView() {
-        bottomNavigationView?.setVisibility(View.GONE)
+    fun hideBottomNavigationView() {
+        bottomNavigationView?.visibility = View.GONE
         bottomAppBar?.visibility = View.GONE
         fab?.visibility = View.GONE
 
 
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
 
         currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
@@ -384,13 +378,14 @@ Log.d("status","$isShow")
 
     }
 
-    fun loadFragmentForBack(fragment: Fragment) {
+    @SuppressLint("CommitTransaction")
+    private fun loadFragmentForBack(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()
     }
 
-    fun isPermissionGranted(): Boolean {
+    private fun isPermissionGranted(): Boolean {
         return sharedPreferences.getBoolean("permission_granted", false)
     }
 
@@ -423,8 +418,8 @@ Log.d("status","$isShow")
     }
 
 
-    fun isInternet(): Boolean {
-        var isConnected = false
+    private fun isInternet(): Boolean {
+        val isConnected: Boolean
         val connectivityManager =
             getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -448,7 +443,7 @@ Log.d("status","$isShow")
         return isConnected
     }
 
-    fun showNoInternetDialog() {
+    private fun showNoInternetDialog() {
         val dialogBuilder = AlertDialog.Builder(this)
         dialogBuilder.setTitle("No Internet Connection")
         dialogBuilder.setMessage("Please check your internet connection and try again.")

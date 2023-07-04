@@ -2,21 +2,15 @@ package com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter
 
 
 import android.content.Context
-import android.content.res.Resources
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.PorterDuff
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.getCurrencyClass
-import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.CategoryItemLayoutBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.TransectionItemLayoutBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.incexpTbl

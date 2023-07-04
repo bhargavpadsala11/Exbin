@@ -1,13 +1,13 @@
+@file:Suppress("NAME_SHADOWING")
+
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
-import android.app.DatePickerDialog
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.google.android.ads.nativetemplates.rvadapter.AdmobNativeAdAdapter
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.MainActivity
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
@@ -16,7 +16,6 @@ import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.getCurrencyClass
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.FragmentTransectionListBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
-import java.text.SimpleDateFormat
 import java.util.*
 
 class TransectionListFragment : Fragment() {
@@ -25,8 +24,6 @@ class TransectionListFragment : Fragment() {
     private lateinit var binding: FragmentTransectionListBinding
     private var inc: Double = 0.0
     private var isAds: Boolean = false
-    private var sDate: String = ""
-    private var lDate: String = ""
     private var FireBaseGooggleAdsId: String = ""
 
 
@@ -65,11 +62,11 @@ class TransectionListFragment : Fragment() {
         val value = arguments?.getString("TRANSECTIONKEY")
 
         if (value == "INCOME") {
-            custom.ivTitle.setText("Income Transection")
+            custom.ivTitle.text = "Income Transection"
             getIncomeData(dao, categoryMap, currencyClass)
 
         } else if (value == "EXPENSE") {
-            custom.ivTitle.setText("Expense Transection")
+            custom.ivTitle.text = "Expense Transection"
             getExpenseData(dao, categoryMap, currencyClass)
 
         }
@@ -153,49 +150,7 @@ class TransectionListFragment : Fragment() {
             ?.commit()
     }
 
-    fun getLastDate() {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
 
-        val datePickerDialog = DatePickerDialog(
-            requireContext(),
-            { _, year, month, dayOfMonth ->
-                calendar.set(year, month, dayOfMonth)
-                lDate =
-                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(calendar.time)
-                binding.tvAddEnddate.setText("$lDate")
-
-            },
-            year,
-            month,
-            dayOfMonth
-        )
-        datePickerDialog.show()
-    }
-
-    fun getStartDate() {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
-
-        val datePickerDialog = DatePickerDialog(
-            requireContext(),
-            { _, year, month, dayOfMonth ->
-                calendar.set(year, month, dayOfMonth)
-                sDate =
-                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(calendar.time)
-                binding.tvStartdate.setText("$sDate")
-
-            },
-            year,
-            month,
-            dayOfMonth
-        )
-        datePickerDialog.show()
-    }
 
     fun getExpenseData(
         dao: AppDataBase,
@@ -231,7 +186,7 @@ class TransectionListFragment : Fragment() {
                     args.putString("time", time)
                     args.putString("month", month)
                     args.putString("PMIND", pmtIndex)
-                    ldf.setArguments(args)
+                    ldf.arguments = args
                     //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
                     activity?.supportFragmentManager?.beginTransaction()
                         ?.replace(R.id.fragment_container, ldf)
@@ -287,7 +242,7 @@ class TransectionListFragment : Fragment() {
                     args.putString("time", time)
                     args.putString("month", month)
                     args.putString("PMIND", pmtIndex)
-                    ldf.setArguments(args)
+                    ldf.arguments = args
                     //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
                     activity?.supportFragmentManager?.beginTransaction()
                         ?.replace(R.id.fragment_container, ldf)

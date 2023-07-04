@@ -2,7 +2,6 @@ package com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 
 @Entity(tableName = "Currency")
 data class Currency(

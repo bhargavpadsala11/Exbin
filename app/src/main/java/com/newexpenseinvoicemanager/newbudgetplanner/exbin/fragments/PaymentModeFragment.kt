@@ -1,3 +1,5 @@
+@file:Suppress("NAME_SHADOWING")
+
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
 import android.content.ContentValues
@@ -66,8 +68,6 @@ class PaymentModeFragment : Fragment() {
         val mainView = inflater.inflate(R.layout.fragment_payment_mode, container, false)
         mainview = mainView
         addPaymentView = inflater.inflate(R.layout.add_payent_maode_layout, container, false)
-        val titlePaymentModeTextView =
-            addupdatetView?.findViewById<AppCompatTextView>(R.id.titlePaymentMode)
         val addButton = addPaymentView?.findViewById<MaterialButton>(R.id.btnapply)
         val cancelButton = addPaymentView?.findViewById<MaterialButton>(R.id.btncancel)
         val getaymentModeTextView =
@@ -157,10 +157,10 @@ class PaymentModeFragment : Fragment() {
 
                     val titlePaymentModeTextView =
                         addupdatetView?.findViewById<AppCompatTextView>(R.id.titlePaymentMode)
-                    titlePaymentModeTextView?.setText("Update Payment Mode")
+                    titlePaymentModeTextView?.text = "Update Payment Mode"
                     isTitleOrNot = titlePaymentModeTextView!!
                     getaymentModeTextView?.setText("${paymentMode.paymentMode}")
-                    val paymentId = paymentMode.paymentModeId.toInt()
+                    val paymentId = paymentMode.paymentModeId
                     PaymentIds = paymentId.toString()
                     val updateBtn = addupdatetView?.findViewById<MaterialButton>(R.id.btnapply)
                     updateBtn?.setOnClickListener {
@@ -176,7 +176,7 @@ class PaymentModeFragment : Fragment() {
 
                     val cancelButton = addupdatetView?.findViewById<MaterialButton>(R.id.btncancel)
                     cancelButton?.setOnClickListener {
-                        titlePaymentModeTextView?.setText("Add Payment Mode")
+                        titlePaymentModeTextView.text = "Add Payment Mode"
                         container?.removeView(addupdatetView)
                     }
                 }
@@ -194,7 +194,7 @@ class PaymentModeFragment : Fragment() {
 
                     val deleteTitleTextView =
                         deletePaymentView?.findViewById<AppCompatTextView>(R.id.tv_delete_title)
-                    deleteTitleTextView?.setText("Are you sure you want to delete this PaymentMode ?")
+                    deleteTitleTextView?.text = "Are you sure you want to delete this PaymentMode ?"
                     val deletePaymentModeCnlBtn =
                         deletePaymentView?.findViewById<MaterialButton>(R.id.btncancel)
                     deletePaymentModeBtn?.setOnClickListener {
@@ -239,9 +239,6 @@ class PaymentModeFragment : Fragment() {
         }
     }
 
-    private fun hideFragment(addcardview: MaterialCardView) {
-        addcardview.visibility = View.GONE
-    }
 
     override fun onResume() {
         super.onResume()
@@ -284,7 +281,7 @@ class PaymentModeFragment : Fragment() {
     }
 
     fun loadAd(container: ViewGroup?, getaymentModeTextView: TextInputEditText?) {
-        var adRequest = AdRequest.Builder().build()
+        val adRequest = AdRequest.Builder().build()
 
         InterstitialAd.load(
             requireContext(),
@@ -292,7 +289,7 @@ class PaymentModeFragment : Fragment() {
             adRequest,
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
-                    Log.d(ContentValues.TAG, adError?.toString()!!)
+                    Log.d(ContentValues.TAG, adError.toString())
                     mInterstitialAd = null
                 }
 
@@ -310,11 +307,11 @@ class PaymentModeFragment : Fragment() {
                                 // Called when ad is dismissed.
                                 Log.d(ContentValues.TAG, "Ad dismissed fullscreen content.")
 
-                                Log.d("Add Payment Mode", "$isTitle")
+                                Log.d("Add Payment Mode", isTitle)
                                 mInterstitialAd = null
 
                                 if (isTitle == "ADD") {
-                                    Log.d("Add Payment Mode", "$isTitle")
+                                    Log.d("Add Payment Mode", isTitle)
                                     addPaymentMode(getaymentModeTextView?.text.toString())
                                     mainview.visibility = View.VISIBLE
                                     addPaymentView?.visibility = View.GONE
