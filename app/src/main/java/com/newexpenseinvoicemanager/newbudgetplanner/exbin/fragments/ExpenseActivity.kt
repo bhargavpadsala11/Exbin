@@ -1,10 +1,11 @@
+@file:Suppress("NAME_SHADOWING", "NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.ContentValues
-import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -28,13 +29,10 @@ import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.incexpTbl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.util.*
-import kotlin.collections.ArrayList
 
 class ExpenseActivity : Fragment() {
     private lateinit var binding: ActivityExpenseBinding
-    private lateinit var categoryList: ArrayList<String>
     private lateinit var PaymentModeList: ArrayList<String>
     private var date: String? = ""
     private var time: String? = ""
@@ -56,6 +54,7 @@ class ExpenseActivity : Fragment() {
     private var isAds: Boolean = false
 
 
+    @SuppressLint("SimpleDateFormat")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -73,13 +72,13 @@ class ExpenseActivity : Fragment() {
 
         val custom = binding.appBar
         custom.ivDelete.visibility = View.GONE
-        custom.ivTitle.setText("Add Expense")
+        custom.ivTitle.text = "Add Expense"
         custom.ivBack.setOnClickListener {
             loadFragment(HomeFragment())
             (activity as MainActivity?)!!.setBottomNavigationAsHome()
         }
 
-        if (isAds == true) {
+        if (isAds) {
             val adContainer = binding.adView
             val mAdView = AdView(requireContext())
             mAdView.setAdSize(AdSize.BANNER)
@@ -128,7 +127,7 @@ class ExpenseActivity : Fragment() {
 
             val calendar = Calendar.getInstance()
             val sdf = SimpleDateFormat("dd/MM/yyyy")
-            custom.ivTitle.setText("Update Expense")
+            custom.ivTitle.text = "Update Expense"
             custom.ivDelete.visibility = View.VISIBLE
             // getPaymentMode()
             val UPDATE_CAT = arguments?.getString("CATEGORY_Update")
@@ -146,17 +145,17 @@ class ExpenseActivity : Fragment() {
             NOTE_ = arguments?.getString("nt")
             SMONTH_ = arguments?.getString("month")
             _ID = ID_
-            if (isAds == true) {
+            if (isAds) {
                 loadAd()
             }
             spinnerSet(PAY_!!)
             binding.expcategory.setOnClickListener { getCategoryForUpdate() }
             //PaymentModeList.set(PAY_MD_!!.toInt(),PAY_!!)
             binding.expAmount.setText(AMNT_)
-            binding.expdate.setText(DATE_)
-            binding.expcategory.setText(CAT_)
+            binding.expdate.text = DATE_
+            binding.expcategory.text = CAT_
             binding.expNote.setText(NOTE_)
-            binding.exptime.setText(TIME_)
+            binding.exptime.text = TIME_
             custom.ivDelete.setOnClickListener {
                 deleteCategoryView =
                     inflater.inflate(R.layout.custom_delete_dialog, container, false)
@@ -167,7 +166,7 @@ class ExpenseActivity : Fragment() {
                     deleteCategoryView?.findViewById<MaterialButton>(R.id.btncancel)
                 val hintText =
                     deleteCategoryView?.findViewById<AppCompatTextView>(R.id.tv_delete_title)
-                hintText?.setText("Are you sure you want to delete this Expense Item?")
+                hintText?.text = "Are you sure you want to delete this Expense Item?"
                 deleteBtn?.setOnClickListener {
                     val db = AppDataBase.getInstance(requireContext()).incexpTblDao()
                     lifecycleScope.launch(Dispatchers.IO) {
@@ -229,19 +228,10 @@ class ExpenseActivity : Fragment() {
                 )
                 timePicker.show()
             }
-            binding.addIncomeBtn.setText("Update")
+            binding.addIncomeBtn.text = "Update"
 
             binding.addIncomeBtn.setOnClickListener {
                 validationOfDataForUpdate(
-                    ID_,
-                    CAT_,
-                    AMNT_,
-                    DATE_,
-                    TIME_,
-                    PAY_,
-                    PAY_MD_,
-                    NOTE_,
-                    SMONTH_
                 )
             }
 
@@ -254,7 +244,7 @@ class ExpenseActivity : Fragment() {
             binding.expAmount.setText(amnt)
             binding.expNote.setText(nte)
             if (tme != null) {
-                binding.exptime.setText(tme)
+                binding.exptime.text = tme
                 time = binding.exptime.text.toString()
             }
             spinnerSet(py_ind_!!)
@@ -266,10 +256,10 @@ class ExpenseActivity : Fragment() {
             date = defaulttDate
             time = defaultTime
             if (dte != null) {
-                binding.expdate.setText(dte)
+                binding.expdate.text = dte
                 date = binding.expdate.text.toString()
             } else {
-                binding.expdate.setText(defaulttDate)
+                binding.expdate.text = defaulttDate
             }
 
             val selectedDateString = binding.expdate.text.toString()
@@ -279,7 +269,7 @@ class ExpenseActivity : Fragment() {
             sMonth = monthName
 //            Toast.makeText(requireContext(), "Selected $SELECTED_CATEGORY", Toast.LENGTH_SHORT).show()
             binding.expcategory.setOnClickListener { getCategory() }
-            binding.expcategory.setText(SELECTED_CATEGORY)
+            binding.expcategory.text = SELECTED_CATEGORY
 
             val calendar = Calendar.getInstance()
 
@@ -338,14 +328,14 @@ class ExpenseActivity : Fragment() {
             val defaultTime = sdf_1.format(Date())
             date = defaulttDate
             time = defaultTime
-            binding.expdate.setText(defaulttDate)
-            binding.exptime.setText(defaultTime)
+            binding.expdate.text = defaulttDate
+            binding.exptime.text = defaultTime
             val selectedDateString = binding.expdate.text.toString()
             val selectedDate = sdf.parse(selectedDateString)
             val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
             val monthName = monthFormat.format(selectedDate)
             sMonth = monthName
-            binding.expcategory.setText(SELECTED_CATEGORY)
+            binding.expcategory.text = SELECTED_CATEGORY
 
 
             getPaymentMode()
@@ -419,7 +409,7 @@ class ExpenseActivity : Fragment() {
         args.putString("month", SMONTH_)
         args.putString("PMIND", PAY_MD_)
         args.putString("id", _ID)
-        ldf.setArguments(args)
+        ldf.arguments = args
         //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
         activity?.supportFragmentManager?.beginTransaction()
             ?.replace(R.id.fragment_container, ldf)
@@ -427,15 +417,7 @@ class ExpenseActivity : Fragment() {
     }
 
     private fun validationOfDataForUpdate(
-        iD_: String?,
-        caT_: String?,
-        amnT_: String?,
-        datE_: String?,
-        timE_: String?,
-        paY_: String?,
-        payMd: String?,
-        notE_: String?,
-        smontH_: String?
+
     ) {
         if (binding.expcategory.text.toString() == "Select Category" || binding.expcategory.text.toString()
                 .isEmpty()
@@ -544,12 +526,12 @@ class ExpenseActivity : Fragment() {
         val ldf = CategoryListFragment()
         val args = Bundle()
         args.putString("SELECT_CAT_EXP", "002")
-        args.putString("AMNT_VL", "${binding.expAmount.text.toString()}")
-        args.putString("NOTE_VL", "${binding.expNote.text.toString()}")
+        args.putString("AMNT_VL", binding.expAmount.text.toString())
+        args.putString("NOTE_VL", binding.expNote.text.toString())
         args.putString("DATE_VL", "$date")
         args.putString("TIME_VL", "$time")
-        args.putString("PAY_IND_VL", "${binding.exppaymentMode.selectedItem as String}")
-        ldf.setArguments(args)
+        args.putString("PAY_IND_VL", binding.exppaymentMode.selectedItem as String)
+        ldf.arguments = args
         //Toast.makeText(requireContext(), "$args", Toast.LENGTH_SHORT).show()
         activity?.supportFragmentManager?.beginTransaction()
             ?.replace(R.id.fragment_container, ldf)
@@ -559,9 +541,9 @@ class ExpenseActivity : Fragment() {
     fun clearText() {
         binding.expAmount.setText("")
         binding.expNote.setText("")
-        binding.expdate.setText("$date")
-        binding.exptime.setText("$time")
-        binding.expcategory.setText("")
+        binding.expdate.text = "$date"
+        binding.exptime.text = "$time"
+        binding.expcategory.text = ""
         Toast.makeText(requireContext(), "Expense Added Successfully", Toast.LENGTH_SHORT).show()
         loadFragment(HomeFragment())
     }
@@ -577,6 +559,7 @@ class ExpenseActivity : Fragment() {
 
     }
 
+    @SuppressLint("SimpleDateFormat")
     fun validationOfData() {
         if (binding.expcategory.text.toString() == "Select Category" || binding.expcategory.text.toString()
                 .isEmpty()
@@ -666,7 +649,7 @@ class ExpenseActivity : Fragment() {
 //        spinner.error = error
 //    }
     fun spinnerSet(position: String) {
-        PaymentModeList = java.util.ArrayList()
+        PaymentModeList = ArrayList()
         val dao = AppDataBase.getInstance(requireContext()).paymentModesDao()
 
         dao.getAllPaymentMode().observe(requireActivity()) { paymentModes ->
@@ -701,7 +684,7 @@ class ExpenseActivity : Fragment() {
 
     fun loadAd(
     ) {
-        var adRequest = AdRequest.Builder().build()
+        val adRequest = AdRequest.Builder().build()
 
         InterstitialAd.load(
             requireContext(),
@@ -709,7 +692,7 @@ class ExpenseActivity : Fragment() {
             adRequest,
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
-                    Log.d(ContentValues.TAG, adError?.toString()!!)
+                    Log.d(ContentValues.TAG, adError.toString())
                     mInterstitialAd = null
                 }
 
