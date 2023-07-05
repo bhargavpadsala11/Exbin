@@ -76,7 +76,17 @@ class BackUpActivity : AppCompatActivity() {
 
 
         binding.mbBackupBtn.setOnClickListener {
-            uploadFileToGDrive(this)
+            gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build()
+
+            gsc = GoogleSignIn.getClient(this, gso)
+
+            var account: GoogleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)!!
+            if (account != null) {
+            uploadFileToGDrive(this)}else{
+                Toast.makeText(this, "Login First", Toast.LENGTH_SHORT).show()
+            }
         }
         val connectivityManager =
             getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -103,9 +113,11 @@ class BackUpActivity : AppCompatActivity() {
             binding.myTemplate.visibility = View.GONE
 
         }
+        
         binding.titleTextView.setOnClickListener {
             this.binding.mbBackup.performClick()
         }
+        
         binding.mbBackup.setOnClickListener {
             SingIn()
         }
@@ -113,6 +125,7 @@ class BackUpActivity : AppCompatActivity() {
         binding.titleTextView1.setOnClickListener {
             this.binding.mbSingOut.performClick()
         }
+        
         binding.mbSingOut.setOnClickListener {
             gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -142,6 +155,7 @@ class BackUpActivity : AppCompatActivity() {
                 Toast.makeText(this, "Log in First", Toast.LENGTH_SHORT).show()
             }
         }
+        
         binding.editBackarrow.setOnClickListener {
             onBackPressed()
         }

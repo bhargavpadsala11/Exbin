@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private val PERMISSION_REQUEST_CODE = 123
     private var FireBaseGooggleAdsId: String = ""
+    private var isAds: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -206,8 +207,11 @@ class MainActivity : AppCompatActivity() {
                 var isShow = false
                 if (isShowAds == "true") {
                     isShow = true
+                    isAds = true
                 } else {
                     !isShow
+                    isAds = false
+
                 }
                 Log.d("status", "$isShow")
                 val preference = getSharedPreferences("NativeId", MODE_PRIVATE)
@@ -276,6 +280,10 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView?.selectedItemId = R.id.navigation_home
     }
 
+    public fun setBottomNavigationAsDesire(itemId: Int) {
+        bottomNavigationView?.selectedItemId = itemId
+    }
+
     fun hideBottomNavigationView() {
         bottomNavigationView?.visibility = View.GONE
         bottomAppBar?.visibility = View.GONE
@@ -308,17 +316,21 @@ class MainActivity : AppCompatActivity() {
                 }
                 val deleteDiloug = binding.exitDialog
 
-                val adLoader = AdLoader.Builder(this, FireBaseGooggleAdsId)
-                    .forNativeAd { nativeAd ->
-                        val styles =
-                            NativeTemplateStyle.Builder().build()
-                        val template: TemplateView = deleteDiloug.myTemplate
-                        template.setStyles(styles)
-                        template.setNativeAd(nativeAd)
-                    }
-                    .build()
+                if (isAds == true) {
+                    val adLoader = AdLoader.Builder(this, FireBaseGooggleAdsId)
+                        .forNativeAd { nativeAd ->
+                            val styles =
+                                NativeTemplateStyle.Builder().build()
+                            val template: TemplateView = deleteDiloug.myTemplate
+                            template.setStyles(styles)
+                            template.setNativeAd(nativeAd)
+                        }
+                        .build()
 
-                adLoader.loadAd(AdRequest.Builder().build())
+                    adLoader.loadAd(AdRequest.Builder().build())
+                }else{
+                    deleteDiloug.myTemplate.visibility = View.INVISIBLE
+                }
                 deleteDiloug.btnDelete.setOnClickListener {
                     finish()
                 }

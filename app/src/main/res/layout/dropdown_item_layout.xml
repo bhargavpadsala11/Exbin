@@ -4,6 +4,6 @@
     android:layout_height="wrap_content"
     android:id="@+id/textView"
     android:textStyle="bold"
-    android:text="Sahil"
+    android:text=""
     android:padding="14dp">
 </TextView>

@@ -84,6 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="5"
             android:hint="0"
+            android:maxLength="8"
             android:inputType="number"
             android:textColor="@color/white"
             android:textColorHint="@color/white"

@@ -264,6 +264,7 @@ class HomeFragment : Fragment() {
             transaction?.replace(R.id.fragment_container, TransectionFragment())
             transaction?.addToBackStack(null)
             transaction?.commit()
+            (activity as MainActivity?)!!.setBottomNavigationAsDesire(R.id.navigation_transection)
         }
 
         return binding.root

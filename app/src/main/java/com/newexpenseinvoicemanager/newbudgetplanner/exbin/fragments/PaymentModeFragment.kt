@@ -182,6 +182,9 @@ class PaymentModeFragment : Fragment() {
                 }
                 if (buttonClicked == "DELETE") {
 
+                    val pay_mode = dao.getPaymentModeByID(paymentMode.paymentModeId)
+                    Log.d("pay_mode","$pay_mode")
+
                     deletePaymentView =
                         inflater.inflate(R.layout.custom_delete_dialog, container, false)
 
@@ -198,12 +201,12 @@ class PaymentModeFragment : Fragment() {
                     val deletePaymentModeCnlBtn =
                         deletePaymentView?.findViewById<MaterialButton>(R.id.btncancel)
                     deletePaymentModeBtn?.setOnClickListener {
-                        Toast.makeText(requireContext(), "Pressed", Toast.LENGTH_SHORT).show()
                         val db = AppDataBase.getInstance(requireContext()).incexpTblDao()
+
                         val existingpayment =
-                            db.getPaymentModeByName(getaymentModeTextView?.text.toString())
+                            db.getPaymentModeByName(pay_mode!!)
+                    Log.d("existingpayment","$existingpayment , ${paymentMode.paymentMode}!!")
                         if (existingpayment == null) {
-                            Log.d("in if", "$existingpayment")
                             val paymentId = paymentMode.paymentModeId
                             deltePaymentMode(paymentId)
                             container?.removeView(deletePaymentView)

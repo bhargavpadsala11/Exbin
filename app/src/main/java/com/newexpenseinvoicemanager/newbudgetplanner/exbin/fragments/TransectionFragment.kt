@@ -1,11 +1,15 @@
 package com.newexpenseinvoicemanager.newbudgetplanner.exbin.fragments
 
 
+import android.app.ActivityManager
 import android.app.DatePickerDialog
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
+import android.media.MediaScannerConnection
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -58,7 +62,9 @@ class TransectionFragment : Fragment() {
     private var mInterstitialAd: InterstitialAd? = null
     private var isFilter: Boolean = false
     private var isAds: Boolean = false
-    private var isFiltrDiloge : View? = null
+    private var isFiltrDiloge: View? = null
+    private var isFiltrDilogeVisible: View? = null
+    private var isOrNot: Boolean = false
 
 
     override fun onCreateView(
@@ -83,8 +89,9 @@ class TransectionFragment : Fragment() {
         custom.ivPdf.visibility = VISIBLE
         custom.ivPdf.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white))
         val filter = binding.clFliter
+        isFiltrDilogeVisible = filter
         val createFilter = binding.clConverter
-        isFiltrDiloge =  binding.clConverter
+        isFiltrDiloge = binding.clConverter
 
 
         custom.ivBack.setOnClickListener {
@@ -208,7 +215,7 @@ class TransectionFragment : Fragment() {
                     ContextCompat.getColorStateList(requireContext(), R.color.white)
                 )
                 (activity as MainActivity?)!!.showBottomNavigationView()
-            } else {
+            }  else {
                 isFilter = true
 
                 filter.visibility = View.GONE
@@ -234,7 +241,7 @@ class TransectionFragment : Fragment() {
                                     adapterOfTransection(it, categoryMap, currencyClass)
 
                             }
-                    } else {
+                    }else {
                         dao.incexpTblDao().getAllIncomeData().observe(requireActivity()) {
                             binding.transectionItem.adapter =
                                 adapterOfTransection(it, categoryMap, currencyClass)
@@ -272,6 +279,8 @@ class TransectionFragment : Fragment() {
 
 
             binding.btnDelete.setOnClickListener {
+                isOrNot = true
+                createFilter.visibility = GONE
                 if (PDF_OR_EXCEL == true) {
                     //add ads here
                     if (mInterstitialAd != null) {
@@ -286,14 +295,22 @@ class TransectionFragment : Fragment() {
                                     dao.incexpTblDao().getAllExpenseDataByDate(sDate!!, lDate!!)
                                         .observe(requireActivity()) {
                                             val adapter =
-                                                adapterOfTransection(it, categoryMap, currencyClass)
+                                                adapterOfTransectionForPdfExcel(
+                                                    it,
+                                                    categoryMap,
+                                                    currencyClass
+                                                )
                                             generatePdf("Expense Transaction By Date", adapter)
                                         }
                                 } else {
                                     dao.incexpTblDao().getAllExpenseData()
                                         .observe(requireActivity()) {
                                             val adapter =
-                                                adapterOfTransection(it, categoryMap, currencyClass)
+                                                adapterOfTransectionForPdfExcel(
+                                                    it,
+                                                    categoryMap,
+                                                    currencyClass
+                                                )
                                             generatePdf("All Expense Transaction", adapter)
                                         }
                                 }
@@ -302,14 +319,22 @@ class TransectionFragment : Fragment() {
                                     dao.incexpTblDao().getAllIncomeDataByDate(sDate!!, lDate!!)
                                         .observe(requireActivity()) {
                                             val adapter =
-                                                adapterOfTransection(it, categoryMap, currencyClass)
+                                                adapterOfTransectionForPdfExcel(
+                                                    it,
+                                                    categoryMap,
+                                                    currencyClass
+                                                )
                                             generatePdf("Income Transaction By Date", adapter)
                                         }
                                 } else {
                                     dao.incexpTblDao().getAllIncomeData()
                                         .observe(requireActivity()) {
                                             val adapter =
-                                                adapterOfTransection(it, categoryMap, currencyClass)
+                                                adapterOfTransectionForPdfExcel(
+                                                    it,
+                                                    categoryMap,
+                                                    currencyClass
+                                                )
                                             generatePdf("All Income Transaction", adapter)
                                         }
                                 }
@@ -317,7 +342,11 @@ class TransectionFragment : Fragment() {
                                 dao.incexpTblDao().getAllDataByTwoDate(sDate!!, lDate!!)
                                     .observe(requireActivity()) {
                                         val adapter =
-                                            adapterOfTransection(it, categoryMap, currencyClass)
+                                            adapterOfTransectionForPdfExcel(
+                                                it,
+                                                categoryMap,
+                                                currencyClass
+                                            )
                                         generatePdf("All Transaction By Date", adapter)
 
                                     }
@@ -325,7 +354,8 @@ class TransectionFragment : Fragment() {
                         } else {
                             Log.d("TAG", "The interstitial ad wasn't ready yet.")
                             dao.incexpTblDao().getAllData().observe(requireActivity()) {
-                                val adapter = adapterOfTransection(it, categoryMap, currencyClass)
+                                val adapter =
+                                    adapterOfTransectionForPdfExcel(it, categoryMap, currencyClass)
                                 generatePdf("All Transections", adapter)
                             }
                             (activity as MainActivity?)!!.showBottomNavigationView()
@@ -344,14 +374,22 @@ class TransectionFragment : Fragment() {
                                     dao.incexpTblDao().getAllExpenseDataByDate(sDate!!, lDate!!)
                                         .observe(requireActivity()) {
                                             val adapter =
-                                                adapterOfTransection(it, categoryMap, currencyClass)
+                                                adapterOfTransectionForPdfExcel(
+                                                    it,
+                                                    categoryMap,
+                                                    currencyClass
+                                                )
                                             exportToExcel(adapter, requireContext())
                                         }
                                 } else {
                                     dao.incexpTblDao().getAllExpenseData()
                                         .observe(requireActivity()) {
                                             val adapter =
-                                                adapterOfTransection(it, categoryMap, currencyClass)
+                                                adapterOfTransectionForPdfExcel(
+                                                    it,
+                                                    categoryMap,
+                                                    currencyClass
+                                                )
                                             exportToExcel(adapter, requireContext())
                                         }
                                 }
@@ -360,14 +398,22 @@ class TransectionFragment : Fragment() {
                                     dao.incexpTblDao().getAllIncomeDataByDate(sDate!!, lDate!!)
                                         .observe(requireActivity()) {
                                             val adapter =
-                                                adapterOfTransection(it, categoryMap, currencyClass)
+                                                adapterOfTransectionForPdfExcel(
+                                                    it,
+                                                    categoryMap,
+                                                    currencyClass
+                                                )
                                             exportToExcel(adapter, requireContext())
                                         }
                                 } else {
                                     dao.incexpTblDao().getAllIncomeData()
                                         .observe(requireActivity()) {
                                             val adapter =
-                                                adapterOfTransection(it, categoryMap, currencyClass)
+                                                adapterOfTransectionForPdfExcel(
+                                                    it,
+                                                    categoryMap,
+                                                    currencyClass
+                                                )
                                             exportToExcel(adapter, requireContext())
                                         }
                                 }
@@ -375,13 +421,18 @@ class TransectionFragment : Fragment() {
                                 dao.incexpTblDao().getAllDataByTwoDate(sDate!!, lDate!!)
                                     .observe(requireActivity()) {
                                         val adapter =
-                                            adapterOfTransection(it, categoryMap, currencyClass)
+                                            adapterOfTransectionForPdfExcel(
+                                                it,
+                                                categoryMap,
+                                                currencyClass
+                                            )
                                         exportToExcel(adapter, requireContext())
                                     }
                             }
                         } else {
                             dao.incexpTblDao().getAllData().observe(requireActivity()) {
-                                val adapter = adapterOfTransection(it, categoryMap, currencyClass)
+                                val adapter =
+                                    adapterOfTransectionForPdfExcel(it, categoryMap, currencyClass)
                                 exportToExcel(adapter, requireContext())
                             }
                             (activity as MainActivity?)!!.showBottomNavigationView()
@@ -389,11 +440,16 @@ class TransectionFragment : Fragment() {
                     }
 
                 }
+
+//        (activity as MainActivity?)!!.floatButtonHide()
+                (activity as MainActivity?)!!.showBottomNavigationView()
             }
-            val filePath = File(requireContext().filesDir, "YOUR_FILE")
-            binding.actFilePath.setText("File Path: " + "$filePath")
+
+            //  val filePath = File(requireContext().filesDir, "YOUR_FILE")
+            // binding.actFilePath.setText("File Path: " + "$filePath")
 
             binding.btncancel.setOnClickListener {
+                isOrNot = false
                 createFilter.visibility = View.GONE
                 (activity as MainActivity?)!!.showBottomNavigationView()
 
@@ -493,137 +549,191 @@ class TransectionFragment : Fragment() {
         title: String,
         adapter: TransectionListAdapter
     ) {
-        val document = Document()
-        val fileName = "EXBIN" + "$cDate" + "Transaction.pdf"
-        val filePath = File(requireContext().filesDir, fileName)
-        val outputStream = FileOutputStream(filePath)
-        PdfWriter.getInstance(document, outputStream)
-//        requireContext().getExternalFilesDir(null)?.absolutePath + "/" + fileName
-        document.open()
-        val titleFont = Font(Font.FontFamily.TIMES_ROMAN, 35f, Font.BOLD)
-        val titlePhrase = Phrase(title, titleFont)
-        val titleParagraph = Paragraph(titlePhrase)
-        titleParagraph.alignment = Element.ALIGN_CENTER
-        document.add(titleParagraph)
-        // Add adapter data to PDF
+        if (isOrNot == true) {
+            isFiltrDilogeVisible?.visibility = View.GONE
+            val document = Document()
+            val fileName = "EXBIN$cDate" + "Transaction.pdf"
+            val fileDir = File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                "Exbin"
+            )
+            fileDir.mkdirs() // Create the directory if it doesn't exist
+            val filePath = File(fileDir, fileName)
+            val outputStream = FileOutputStream(filePath)
+            PdfWriter.getInstance(document, outputStream)
+            document.open()
+            val titleFont = Font(Font.FontFamily.TIMES_ROMAN, 35f, Font.BOLD)
+            val titlePhrase = Phrase(title, titleFont)
+            val titleParagraph = Paragraph(titlePhrase)
+            titleParagraph.alignment = Element.ALIGN_CENTER
+            document.add(titleParagraph)
+            // Add adapter data to PDF
 
-        val font = Font(Font.FontFamily.TIMES_ROMAN, 22f)
-        val table = PdfPTable(5)
-        table.addCell(Phrase("Date", font))
-        table.addCell(Phrase("Category", font))
-        table.addCell(Phrase("Inc/Exp", font))
-        table.addCell(Phrase("Amount", font))
-        table.addCell(Phrase("Note", font))
-        val emptyCell = PdfPCell()
-        emptyCell.border = PdfPCell.NO_BORDER
-        emptyCell.fixedHeight = 20f
+            val font = Font(Font.FontFamily.TIMES_ROMAN, 19f)
+            val table = PdfPTable(5)
+            table.addCell(Phrase("Date", font))
+            table.addCell(Phrase("Category", font))
+            table.addCell(Phrase("Inc/Exp", font))
+            table.addCell(Phrase("Amount", font))
+            table.addCell(Phrase("Note", font))
+            val emptyCell = PdfPCell()
+            emptyCell.border = PdfPCell.NO_BORDER
+            emptyCell.fixedHeight = 20f
 
-        table.addCell(emptyCell)
-        table.addCell(emptyCell)
-        table.addCell(emptyCell)
-        table.addCell(emptyCell)
-        table.addCell(emptyCell)
+            table.addCell(emptyCell)
+            table.addCell(emptyCell)
+            table.addCell(emptyCell)
+            table.addCell(emptyCell)
+            table.addCell(emptyCell)
 
 
-        for (i in 0 until adapter.itemCount) {
-            val item = adapter.list[i]
-            table.addCell(Phrase(item.date, font))
-            table.addCell(Phrase(item.category, font))
-            table.addCell(Phrase(item.dType, font))
+            for (i in 0 until adapter.itemCount) {
+                val item = adapter.list[i]
+                table.addCell(Phrase(item.date, font))
+                table.addCell(Phrase(item.category, font))
+                table.addCell(Phrase(item.dType, font))
 
-            // Create a cell with the amount and set the color based on dType
-            val amountFont = Font(Font.FontFamily.TIMES_ROMAN, 22f)
-            if (item.dType == "INCOME") {
-                amountFont.color = BaseColor.GREEN
-            }  else if (item.dType == "EXPENSE") {
-                amountFont.color = BaseColor.RED
-                "-${item.amount}"
-            } else {
-                item.amount.toString()
+                // Create a cell with the amount and set the color based on dType
+                val amountFont = Font(Font.FontFamily.TIMES_ROMAN, 19f)
+                if (item.dType == "INCOME") {
+                    amountFont.color = BaseColor.GREEN
+                } else if (item.dType == "EXPENSE") {
+                    amountFont.color = BaseColor.RED
+                    "-${item.amount}"
+                } else {
+                    item.amount.toString()
+                }
+                val amountCell = PdfPCell(Phrase(item.amount.toString(), amountFont))
+                table.addCell(amountCell)
+                table.addCell(Phrase(item.note, font))
             }
-            val amountCell = PdfPCell(Phrase(item.amount.toString(), amountFont))
-            table.addCell(amountCell)
-            table.addCell(Phrase(item.note,font))
-        }
 
-        document.add(table)
-        document.close()
+            document.add(table)
+            document.close()
 
-        val uri = FileProvider.getUriForFile(
-            requireContext(),
-            "${requireContext().packageName}.provider",
-            filePath
-        )
-
-        // Create an intent to view the CSV file
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.setDataAndType(uri, "application/pdf")
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        if (intent.resolveActivity(requireContext().packageManager) != null) {
-            // Start the activity
-            requireContext().startActivity(intent)
-
+            // Notify the MediaScanner about the new file
+            MediaScannerConnection.scanFile(
+                context,
+                arrayOf(filePath.absolutePath),
+                null,
+                null
+            )
+            isOrNot = false
             // Display a toast message with the file path
             Toast.makeText(context, "File saved", Toast.LENGTH_LONG).show()
-//            Log.d("Path Tag","$filePath")
-        } else {
-            // Show an error message
-            Toast.makeText(context, "No app found to open PDF file", Toast.LENGTH_SHORT).show()
+            (activity as MainActivity?)!!.showBottomNavigationView()
         }
     }
 
     fun exportToExcel(adapter: TransectionListAdapter, context: Context) {
         // Get the data from your adapter
-        val data = adapter.list
+        if (isOrNot == true) {
+            isFiltrDilogeVisible?.visibility = View.GONE
 
+            val data = adapter.list
 
-        // Create a new CSV writer
-        val fileName = "EXBIN" + "$cDate" + "Transaction.csv"
-        val file = File(context.filesDir, fileName)
-        val writer = CSVWriter(FileWriter(file))
+            // Create a new CSV writer
+            val fileName = "EXBIN$cDate" + "Transaction.csv"
+            val fileDir = File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                "Exbin"
+            )
+            fileDir.mkdirs() // Create the directory if it doesn't exist
+            val file = File(fileDir, fileName)
+            val writer = CSVWriter(FileWriter(file))
 
-        // Write the header row
-        writer.writeNext(arrayOf("Date", "Category","Inc/Exp", "Amount", "Note"))
+            // Write the header row
+            writer.writeNext(arrayOf("Date", "Category", "Inc/Exp", "Amount", "Note"))
 
-        // Write the data to the CSV file
-        for (item in data) {
-            val date = item.date
-            val category = item.category
-            val dType = item.dType
-            val amount = if (item.dType == "EXPENSE") "-${item.amount}" else "${item.amount}"
-            val note = item.note
-            writer.writeNext(arrayOf(date,category,dType,amount,note))
-        }
+            // Write the data to the CSV file
+            for (item in data) {
+                val date = item.date
+                val category = item.category
+                val dType = item.dType
+                val amount = if (item.dType == "EXPENSE") "-${item.amount}" else "${item.amount}"
+                val note = item.note
+                writer.writeNext(arrayOf(date, category, dType, amount, note))
+            }
 
-        // Close the writer
-        writer.close()
-
-        // Get the file URI using a FileProvider
-        val uri = FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.provider",
-            file
-        )
-
-        // Create an intent to view the CSV file
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.setDataAndType(uri, "text/csv")
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-
-        // Check if there is an app that can handle the intent
-        if (intent.resolveActivity(context.packageManager) != null) {
-            // Start the activity
-            context.startActivity(intent)
+            // Close the writer
+            writer.close()
 
             // Display a toast message with the file path
             val filePath = file.absolutePath
+            MediaScannerConnection.scanFile(
+                context,
+                arrayOf(filePath),
+                null,
+                null
+            )
             Toast.makeText(context, "File saved", Toast.LENGTH_LONG).show()
-            Log.d("Path Tag", "$filePath")
-        } else {
-            // Show an error message
-            Toast.makeText(context, "No app found to open CSV file", Toast.LENGTH_SHORT).show()
+            isOrNot = false
+            // Create an intent to notify the MediaScanner about the new file
+            val scanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+            scanIntent.data = Uri.fromFile(file)
+            context.sendBroadcast(scanIntent)
+//        (activity as MainActivity?)!!.floatButtonHide()
+            (activity as MainActivity?)!!.showBottomNavigationView()
         }
     }
+
+//    fun exportToExcel(adapter: TransectionListAdapter, context: Context) {
+//        // Get the data from your adapter
+//        val data = adapter.list
+//
+//
+//        // Create a new CSV writer
+//        val fileName = "EXBIN" + "$cDate" + "Transaction.csv"
+//        val file = File(context.filesDir, fileName)
+//        val writer = CSVWriter(FileWriter(file))
+//
+//        // Write the header row
+//        writer.writeNext(arrayOf("Date", "Category", "Inc/Exp", "Amount", "Note"))
+//
+//        // Write the data to the CSV file
+//        for (item in data) {
+//            val date = item.date
+//            val category = item.category
+//            val dType = item.dType
+//            val amount = if (item.dType == "EXPENSE") "-${item.amount}" else "${item.amount}"
+//            val note = item.note
+//            writer.writeNext(arrayOf(date, category, dType, amount, note))
+//        }
+//
+//        // Close the writer
+//        writer.close()
+//
+//        // Get the file URI using a FileProvider
+//        val uri = FileProvider.getUriForFile(
+//            context,
+//            "${context.packageName}.provider",
+//            file
+//        )
+//
+//        // Create an intent to view the CSV file
+//        val intent = Intent(Intent.ACTION_VIEW)
+//        intent.setDataAndType(uri, "text/csv")
+//        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+//
+//        // Check if there is an app that can handle the intent
+//        if (intent.resolveActivity(context.packageManager) != null) {
+//            // Start the activity
+//
+//            context.startActivity(intent)
+//            requireActivity().finish()
+//
+//            // Display a toast message with the file path
+//            val filePath = file.absolutePath
+//            Toast.makeText(context, "File saved", Toast.LENGTH_LONG).show()
+//
+//            Log.d("Path Tag", "$filePath")
+//        } else {
+//            // Show an error message
+//            reloadFragmentAndKillProcesses()
+//
+//            Toast.makeText(context, "No app found to open CSV file", Toast.LENGTH_SHORT).show()
+//        }
+//    }
 
     fun adapterOfTransection(
         it: List<incexpTbl>,
@@ -686,6 +796,20 @@ class TransectionFragment : Fragment() {
         return adapter
     }
 
+    fun adapterOfTransectionForPdfExcel(
+        it: List<incexpTbl>,
+        categoryMap: MutableMap<String, Categories>,
+        currencyClass: getCurrencyClass
+    ): TransectionListAdapter {
+        val adapter = TransectionListAdapter(
+            requireContext(),
+            it,
+            categoryMap,
+            currencyClass
+        ) { value, mode -> }
+        return adapter
+    }
+
 
     fun loadAd(
         dao: AppDataBase,
@@ -729,7 +853,7 @@ class TransectionFragment : Fragment() {
                                                     .getAllExpenseDataByDate(sDate!!, lDate!!)
                                                     .observe(requireActivity()) {
                                                         val adapter =
-                                                            adapterOfTransection(
+                                                            adapterOfTransectionForPdfExcel(
                                                                 it,
                                                                 categoryMap,
                                                                 currencyClass
@@ -743,7 +867,7 @@ class TransectionFragment : Fragment() {
                                                 dao.incexpTblDao().getAllExpenseData()
                                                     .observe(requireActivity()) {
                                                         val adapter =
-                                                            adapterOfTransection(
+                                                            adapterOfTransectionForPdfExcel(
                                                                 it,
                                                                 categoryMap,
                                                                 currencyClass
@@ -760,7 +884,7 @@ class TransectionFragment : Fragment() {
                                                     .getAllIncomeDataByDate(sDate!!, lDate!!)
                                                     .observe(requireActivity()) {
                                                         val adapter =
-                                                            adapterOfTransection(
+                                                            adapterOfTransectionForPdfExcel(
                                                                 it,
                                                                 categoryMap,
                                                                 currencyClass
@@ -774,7 +898,7 @@ class TransectionFragment : Fragment() {
                                                 dao.incexpTblDao().getAllIncomeData()
                                                     .observe(requireActivity()) {
                                                         val adapter =
-                                                            adapterOfTransection(
+                                                            adapterOfTransectionForPdfExcel(
                                                                 it,
                                                                 categoryMap,
                                                                 currencyClass
@@ -789,7 +913,7 @@ class TransectionFragment : Fragment() {
                                             dao.incexpTblDao().getAllDataByTwoDate(sDate!!, lDate!!)
                                                 .observe(requireActivity()) {
                                                     val adapter =
-                                                        adapterOfTransection(
+                                                        adapterOfTransectionForPdfExcel(
                                                             it,
                                                             categoryMap,
                                                             currencyClass
@@ -802,7 +926,11 @@ class TransectionFragment : Fragment() {
                                         Log.d("TAG", "The interstitial ad wasn't ready yet.")
                                         dao.incexpTblDao().getAllData().observe(requireActivity()) {
                                             val adapter =
-                                                adapterOfTransection(it, categoryMap, currencyClass)
+                                                adapterOfTransectionForPdfExcel(
+                                                    it,
+                                                    categoryMap,
+                                                    currencyClass
+                                                )
                                             generatePdf("All Transections", adapter)
                                         }
                                         (activity as MainActivity?)!!.showBottomNavigationView()
@@ -820,7 +948,7 @@ class TransectionFragment : Fragment() {
                                                     .getAllExpenseDataByDate(sDate!!, lDate!!)
                                                     .observe(requireActivity()) {
                                                         val adapter =
-                                                            adapterOfTransection(
+                                                            adapterOfTransectionForPdfExcel(
                                                                 it,
                                                                 categoryMap,
                                                                 currencyClass
@@ -831,7 +959,7 @@ class TransectionFragment : Fragment() {
                                                 dao.incexpTblDao().getAllExpenseData()
                                                     .observe(requireActivity()) {
                                                         val adapter =
-                                                            adapterOfTransection(
+                                                            adapterOfTransectionForPdfExcel(
                                                                 it,
                                                                 categoryMap,
                                                                 currencyClass
@@ -845,7 +973,7 @@ class TransectionFragment : Fragment() {
                                                     .getAllIncomeDataByDate(sDate!!, lDate!!)
                                                     .observe(requireActivity()) {
                                                         val adapter =
-                                                            adapterOfTransection(
+                                                            adapterOfTransectionForPdfExcel(
                                                                 it,
                                                                 categoryMap,
                                                                 currencyClass
@@ -856,7 +984,7 @@ class TransectionFragment : Fragment() {
                                                 dao.incexpTblDao().getAllIncomeData()
                                                     .observe(requireActivity()) {
                                                         val adapter =
-                                                            adapterOfTransection(
+                                                            adapterOfTransectionForPdfExcel(
                                                                 it,
                                                                 categoryMap,
                                                                 currencyClass
@@ -868,7 +996,7 @@ class TransectionFragment : Fragment() {
                                             dao.incexpTblDao().getAllDataByTwoDate(sDate!!, lDate!!)
                                                 .observe(requireActivity()) {
                                                     val adapter =
-                                                        adapterOfTransection(
+                                                        adapterOfTransectionForPdfExcel(
                                                             it,
                                                             categoryMap,
                                                             currencyClass
@@ -880,7 +1008,11 @@ class TransectionFragment : Fragment() {
 
                                         dao.incexpTblDao().getAllData().observe(requireActivity()) {
                                             val adapter =
-                                                adapterOfTransection(it, categoryMap, currencyClass)
+                                                adapterOfTransectionForPdfExcel(
+                                                    it,
+                                                    categoryMap,
+                                                    currencyClass
+                                                )
                                             exportToExcel(adapter, requireContext())
                                         }
                                         (activity as MainActivity?)!!.showBottomNavigationView()
@@ -913,9 +1045,25 @@ class TransectionFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         isFiltrDiloge?.visibility = View.GONE
-        (activity as MainActivity?)!!.floatButtonHide()
-
+        isFiltrDilogeVisible?.visibility = View.GONE
+//        (activity as MainActivity?)!!.floatButtonHide()
         (activity as MainActivity?)!!.showBottomNavigationView()
+        // reloadFragmentAndKillProcesses()
+        // killProcesses()
+        if (isFilter == true) {
+            reloadFragmentAndKillProcesses()
+            Toast.makeText(requireContext(), "$isFilter", Toast.LENGTH_SHORT).show()
+            Log.d("isFilter", "$isFilter")
+        }
+    }
+
+    fun reloadFragmentAndKillProcesses() {
+        val fragmentManager = requireActivity().supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        fragmentTransaction.detach(this)
+        fragmentTransaction.attach(this)
+        fragmentTransaction.commitAllowingStateLoss()
+        fragmentManager.executePendingTransactions()
     }
 
 

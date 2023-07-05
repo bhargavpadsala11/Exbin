@@ -47,6 +47,9 @@ suspend fun insertDefaultPaymentModes(paymentModes: List<PaymentModes>)
     @Query("SELECT * FROM PaymentModes WHERE paymentMode = :name")
     fun getPaymentModeByName(name: String): PaymentModes?
 
+    @Query("SELECT paymentMode FROM PaymentModes WHERE paymentModeId = :name")
+    fun getPaymentModeByID(name: Int): String?
+
 
 
 

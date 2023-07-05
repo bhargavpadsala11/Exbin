@@ -602,8 +602,9 @@ class ExpenseActivity : Fragment() {
             binding.expNote.requestFocus()
             binding.expNote.error = "Empty"
         } else {
-            val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+            val sdf = SimpleDateFormat("dd/MM/yyyy hh:mm:ss")
             val currentDate = sdf.format(Date())
+            Log.d("SimpleDateFormat","$currentDate")
             val amount = binding.expAmount.text.toString()
             val note = binding.expNote.text.toString()
             val category = binding.expcategory.text.toString()

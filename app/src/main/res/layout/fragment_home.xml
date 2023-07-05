@@ -18,11 +18,6 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <com.google.android.ads.nativetemplates.TemplateView
-                android:id="@+id/my_template"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:gnt_template_type="@layout/gnt_medium_template_view" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -220,6 +215,11 @@
                     android:textStyle="bold" />
 
             </LinearLayout>
+            <com.google.android.ads.nativetemplates.TemplateView
+                android:id="@+id/my_template"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:gnt_template_type="@layout/gnt_medium_template_view" />
 
             <LinearLayout
                 android:id="@+id/seeAll"
@@ -265,6 +265,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="visible"
+                android:paddingBottom="5dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/transection_item_layout" />
 
