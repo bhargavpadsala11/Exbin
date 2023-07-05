@@ -246,6 +246,15 @@ class IncomeActivity : Fragment() {
             }
 
         } else if (SELECTED_CATEGORY != null) {
+            val sdf = SimpleDateFormat("dd/MM/yyyy")
+            val sdf_1 = SimpleDateFormat("hh:mm a")
+            val defaulttDate = sdf.format(Date())
+            val defaultTime = sdf_1.format(Date())
+            // Get the dynamically selected date as a string
+
+
+            date = defaulttDate
+            time = defaultTime
             val amnt = arguments?.getString("amnt_vle")
             val nte = arguments?.getString("nte_vle")
             val dte = arguments?.getString("dte_vle")
@@ -257,25 +266,20 @@ class IncomeActivity : Fragment() {
 
                 binding.inctime.setText(tme)
                 time = binding.inctime.text.toString()
+            }else{
+                binding.inctime.setText(defaultTime)
             }
             spinnerSet(py_ind_!!)
 
 
-            val sdf = SimpleDateFormat("dd/MM/yyyy")
-            val sdf_1 = SimpleDateFormat("hh:mm a")
-            val defaulttDate = sdf.format(Date())
-            val defaultTime = sdf_1.format(Date())
-            // Get the dynamically selected date as a string
 
-
-            date = defaulttDate
-            time = defaultTime
             if (dte != null) {
                 binding.incdate.setText(dte)
                 date = binding.incdate.text.toString()
             } else {
                 binding.incdate.setText(defaulttDate)
             }
+
             val selectedDateString = binding.incdate.text.toString()
             val selectedDate = sdf.parse(selectedDateString)
             val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
@@ -458,7 +462,7 @@ class IncomeActivity : Fragment() {
             binding.incNote.error = "Empty"
         } else {
 
-            val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+            val sdf = SimpleDateFormat("dd/MM/yyyy hh:mm:ss")
             val currentDate = sdf.format(Date())
             val amount = binding.incAmount.text.toString()
             val note = binding.incNote.text.toString()

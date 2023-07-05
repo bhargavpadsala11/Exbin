@@ -18,7 +18,7 @@ interface incexpTblDao {
     @Delete
     suspend fun deletetincexpTbl(incexpTbl : incexpTbl)
 
-    @Query("SELECT * FROM incexpTbl ORDER BY substr(date, 7, 4)||substr(date, 4, 2)||substr(date, 1, 2) DESC")
+    @Query("SELECT * FROM incexpTbl ORDER BY substr(date, 7, 4)||substr(date, 4, 2)||substr(date, 1, 2)||substr(currentDate, 12, 8) DESC")
     fun getAllData():LiveData<List<incexpTbl>>
 
     @Query("SELECT * FROM incexpTbl WHERE date = :sDate")
@@ -27,14 +27,14 @@ interface incexpTblDao {
 //    @Query("SELECT * FROM incexpTbl ORDER BY date DESC LIMIT 5")
 //    fun getAllDataHome():LiveData<List<incexpTbl>>
 
-    @Query("SELECT * FROM incexpTbl ORDER BY substr(date, 7, 4)||substr(date, 4, 2)||substr(date, 1, 2) DESC LIMIT 5")
+    @Query("SELECT * FROM incexpTbl ORDER BY substr(date, 7, 4)||substr(date, 4, 2)||substr(date, 1, 2)||substr(currentDate, 12, 8) DESC LIMIT 5")
     fun getAllDataHome(): LiveData<List<incexpTbl>>
 
     @Query("SELECT * FROM incexpTbl WHERE dType = 'INCOME'")
     fun getAllIncomeData(): LiveData<List<incexpTbl>>
 
-    @Query("SELECT * FROM incexpTbl WHERE paymentMode = :name")
-    fun getPaymentModeByName(name: String): LiveData<List<incexpTbl>>
+    @Query("SELECT paymentMode FROM incexpTbl WHERE paymentMode = :name")
+    fun getPaymentModeByName(name: String): String?
 
 
     @Query("SELECT * FROM incexpTbl WHERE date BETWEEN :startDate AND :endDate")
@@ -77,7 +77,22 @@ interface incexpTblDao {
     @Query("UPDATE incexpTbl SET amount = :newAmount,category = :newCategory,sMonth = :newMonth,date = :newDate,time = :newTime,paymentMode = :newPay,paymentModeIndex = :newPyInd,note = :newNote WHERE Id = :newId")
     fun updateIncExpByID(newAmount: String,newCategory: String,newMonth: String,newDate: String,newTime: String,newPay: String,newPyInd: String,newNote: String,newId:Int)
 
+    @Query("SELECT * FROM incexpTbl WHERE dType = 'INCOME'")
+    fun getEPAllIncomeData(): incexpTbl?
 
+
+    @Query("SELECT * FROM incexpTbl WHERE date BETWEEN :startDate AND :endDate")
+    fun getEPAllDataByTwoDate(startDate: String, endDate: String): incexpTbl?
+
+    @Query("SELECT * FROM incexpTbl WHERE dType = 'INCOME' AND date BETWEEN :startDate AND :endDate")
+    fun getEPAllIncomeDataByDate(startDate: String, endDate: String): incexpTbl?
+
+
+
+    @Query("SELECT * FROM incexpTbl WHERE dType = 'EXPENSE' AND date BETWEEN :startDate AND :endDate")
+    fun getEPAllExpenseDataByDate(startDate: String, endDate: String): incexpTbl?
+    @Query("SELECT * FROM incexpTbl WHERE dType = 'EXPENSE'")
+    fun getEPAllExpenseData(): incexpTbl?
 
 
 }

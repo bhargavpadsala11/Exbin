@@ -197,6 +197,7 @@ tools:context=".fragments.BudgetFragment">
         android:textColor="@color/white"
         android:textSize="50sp"
         android:text=""
+        android:maxLength="8"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/view1"
         app:layout_constraintEnd_toEndOf="parent"

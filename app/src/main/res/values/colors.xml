@@ -29,8 +29,8 @@
     <color name="Cat_color2">#00FF00</color>
     <color name="Cat_color3">#0000FF</color>
     <!-- Add more colors here -->
-    <color name="transectionRed">#F20000</color>
-    <color name="transectionGreen">#00F200</color>
+    <color name="transectionRed">#E64A61</color>
+    <color name="transectionGreen">#0FC36F</color>
     <color name="button_background_color">#2196F3</color>
 
 
