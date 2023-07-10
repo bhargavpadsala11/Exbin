@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="56dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -48,5 +49,15 @@
         app:layout_constraintEnd_toStartOf="@+id/iv_delete"
         app:layout_constraintTop_toTopOf="parent"
         android:visibility="gone"/>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/mdv_isFilter"
+        android:layout_width="6dp"
+        android:layout_height="6dp"
+        android:visibility="gone"
+        app:cardBackgroundColor="@color/transectionRed"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_delete"
+        app:layout_constraintEnd_toEndOf="@+id/iv_delete"
+        app:layout_constraintStart_toStartOf="@+id/iv_delete" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

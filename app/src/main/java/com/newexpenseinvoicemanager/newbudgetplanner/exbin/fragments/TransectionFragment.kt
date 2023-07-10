@@ -6,6 +6,7 @@ import android.app.DatePickerDialog
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Bundle
@@ -38,6 +39,7 @@ import com.newexpenseinvoicemanager.newbudgetplanner.exbin.R
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.adapter.TransectionListAdapter
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.AppDataBase
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.dataBase.getCurrencyClass
+import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.CustomAppBarBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.databinding.FragmentTransectionBinding
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.Categories
 import com.newexpenseinvoicemanager.newbudgetplanner.exbin.roomdb.incexpTbl
@@ -65,6 +67,12 @@ class TransectionFragment : Fragment() {
     private var isFiltrDiloge: View? = null
     private var isFiltrDilogeVisible: View? = null
     private var isOrNot: Boolean = false
+    private var isFilterOrNotPrf: Boolean = false
+    private var custom: CustomAppBarBinding? = null
+    private var daoo: AppDataBase? = null
+    private var currencyClas: getCurrencyClass? = null
+    private var categoryMa: MutableMap<String, Categories>? = null
+    private var pref: SharedPreferences? =null
 
 
     override fun onCreateView(
@@ -84,25 +92,33 @@ class TransectionFragment : Fragment() {
         FireBaseGooggleAdsInterId = preference.getString("inter_id", "")!!
         isAds = preference.getBoolean("isShow", false)
 
+         pref =
+            requireContext().getSharedPreferences("IsFilterOrNotPrf", AppCompatActivity.MODE_PRIVATE)
+        isFilterOrNotPrf = pref!!.getBoolean("IsFilterOrNotPrf_",false)
 
-        val custom = binding.appBar
-        custom.ivPdf.visibility = VISIBLE
-        custom.ivPdf.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white))
+        custom = binding.appBar
+        custom!!.ivPdf.visibility = VISIBLE
+        custom!!.ivPdf.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white))
         val filter = binding.clFliter
         isFiltrDilogeVisible = filter
         val createFilter = binding.clConverter
         isFiltrDiloge = binding.clConverter
+        val inComeButton = binding.btnIncome
+        val exPenseButton = binding.btnExpense
+
+//        val isFilterOrNot = custom.mdvIsFilter
 
 
-        custom.ivBack.setOnClickListener {
+        custom!!.ivBack.setOnClickListener {
             (activity as MainActivity?)!!.setBottomNavigationAsHome()
             loadFragment(HomeFragment())
         }
 
 
-        custom.ivTitle.setText("Transaction List")
-        custom.ivDelete.setImageResource(R.drawable.ic_filter)
-        custom.ivDelete.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white))
+
+        custom!!.ivTitle.setText("Transaction List")
+        custom!!.ivDelete.setImageResource(R.drawable.ic_filter)
+        custom!!.ivDelete.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white))
 
 
         val currencyClass = getCurrencyClass(viewLifecycleOwner, requireContext())
@@ -113,6 +129,77 @@ class TransectionFragment : Fragment() {
                 categoryMap[category.CategoryName!!] = category
             }
         }
+
+        daoo = dao
+        currencyClas =currencyClass
+        categoryMa = categoryMap
+
+        if (isFilterOrNotPrf == true){
+
+            sDate = pref!!.getString("StartDate","")
+                lDate = pref!!.getString("EndDate","")
+                tMode = pref!!.getString("INC_OR_EXP","")!!
+            Log.d("IsFilterOrNotPrf_","$isFilterOrNotPrf")
+            Log.d("StartDate",sDate!!)
+            Log.d("EndDate",lDate!!)
+            Log.d("INC_OR_EXP",tMode)
+            custom!!.ivDelete.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.transectionRed
+                )
+            )
+//                isFilterOrNot.visibility = View.VISIBLE
+            isFilter = true
+
+            filter.visibility = View.GONE
+            if (tMode == "EXPENSE") {
+                if (sDate != "" && lDate != "") {
+                    dao.incexpTblDao().getAllExpenseDataByDate(sDate!!, lDate!!)
+                        .observe(requireActivity()) {
+                            binding.transectionItem.adapter =
+                                adapterOfTransection(it, categoryMap, currencyClass)
+
+                        }
+                    setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                } else {
+                    dao.incexpTblDao().getAllExpenseData().observe(requireActivity()) {
+                        binding.transectionItem.adapter =
+                            adapterOfTransection(it, categoryMap, currencyClass)
+                    }
+                    setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+
+                }
+            } else if (tMode == "INCOME") {
+                if (sDate != "" && lDate != "") {
+                    dao.incexpTblDao().getAllIncomeDataByDate(sDate!!, lDate!!)
+                        .observe(requireActivity()) {
+                            binding.transectionItem.adapter =
+                                adapterOfTransection(it, categoryMap, currencyClass)
+
+                        }
+                    setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                } else {
+                    dao.incexpTblDao().getAllIncomeData().observe(requireActivity()) {
+                        binding.transectionItem.adapter =
+                            adapterOfTransection(it, categoryMap, currencyClass)
+                    }
+                    setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                }
+            } else if (sDate != null && lDate != null) {
+                dao.incexpTblDao().getAllDataByTwoDate(sDate!!, lDate!!)
+                    .observe(requireActivity()) {
+                        binding.transectionItem.adapter =
+                            adapterOfTransection(it, categoryMap, currencyClass)
+
+                    }
+                setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+            }
+            (activity as MainActivity?)!!.showBottomNavigationView()
+
+
+    }
+
 //        getIdofNativeAds()
 
         if (isAds == true) {
@@ -120,8 +207,6 @@ class TransectionFragment : Fragment() {
         }
         getTransecton(currencyClass)
 
-        val inComeButton = binding.btnIncome
-        val exPenseButton = binding.btnExpense
 
 
 
@@ -173,8 +258,9 @@ class TransectionFragment : Fragment() {
         }
 
         binding.btnReset.setOnClickListener {
+            custom!!.ivDelete.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white))
 
-
+//            isFilterOrNot.visibility = View.GONE
             isFilter = false
             sDate = ""
             lDate = ""
@@ -191,6 +277,7 @@ class TransectionFragment : Fragment() {
                 exPenseButton,
                 ContextCompat.getColorStateList(requireContext(), R.color.white)
             )
+            setPrefForFIlter(false,sDate!!,lDate!!,tMode)
             (activity as MainActivity?)!!.showBottomNavigationView()
 
         }
@@ -215,37 +302,61 @@ class TransectionFragment : Fragment() {
                     ContextCompat.getColorStateList(requireContext(), R.color.white)
                 )
                 (activity as MainActivity?)!!.showBottomNavigationView()
-            }  else {
+            } else {
+                custom!!.ivDelete.setColorFilter(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.transectionRed
+                    )
+                )
+//                isFilterOrNot.visibility = View.VISIBLE
                 isFilter = true
 
                 filter.visibility = View.GONE
                 if (tMode == "EXPENSE") {
-                    if (sDate != "" && lDate != "") {
+                    if (sDate != "" && lDate == "" || sDate == "" && lDate != "") {
+                        Toast.makeText(
+                            requireContext(),
+                            "Please Select Both date",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else if (sDate != "" && lDate != "") {
                         dao.incexpTblDao().getAllExpenseDataByDate(sDate!!, lDate!!)
                             .observe(requireActivity()) {
                                 binding.transectionItem.adapter =
                                     adapterOfTransection(it, categoryMap, currencyClass)
 
                             }
+                        setPrefForFIlter(true,sDate!!, lDate!!, tMode)
                     } else {
                         dao.incexpTblDao().getAllExpenseData().observe(requireActivity()) {
                             binding.transectionItem.adapter =
                                 adapterOfTransection(it, categoryMap, currencyClass)
                         }
+                        setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+
                     }
                 } else if (tMode == "INCOME") {
-                    if (sDate != "" && lDate != "") {
+                    if (sDate != "" && lDate == "" || sDate == "" && lDate != "") {
+                        Toast.makeText(
+                            requireContext(),
+                            "Please Select Both date",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else if (sDate != "" && lDate != "") {
                         dao.incexpTblDao().getAllIncomeDataByDate(sDate!!, lDate!!)
                             .observe(requireActivity()) {
                                 binding.transectionItem.adapter =
                                     adapterOfTransection(it, categoryMap, currencyClass)
 
                             }
-                    }else {
+                        setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                    } else {
                         dao.incexpTblDao().getAllIncomeData().observe(requireActivity()) {
                             binding.transectionItem.adapter =
                                 adapterOfTransection(it, categoryMap, currencyClass)
                         }
+                        setPrefForFIlter(true,sDate!!, lDate!!, tMode)
                     }
                 } else if (sDate != null && lDate != null) {
                     dao.incexpTblDao().getAllDataByTwoDate(sDate!!, lDate!!)
@@ -254,19 +365,20 @@ class TransectionFragment : Fragment() {
                                 adapterOfTransection(it, categoryMap, currencyClass)
 
                         }
+                    setPrefForFIlter(true,sDate!!, lDate!!, tMode)
                 }
                 (activity as MainActivity?)!!.showBottomNavigationView()
             }
 
         }
 
-        custom.ivDelete.setOnClickListener {
+        custom!!.ivDelete.setOnClickListener {
             filter.visibility = View.VISIBLE
             (activity as MainActivity?)!!.hideBottomNavigationView()
 
         }
 
-        custom.ivPdf.setOnClickListener {
+        custom!!.ivPdf.setOnClickListener {
             createFilter.visibility = VISIBLE
             binding.rdbPdf.setOnClickListener {
                 PDF_OR_EXCEL = true
@@ -677,64 +789,6 @@ class TransectionFragment : Fragment() {
         }
     }
 
-//    fun exportToExcel(adapter: TransectionListAdapter, context: Context) {
-//        // Get the data from your adapter
-//        val data = adapter.list
-//
-//
-//        // Create a new CSV writer
-//        val fileName = "EXBIN" + "$cDate" + "Transaction.csv"
-//        val file = File(context.filesDir, fileName)
-//        val writer = CSVWriter(FileWriter(file))
-//
-//        // Write the header row
-//        writer.writeNext(arrayOf("Date", "Category", "Inc/Exp", "Amount", "Note"))
-//
-//        // Write the data to the CSV file
-//        for (item in data) {
-//            val date = item.date
-//            val category = item.category
-//            val dType = item.dType
-//            val amount = if (item.dType == "EXPENSE") "-${item.amount}" else "${item.amount}"
-//            val note = item.note
-//            writer.writeNext(arrayOf(date, category, dType, amount, note))
-//        }
-//
-//        // Close the writer
-//        writer.close()
-//
-//        // Get the file URI using a FileProvider
-//        val uri = FileProvider.getUriForFile(
-//            context,
-//            "${context.packageName}.provider",
-//            file
-//        )
-//
-//        // Create an intent to view the CSV file
-//        val intent = Intent(Intent.ACTION_VIEW)
-//        intent.setDataAndType(uri, "text/csv")
-//        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-//
-//        // Check if there is an app that can handle the intent
-//        if (intent.resolveActivity(context.packageManager) != null) {
-//            // Start the activity
-//
-//            context.startActivity(intent)
-//            requireActivity().finish()
-//
-//            // Display a toast message with the file path
-//            val filePath = file.absolutePath
-//            Toast.makeText(context, "File saved", Toast.LENGTH_LONG).show()
-//
-//            Log.d("Path Tag", "$filePath")
-//        } else {
-//            // Show an error message
-//            reloadFragmentAndKillProcesses()
-//
-//            Toast.makeText(context, "No app found to open CSV file", Toast.LENGTH_SHORT).show()
-//        }
-//    }
-
     fun adapterOfTransection(
         it: List<incexpTbl>,
         categoryMap: MutableMap<String, Categories>,
@@ -1046,24 +1100,98 @@ class TransectionFragment : Fragment() {
         super.onResume()
         isFiltrDiloge?.visibility = View.GONE
         isFiltrDilogeVisible?.visibility = View.GONE
-//        (activity as MainActivity?)!!.floatButtonHide()
         (activity as MainActivity?)!!.showBottomNavigationView()
-        // reloadFragmentAndKillProcesses()
-        // killProcesses()
-        if (isFilter == true) {
-            reloadFragmentAndKillProcesses()
-            Toast.makeText(requireContext(), "$isFilter", Toast.LENGTH_SHORT).show()
-            Log.d("isFilter", "$isFilter")
+
+        if (isFilterOrNotPrf == true){
+            sDate = pref!!.getString("StartDate","")
+            lDate = pref!!.getString("EndDate","")
+            tMode = pref!!.getString("INC_OR_EXP","")!!
+            custom!!.ivDelete.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.transectionRed
+                )
+            )
+//                isFilterOrNot.visibility = View.VISIBLE
+            isFilter = true
+
+            if (tMode == "EXPENSE") {
+                if (sDate != "" && lDate == "" || sDate == "" && lDate != "") {
+                    Toast.makeText(
+                        requireContext(),
+                        "Please Select Both date",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else if (sDate != "" && lDate != "") {
+                    daoo!!.incexpTblDao().getAllExpenseDataByDate(sDate!!, lDate!!)
+                        .observe(requireActivity()) {
+                            binding.transectionItem.adapter =
+                                adapterOfTransection(it, categoryMa!!, currencyClas!!)
+
+                        }
+                    setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                } else {
+                    daoo!!.incexpTblDao().getAllExpenseData().observe(requireActivity()) {
+                        binding.transectionItem.adapter =
+                            adapterOfTransection(it, categoryMa!!, currencyClas!!)
+                    }
+                    setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+
+                }
+            } else if (tMode == "INCOME") {
+                if (sDate != "" && lDate == "" || sDate == "" && lDate != "") {
+                    Toast.makeText(
+                        requireContext(),
+                        "Please Select Both date",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else if (sDate != "" && lDate != "") {
+                    daoo!!.incexpTblDao().getAllIncomeDataByDate(sDate!!, lDate!!)
+                        .observe(requireActivity()) {
+                            binding.transectionItem.adapter =
+                                adapterOfTransection(it, categoryMa!!, currencyClas!!)
+
+                        }
+                    setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                } else {
+                    daoo!!.incexpTblDao().getAllIncomeData().observe(requireActivity()) {
+                        binding.transectionItem.adapter =
+                            adapterOfTransection(it, categoryMa!!, currencyClas!!)
+                    }
+                    setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                }
+            } else if (sDate != null && lDate != null) {
+                daoo!!.incexpTblDao().getAllDataByTwoDate(sDate!!, lDate!!)
+                    .observe(requireActivity()) {
+                        binding.transectionItem.adapter =
+                            adapterOfTransection(it, categoryMa!!, currencyClas!!)
+
+                    }
+                setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+            }
+            (activity as MainActivity?)!!.showBottomNavigationView()
+
+
         }
+        
     }
 
-    fun reloadFragmentAndKillProcesses() {
-        val fragmentManager = requireActivity().supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.detach(this)
-        fragmentTransaction.attach(this)
-        fragmentTransaction.commitAllowingStateLoss()
-        fragmentManager.executePendingTransactions()
+
+    fun setPrefForFIlter(isornot:Boolean,sd: String, ld: String, iem: String) {
+        val preference = requireActivity().getSharedPreferences(
+            "IsFilterOrNotPrf",
+            AppCompatActivity.MODE_PRIVATE
+        )
+        val editor = preference.edit()
+        editor.putBoolean("IsFilterOrNotPrf_",isornot)
+        editor.putString("StartDate", sd)
+        editor.putString("EndDate", ld)
+        editor.putString("INC_OR_EXP", iem)
+        editor.apply()
+        Log.d("IsFilterOrNotPrf_","$isornot")
+        Log.d("StartDate",sd)
+        Log.d("EndDate",ld)
+        Log.d("INC_OR_EXP",iem)
     }
 
 

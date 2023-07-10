@@ -157,11 +157,6 @@ class MoreFragment : Fragment() {
             }
             fileInputStream.close()
             fileOutputStream.close()
-            Toast.makeText(
-                context,
-                "Database exported",
-                Toast.LENGTH_SHORT
-            ).show()
         } catch (e: IOException) {
             e.printStackTrace()
             Toast.makeText(context, "Failed to export database", Toast.LENGTH_SHORT).show()
