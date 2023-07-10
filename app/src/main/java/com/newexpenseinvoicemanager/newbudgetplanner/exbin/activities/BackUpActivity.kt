@@ -55,6 +55,8 @@ class BackUpActivity : AppCompatActivity() {
     lateinit var mDrive: Drive
     private var FireBaseGooggleAdsId: String = ""
     private var isAds: Boolean = false
+    private var isAccount: GoogleSignInAccount? = null
+    private var isLogedIn: Boolean = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,32 +64,50 @@ class BackUpActivity : AppCompatActivity() {
         binding = ActivityBackUpBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         val preference =
             this.getSharedPreferences("NativeId", AppCompatActivity.MODE_PRIVATE)
         FireBaseGooggleAdsId = preference.getString("Na_tive_id", "")!!
         isAds = preference.getBoolean("isShow", false)
 
+        val pref = this.getSharedPreferences("IsLogIn", MODE_PRIVATE)
+        isLogedIn = pref.getBoolean("LogIn", false)
 
+        val driveDialog: View = findViewById(R.id.drive_dialog)
+
+        val DriveDialog = binding.driveDialog
         gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
             .build()
 
         gsc = GoogleSignIn.getClient(this, gso)
+        if (isLogedIn == true) {
+            BackupActivity()
+        }
+
+        //  isAccount = GoogleSignIn.getLastSignedInAccount(this)!!
 
 
         binding.mbBackupBtn.setOnClickListener {
-            gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build()
 
-            gsc = GoogleSignIn.getClient(this, gso)
 
-            var account: GoogleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)!!
-            if (account != null) {
-            uploadFileToGDrive(this)}else{
+            if (isAccount != null) {
+                driveDialog.visibility = View.VISIBLE
+                DriveDialog.upldTvDeleteTitle.text =
+                    "Do you want to back up your data to your drive"
+                DriveDialog.upldBtnDelete.setOnClickListener {
+                    uploadFileToGDrive(this)
+                }
+                DriveDialog.upldBtncancel.setOnClickListener {
+                    driveDialog.visibility = View.GONE
+
+                }
+
+            } else {
                 Toast.makeText(this, "Login First", Toast.LENGTH_SHORT).show()
             }
         }
+
         val connectivityManager =
             getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = connectivityManager.activeNetworkInfo
@@ -113,11 +133,11 @@ class BackUpActivity : AppCompatActivity() {
             binding.myTemplate.visibility = View.GONE
 
         }
-        
+
         binding.titleTextView.setOnClickListener {
             this.binding.mbBackup.performClick()
         }
-        
+
         binding.mbBackup.setOnClickListener {
             SingIn()
         }
@@ -125,37 +145,37 @@ class BackUpActivity : AppCompatActivity() {
         binding.titleTextView1.setOnClickListener {
             this.binding.mbSingOut.performClick()
         }
-        
+
         binding.mbSingOut.setOnClickListener {
-            gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build()
 
-            gsc = GoogleSignIn.getClient(this, gso)
-
-            var account: GoogleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)!!
-            if (account != null) {
+            if (isAccount != null) {
                 singOut()
+                val preference = getSharedPreferences("IsLogIn", MODE_PRIVATE)
+                val editor = preference.edit()
+                editor.putBoolean("LogIn", false)
+                editor.apply()
             } else {
                 Toast.makeText(this, "Log in First", Toast.LENGTH_SHORT).show()
             }
         }
 
         binding.mbDwnld.setOnClickListener {
-            gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build()
 
-            gsc = GoogleSignIn.getClient(this, gso)
+            if (isAccount != null) {
+                driveDialog.visibility = View.VISIBLE
+                DriveDialog.upldTvDeleteTitle.text = "Do you want to restore your data from drive"
+                DriveDialog.upldBtnDelete.setOnClickListener {
+                    restoreFromBackup()
+                }
+                DriveDialog.upldBtncancel.setOnClickListener {
+                    driveDialog.visibility = View.GONE
 
-            var account: GoogleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)!!
-            if (account != null) {
-                restoreFromBackup()
+                }
             } else {
                 Toast.makeText(this, "Log in First", Toast.LENGTH_SHORT).show()
             }
         }
-        
+
         binding.editBackarrow.setOnClickListener {
             onBackPressed()
         }
@@ -177,6 +197,7 @@ class BackUpActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         if (requestCode == 100) run {
             val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
@@ -188,6 +209,7 @@ class BackUpActivity : AppCompatActivity() {
                 Toast.makeText(this, "error $e", Toast.LENGTH_SHORT).show()
             }
         }
+
     }
 
     private fun BackupActivity() {
@@ -197,17 +219,21 @@ class BackUpActivity : AppCompatActivity() {
 
         gsc = GoogleSignIn.getClient(this, gso)
 
-        var account: GoogleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)!!
-        if (account != null) {
-            binding.tvEmail.text = account.email
-            binding.tvName.text = account.displayName
-            val photoUrl = account.photoUrl
+        isAccount = GoogleSignIn.getLastSignedInAccount(this)!!
+        if (isAccount != null) {
+            binding.tvEmail.text = isAccount!!.email
+            binding.tvName.text = isAccount!!.displayName
+            val photoUrl = isAccount!!.photoUrl
             if (photoUrl != null) {
                 Glide.with(this)
                     .load(photoUrl)
                     .into(binding.gmailimageView)
             }
             mDrive = getDriveService(this)
+            val preference = getSharedPreferences("IsLogIn", MODE_PRIVATE)
+            val editor = preference.edit()
+            editor.putBoolean("LogIn", true)
+            editor.apply()
 
             // Call the exportToGoogleDrive function
         }
