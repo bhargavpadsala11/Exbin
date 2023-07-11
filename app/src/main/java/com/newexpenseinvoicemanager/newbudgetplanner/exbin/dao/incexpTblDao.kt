@@ -59,8 +59,31 @@ interface incexpTblDao {
     @Query("SELECT AVG(amount) AS daily_average FROM incexpTbl WHERE dType = 'EXPENSE'")
     fun getDailyAverageExp(): LiveData<Double>
 
+    @Query("SELECT SUM(amount) AS ttl_sum_exp FROM incexpTbl WHERE dType = 'EXPENSE' AND date BETWEEN :startDate AND :endDate")
+    fun getSumOfExpenseDate(startDate: String, endDate: String): LiveData<Double>
+
+    @Query("SELECT SUM(amount) AS ttl_sum_inc FROM incexpTbl WHERE dType = 'INCOME' AND date BETWEEN :startDate AND :endDate")
+    fun getSumOfIncomeDate(startDate: String, endDate: String): LiveData<Double>
+
+    @Query("SELECT SUM(amount) AS ttl_sum_inc FROM incexpTbl WHERE dType = 'INCOME'")
+    fun getSumOfIncomeAll(): LiveData<Double>
+
+    @Query("SELECT SUM(amount) AS ttl_sum_inc FROM incexpTbl")
+    fun getSumOfAll(): LiveData<Double>
+
+    @Query("SELECT SUM(amount) AS ttl_sum_inc FROM incexpTbl WHERE dType = 'EXPENSE'")
+    fun getSumOfExpenseAll(): LiveData<Double>
+
+    @Query("SELECT SUM(amount) AS ttl_sum_inc FROM incexpTbl WHERE dType = 'INCOME'")
+    fun getSumOfIncome(): LiveData<Double>
+
+    @Query("SELECT SUM(amount) AS ttl_sum_inc FROM incexpTbl WHERE dType = 'EXPENSE'")
+    fun getSumOfExpense(): LiveData<Double>
     @Query("SELECT AVG(amount) AS daily_average FROM incexpTbl WHERE dType = 'INCOME'")
     fun getDailyAverage(): LiveData<Double>
+
+    @Query("SELECT SUM(amount) AS daily_average FROM incexpTbl WHERE date BETWEEN :startDate AND :endDate")
+    fun getSumByTwoDate(startDate: String, endDate: String): LiveData<Double>
 
     @Query("SELECT SUM(CASE WHEN dType = 'INCOME' THEN amount ELSE 0 END) - SUM(CASE WHEN dType = 'EXPENSE' THEN amount ELSE 0 END) AS difference FROM incexpTbl")
     fun getIncomeExpenseDifference(): LiveData<Double>
