@@ -232,6 +232,7 @@ class TransectionFragment : Fragment() {
                                 daoo!!.incexpTblDao().getSumOfExpenseDate(sDate!!, lDate!!)
                                     .observe(requireActivity()) {
                                         expTtl = it.toString()
+                                        allTtl = (incTtl!!.toDouble() - expTtl!!.toDouble()).toString()
                                         setIncomeExpenseValue(incTtl!!, expTtl!!, allTtl!!)
 
                                     }
@@ -445,6 +446,7 @@ class TransectionFragment : Fragment() {
                                     dao.incexpTblDao().getSumOfExpenseDate(sDate!!, lDate!!)
                                         .observe(requireActivity()) {
                                             expTtl = it.toString()
+                                            allTtl = (incTtl!!.toDouble() - expTtl!!.toDouble()).toString()
                                             setIncomeExpenseValue(incTtl!!, expTtl!!, allTtl!!)
 
                                         }
@@ -684,6 +686,7 @@ class TransectionFragment : Fragment() {
                         dao.incexpTblDao().getSumOfExpenseAll()
                             .observe(requireActivity()) {
                                 expTtl = it.toString()
+                                allTtl = (incTtl!!.toDouble() - expTtl!!.toDouble()).toString()
                                 setIncomeExpenseValue(incTtl!!, expTtl!!, allTtl!!)
 
                             }
@@ -1295,6 +1298,7 @@ class TransectionFragment : Fragment() {
                                 daoo!!.incexpTblDao().getSumOfExpenseDate(sDate!!, lDate!!)
                                     .observe(requireActivity()) {
                                         expTtl = it.toString()
+                                        allTtl = (incTtl!!.toDouble() - expTtl!!.toDouble()).toString()
                                         setIncomeExpenseValue(incTtl!!, expTtl!!, allTtl!!)
 
                                     }
