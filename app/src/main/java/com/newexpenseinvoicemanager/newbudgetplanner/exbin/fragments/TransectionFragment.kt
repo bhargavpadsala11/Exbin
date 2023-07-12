@@ -61,6 +61,9 @@ class TransectionFragment : Fragment() {
     private var FireBaseGooggleAdsId: String = ""
     private var FireBaseGooggleAdsInterId: String = ""
     private var cDate: String? = ""
+    private var incTtl: String? = ""
+    private var expTtl: String? = ""
+    private var allTtl: String? = ""
     private var mInterstitialAd: InterstitialAd? = null
     private var isFilter: Boolean = false
     private var isAds: Boolean = false
@@ -72,7 +75,7 @@ class TransectionFragment : Fragment() {
     private var daoo: AppDataBase? = null
     private var currencyClas: getCurrencyClass? = null
     private var categoryMa: MutableMap<String, Categories>? = null
-    private var pref: SharedPreferences? =null
+    private var pref: SharedPreferences? = null
 
 
     override fun onCreateView(
@@ -92,9 +95,12 @@ class TransectionFragment : Fragment() {
         FireBaseGooggleAdsInterId = preference.getString("inter_id", "")!!
         isAds = preference.getBoolean("isShow", false)
 
-         pref =
-            requireContext().getSharedPreferences("IsFilterOrNotPrf", AppCompatActivity.MODE_PRIVATE)
-        isFilterOrNotPrf = pref!!.getBoolean("IsFilterOrNotPrf_",false)
+        pref =
+            requireContext().getSharedPreferences(
+                "IsFilterOrNotPrf",
+                AppCompatActivity.MODE_PRIVATE
+            )
+        isFilterOrNotPrf = pref!!.getBoolean("IsFilterOrNotPrf_", false)
 
         custom = binding.appBar
         custom!!.ivPdf.visibility = VISIBLE
@@ -131,18 +137,13 @@ class TransectionFragment : Fragment() {
         }
 
         daoo = dao
-        currencyClas =currencyClass
+        currencyClas = currencyClass
         categoryMa = categoryMap
 
-        if (isFilterOrNotPrf == true){
-
-            sDate = pref!!.getString("StartDate","")
-                lDate = pref!!.getString("EndDate","")
-                tMode = pref!!.getString("INC_OR_EXP","")!!
-            Log.d("IsFilterOrNotPrf_","$isFilterOrNotPrf")
-            Log.d("StartDate",sDate!!)
-            Log.d("EndDate",lDate!!)
-            Log.d("INC_OR_EXP",tMode)
+        if (isFilterOrNotPrf == true) {
+            sDate = pref!!.getString("StartDate", "")
+            lDate = pref!!.getString("EndDate", "")
+            tMode = pref!!.getString("INC_OR_EXP", "")!!
             custom!!.ivDelete.setColorFilter(
                 ContextCompat.getColor(
                     requireContext(),
@@ -152,53 +153,98 @@ class TransectionFragment : Fragment() {
 //                isFilterOrNot.visibility = View.VISIBLE
             isFilter = true
 
-            filter.visibility = View.GONE
             if (tMode == "EXPENSE") {
-                if (sDate != "" && lDate != "") {
-                    dao.incexpTblDao().getAllExpenseDataByDate(sDate!!, lDate!!)
+                if (sDate != "" && lDate == "" || sDate == "" && lDate != "") {
+                    Toast.makeText(
+                        requireContext(),
+                        "Please Select Both date",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else if (sDate != "" && lDate != "") {
+                    daoo!!.incexpTblDao().getAllExpenseDataByDate(sDate!!, lDate!!)
                         .observe(requireActivity()) {
                             binding.transectionItem.adapter =
-                                adapterOfTransection(it, categoryMap, currencyClass)
+                                adapterOfTransection(it, categoryMa!!, currencyClas!!)
 
                         }
-                    setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                    daoo!!.incexpTblDao().getSumOfExpenseDate(sDate!!, lDate!!)
+                        .observe(requireActivity()) {
+                            val exp = it
+                            setIncomeExpenseValue("00", exp.toString(), exp.toString())
+                        }
+                    setPrefForFIlter(true, sDate!!, lDate!!, tMode)
                 } else {
-                    dao.incexpTblDao().getAllExpenseData().observe(requireActivity()) {
+                    daoo!!.incexpTblDao().getAllExpenseData().observe(requireActivity()) {
                         binding.transectionItem.adapter =
-                            adapterOfTransection(it, categoryMap, currencyClass)
+                            adapterOfTransection(it, categoryMa!!, currencyClas!!)
                     }
-                    setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                    daoo!!.incexpTblDao().getSumOfExpense().observe(requireActivity()) {
+                        val exp = it
+                        setIncomeExpenseValue("00", exp.toString(), exp.toString())
+                    }
+                    setPrefForFIlter(true, sDate!!, lDate!!, tMode)
 
                 }
             } else if (tMode == "INCOME") {
-                if (sDate != "" && lDate != "") {
-                    dao.incexpTblDao().getAllIncomeDataByDate(sDate!!, lDate!!)
+                if (sDate != "" && lDate == "" || sDate == "" && lDate != "") {
+                    Toast.makeText(
+                        requireContext(),
+                        "Please Select Both date",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else if (sDate != "" && lDate != "") {
+                    daoo!!.incexpTblDao().getAllIncomeDataByDate(sDate!!, lDate!!)
                         .observe(requireActivity()) {
                             binding.transectionItem.adapter =
-                                adapterOfTransection(it, categoryMap, currencyClass)
+                                adapterOfTransection(it, categoryMa!!, currencyClas!!)
 
                         }
-                    setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                    daoo!!.incexpTblDao().getSumOfIncomeDate(sDate!!, lDate!!)
+                        .observe(requireActivity()) {
+                            val inc = it
+                            setIncomeExpenseValue(inc.toString(), "00", inc.toString())
+                        }
+                    setPrefForFIlter(true, sDate!!, lDate!!, tMode)
                 } else {
-                    dao.incexpTblDao().getAllIncomeData().observe(requireActivity()) {
+                    daoo!!.incexpTblDao().getAllIncomeData().observe(requireActivity()) {
                         binding.transectionItem.adapter =
-                            adapterOfTransection(it, categoryMap, currencyClass)
+                            adapterOfTransection(it, categoryMa!!, currencyClas!!)
                     }
-                    setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                    daoo!!.incexpTblDao().getSumOfIncome().observe(requireActivity()) {
+                        val inc = it
+                        setIncomeExpenseValue(inc.toString(), "00", inc.toString())
+                    }
+                    setPrefForFIlter(true, sDate!!, lDate!!, tMode)
                 }
             } else if (sDate != null && lDate != null) {
-                dao.incexpTblDao().getAllDataByTwoDate(sDate!!, lDate!!)
+                daoo!!.incexpTblDao().getAllDataByTwoDate(sDate!!, lDate!!)
                     .observe(requireActivity()) {
                         binding.transectionItem.adapter =
-                            adapterOfTransection(it, categoryMap, currencyClass)
+                            adapterOfTransection(it, categoryMa!!, currencyClas!!)
 
                     }
-                setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                daoo!!.incexpTblDao().getSumByTwoDate(sDate!!, lDate!!)
+                    .observe(requireActivity()) {
+                        allTtl = it.toString()
+                        daoo!!.incexpTblDao().getSumOfIncomeDate(sDate!!, lDate!!)
+                            .observe(requireActivity()) {
+                                incTtl = it.toString()
+                                daoo!!.incexpTblDao().getSumOfExpenseDate(sDate!!, lDate!!)
+                                    .observe(requireActivity()) {
+                                        expTtl = it.toString()
+                                        allTtl = (incTtl!!.toDouble() - expTtl!!.toDouble()).toString()
+                                        setIncomeExpenseValue(incTtl!!, expTtl!!, allTtl!!)
+
+                                    }
+                            }
+
+                    }
+                setPrefForFIlter(true, sDate!!, lDate!!, tMode)
             }
             (activity as MainActivity?)!!.showBottomNavigationView()
 
 
-    }
+        }
 
 //        getIdofNativeAds()
 
@@ -258,7 +304,12 @@ class TransectionFragment : Fragment() {
         }
 
         binding.btnReset.setOnClickListener {
-            custom!!.ivDelete.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white))
+            custom!!.ivDelete.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.white
+                )
+            )
 
 //            isFilterOrNot.visibility = View.GONE
             isFilter = false
@@ -277,7 +328,7 @@ class TransectionFragment : Fragment() {
                 exPenseButton,
                 ContextCompat.getColorStateList(requireContext(), R.color.white)
             )
-            setPrefForFIlter(false,sDate!!,lDate!!,tMode)
+            setPrefForFIlter(false, sDate!!, lDate!!, tMode)
             (activity as MainActivity?)!!.showBottomNavigationView()
 
         }
@@ -327,13 +378,22 @@ class TransectionFragment : Fragment() {
                                     adapterOfTransection(it, categoryMap, currencyClass)
 
                             }
-                        setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                        dao.incexpTblDao().getSumOfExpenseDate(sDate!!, lDate!!)
+                            .observe(requireActivity()) {
+                                val exp = it
+                                setIncomeExpenseValue("00", exp.toString(), exp.toString())
+                            }
+                        setPrefForFIlter(true, sDate!!, lDate!!, tMode)
                     } else {
                         dao.incexpTblDao().getAllExpenseData().observe(requireActivity()) {
                             binding.transectionItem.adapter =
                                 adapterOfTransection(it, categoryMap, currencyClass)
                         }
-                        setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                        dao.incexpTblDao().getSumOfExpense().observe(requireActivity()) {
+                            val exp = it
+                            setIncomeExpenseValue("00", exp.toString(), exp.toString())
+                        }
+                        setPrefForFIlter(true, sDate!!, lDate!!, tMode)
 
                     }
                 } else if (tMode == "INCOME") {
@@ -350,22 +410,50 @@ class TransectionFragment : Fragment() {
                                     adapterOfTransection(it, categoryMap, currencyClass)
 
                             }
-                        setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                        dao.incexpTblDao().getSumOfIncomeDate(sDate!!, lDate!!)
+                            .observe(requireActivity()) {
+                                val inc = it
+                                setIncomeExpenseValue(inc.toString(), "00", inc.toString())
+                            }
+                        setPrefForFIlter(true, sDate!!, lDate!!, tMode)
                     } else {
                         dao.incexpTblDao().getAllIncomeData().observe(requireActivity()) {
                             binding.transectionItem.adapter =
                                 adapterOfTransection(it, categoryMap, currencyClass)
                         }
-                        setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                        dao.incexpTblDao().getSumOfIncome().observe(requireActivity()) {
+                            val inc = it
+                            setIncomeExpenseValue(inc.toString(), "00", inc.toString())
+                        }
+                        setPrefForFIlter(true, sDate!!, lDate!!, tMode)
                     }
                 } else if (sDate != null && lDate != null) {
+
                     dao.incexpTblDao().getAllDataByTwoDate(sDate!!, lDate!!)
                         .observe(requireActivity()) {
                             binding.transectionItem.adapter =
                                 adapterOfTransection(it, categoryMap, currencyClass)
 
                         }
-                    setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+
+
+                    dao.incexpTblDao().getSumByTwoDate(sDate!!, lDate!!)
+                        .observe(requireActivity()) {
+                            allTtl = it.toString()
+                            dao.incexpTblDao().getSumOfIncomeDate(sDate!!, lDate!!)
+                                .observe(requireActivity()) {
+                                    incTtl = it.toString()
+                                    dao.incexpTblDao().getSumOfExpenseDate(sDate!!, lDate!!)
+                                        .observe(requireActivity()) {
+                                            expTtl = it.toString()
+                                            allTtl = (incTtl!!.toDouble() - expTtl!!.toDouble()).toString()
+                                            setIncomeExpenseValue(incTtl!!, expTtl!!, allTtl!!)
+
+                                        }
+                                }
+
+                        }
+                    setPrefForFIlter(true, sDate!!, lDate!!, tMode)
                 }
                 (activity as MainActivity?)!!.showBottomNavigationView()
             }
@@ -589,6 +677,22 @@ class TransectionFragment : Fragment() {
                 categoryMap[category.CategoryName!!] = category
             }
         }
+        dao.incexpTblDao().getSumOfAll()
+            .observe(requireActivity()) {
+                allTtl = it.toString()
+                dao.incexpTblDao().getSumOfIncomeAll()
+                    .observe(requireActivity()) {
+                        incTtl = it.toString()
+                        dao.incexpTblDao().getSumOfExpenseAll()
+                            .observe(requireActivity()) {
+                                expTtl = it.toString()
+                                allTtl = (incTtl!!.toDouble() - expTtl!!.toDouble()).toString()
+                                setIncomeExpenseValue(incTtl!!, expTtl!!, allTtl!!)
+
+                            }
+                    }
+
+            }
 
         if (isAds == true) {
             dao.incexpTblDao().getAllData().observe(requireActivity()) {
@@ -1102,10 +1206,10 @@ class TransectionFragment : Fragment() {
         isFiltrDilogeVisible?.visibility = View.GONE
         (activity as MainActivity?)!!.showBottomNavigationView()
 
-        if (isFilterOrNotPrf == true){
-            sDate = pref!!.getString("StartDate","")
-            lDate = pref!!.getString("EndDate","")
-            tMode = pref!!.getString("INC_OR_EXP","")!!
+        if (isFilterOrNotPrf == true) {
+            sDate = pref!!.getString("StartDate", "")
+            lDate = pref!!.getString("EndDate", "")
+            tMode = pref!!.getString("INC_OR_EXP", "")!!
             custom!!.ivDelete.setColorFilter(
                 ContextCompat.getColor(
                     requireContext(),
@@ -1129,13 +1233,22 @@ class TransectionFragment : Fragment() {
                                 adapterOfTransection(it, categoryMa!!, currencyClas!!)
 
                         }
-                    setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                    daoo!!.incexpTblDao().getSumOfExpenseDate(sDate!!, lDate!!)
+                        .observe(requireActivity()) {
+                            val exp = it
+                            setIncomeExpenseValue("00", exp.toString(), exp.toString())
+                        }
+                    setPrefForFIlter(true, sDate!!, lDate!!, tMode)
                 } else {
                     daoo!!.incexpTblDao().getAllExpenseData().observe(requireActivity()) {
                         binding.transectionItem.adapter =
                             adapterOfTransection(it, categoryMa!!, currencyClas!!)
                     }
-                    setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                    daoo!!.incexpTblDao().getSumOfExpense().observe(requireActivity()) {
+                        val exp = it
+                        setIncomeExpenseValue("00", exp.toString(), exp.toString())
+                    }
+                    setPrefForFIlter(true, sDate!!, lDate!!, tMode)
 
                 }
             } else if (tMode == "INCOME") {
@@ -1152,13 +1265,22 @@ class TransectionFragment : Fragment() {
                                 adapterOfTransection(it, categoryMa!!, currencyClas!!)
 
                         }
-                    setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                    daoo!!.incexpTblDao().getSumOfIncomeDate(sDate!!, lDate!!)
+                        .observe(requireActivity()) {
+                            val inc = it
+                            setIncomeExpenseValue(inc.toString(), "00", inc.toString())
+                        }
+                    setPrefForFIlter(true, sDate!!, lDate!!, tMode)
                 } else {
                     daoo!!.incexpTblDao().getAllIncomeData().observe(requireActivity()) {
                         binding.transectionItem.adapter =
                             adapterOfTransection(it, categoryMa!!, currencyClas!!)
                     }
-                    setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                    daoo!!.incexpTblDao().getSumOfIncome().observe(requireActivity()) {
+                        val inc = it
+                        setIncomeExpenseValue(inc.toString(), "00", inc.toString())
+                    }
+                    setPrefForFIlter(true, sDate!!, lDate!!, tMode)
                 }
             } else if (sDate != null && lDate != null) {
                 daoo!!.incexpTblDao().getAllDataByTwoDate(sDate!!, lDate!!)
@@ -1167,31 +1289,49 @@ class TransectionFragment : Fragment() {
                             adapterOfTransection(it, categoryMa!!, currencyClas!!)
 
                     }
-                setPrefForFIlter(true,sDate!!, lDate!!, tMode)
+                daoo!!.incexpTblDao().getSumByTwoDate(sDate!!, lDate!!)
+                    .observe(requireActivity()) {
+                        allTtl = it.toString()
+                        daoo!!.incexpTblDao().getSumOfIncomeDate(sDate!!, lDate!!)
+                            .observe(requireActivity()) {
+                                incTtl = it.toString()
+                                daoo!!.incexpTblDao().getSumOfExpenseDate(sDate!!, lDate!!)
+                                    .observe(requireActivity()) {
+                                        expTtl = it.toString()
+                                        allTtl = (incTtl!!.toDouble() - expTtl!!.toDouble()).toString()
+                                        setIncomeExpenseValue(incTtl!!, expTtl!!, allTtl!!)
+
+                                    }
+                            }
+
+                    }
+                setPrefForFIlter(true, sDate!!, lDate!!, tMode)
             }
             (activity as MainActivity?)!!.showBottomNavigationView()
 
 
         }
-        
+
     }
 
 
-    fun setPrefForFIlter(isornot:Boolean,sd: String, ld: String, iem: String) {
+    fun setPrefForFIlter(isornot: Boolean, sd: String, ld: String, iem: String) {
         val preference = requireActivity().getSharedPreferences(
             "IsFilterOrNotPrf",
             AppCompatActivity.MODE_PRIVATE
         )
         val editor = preference.edit()
-        editor.putBoolean("IsFilterOrNotPrf_",isornot)
+        editor.putBoolean("IsFilterOrNotPrf_", isornot)
         editor.putString("StartDate", sd)
         editor.putString("EndDate", ld)
         editor.putString("INC_OR_EXP", iem)
         editor.apply()
-        Log.d("IsFilterOrNotPrf_","$isornot")
-        Log.d("StartDate",sd)
-        Log.d("EndDate",ld)
-        Log.d("INC_OR_EXP",iem)
+    }
+
+    fun setIncomeExpenseValue(incttl: String, expttl: String, ttl: String) {
+        binding.incExpTotalIncome.text = incttl
+        binding.iincExpExpTtl.text = expttl
+        binding.incExpAvgTtl.text = ttl
     }
 
 
